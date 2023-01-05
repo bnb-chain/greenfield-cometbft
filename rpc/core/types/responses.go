@@ -10,6 +10,7 @@ import (
 	"github.com/tendermint/tendermint/p2p"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/tendermint/tendermint/types"
+	"github.com/tendermint/tendermint/votepool"
 )
 
 // List of blocks
@@ -234,6 +235,11 @@ type ResultBroadcastEvidence struct {
 	Hash []byte `json:"hash"`
 }
 
+// Result of query votes
+type ResultQueryVote struct {
+	Votes []*votepool.Vote `json:"votes"`
+}
+
 // empty results
 type (
 	ResultUnsafeFlushMempool struct{}
@@ -241,6 +247,8 @@ type (
 	ResultSubscribe          struct{}
 	ResultUnsubscribe        struct{}
 	ResultHealth             struct{}
+	ResultBroadcastVote      struct{}
+	ResultFlushVote          struct{}
 )
 
 // Event data from a subscription

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,6 +42,22 @@ func TestValidatorProtoBuf(t *testing.T) {
 func TestValidatorValidateBasic(t *testing.T) {
 	priv := NewMockPV()
 	pubKey, _ := priv.GetPubKey()
+
+	blsPubKey := make([]byte, RelayerBlsKeySize)
+	rand.Read(blsPubKey)
+	relayer := make([]byte, RelayerAddressSize)
+	rand.Read(relayer)
+
+	val := NewValidator(pubKey, 1)
+	val.SetRelayerBlsKey(blsPubKey)
+	val.SetRelayerAddress(relayer)
+
+	wrongBlsPubKey := val.Copy()
+	wrongBlsPubKey.SetRelayerBlsKey([]byte{'a'})
+
+	wrongRelayer := val.Copy()
+	wrongRelayer.SetRelayerAddress([]byte{'a'})
+
 	testCases := []struct {
 		val *Validator
 		err bool
@@ -83,6 +100,21 @@ func TestValidatorValidateBasic(t *testing.T) {
 			},
 			err: true,
 			msg: "validator address is the wrong size: 61",
+		},
+		{
+			val: val,
+			err: false,
+			msg: "",
+		},
+		{
+			val: wrongBlsPubKey,
+			err: true,
+			msg: "validator relayer bls key is the wrong size: [97]",
+		},
+		{
+			val: wrongRelayer,
+			err: true,
+			msg: "validator relayer address is the wrong size: [97]",
 		},
 	}
 

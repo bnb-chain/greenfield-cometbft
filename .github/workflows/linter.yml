@@ -3,12 +3,13 @@ on:
   push:
     branches:
       - master
+      - develop
     paths:
       - "**.md"
       - "**.yml"
       - "**.yaml"
   pull_request:
-    branches: [master]
+    branches: [master, develop]
     paths:
       - "**.md"
       - "**.yml"
@@ -21,7 +22,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
       - name: Lint Code Base
-        uses: docker://github/super-linter:v3
+        uses: docker://github/super-linter:v3.17.0
         env:
           LINTER_RULES_PATH: .
           VALIDATE_ALL_CODEBASE: true
