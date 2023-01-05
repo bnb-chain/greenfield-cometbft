@@ -2,7 +2,7 @@
 FROM golang:1.18-alpine as builder
 RUN apk update && \
     apk upgrade && \
-    apk --no-cache add make
+    apk --no-cache add make build-base
 COPY / /tendermint
 WORKDIR /tendermint
 RUN make build-linux

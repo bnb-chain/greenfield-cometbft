@@ -17,6 +17,7 @@ import (
 	"github.com/tendermint/tendermint/state/indexer"
 	"github.com/tendermint/tendermint/state/txindex"
 	"github.com/tendermint/tendermint/types"
+	"github.com/tendermint/tendermint/votepool"
 )
 
 const (
@@ -93,6 +94,7 @@ type Environment struct {
 	ConsensusReactor *consensus.Reactor
 	EventBus         *types.EventBus // thread safe
 	Mempool          mempl.Mempool
+	VotePool         votepool.VotePool
 
 	Logger log.Logger
 

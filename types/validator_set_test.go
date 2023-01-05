@@ -1641,6 +1641,37 @@ func TestValidatorSetProtoBuf(t *testing.T) {
 	}
 }
 
+func TestValidatorSetHash(t *testing.T) {
+	priKey := ed25519.GenPrivKey()
+	pubKey := priKey.PubKey()
+	address := pubKey.Address()
+	votingPower := int64(100)
+
+	val := &Validator{
+		Address:          address,
+		PubKey:           pubKey,
+		VotingPower:      votingPower,
+		ProposerPriority: 0,
+	}
+
+	validatorSet := ValidatorSet{
+		Validators: []*Validator{val},
+	}
+	validatorsHash := validatorSet.Hash()
+
+	//mock relayer bls public key & address
+	blsPubKey := ed25519.GenPrivKey().PubKey().Bytes()
+	relayer := ed25519.GenPrivKey().PubKey().Address().Bytes()
+	val.SetRelayerBlsKey(blsPubKey)
+	val.SetRelayerAddress(relayer)
+
+	validatorSet = ValidatorSet{
+		Validators: []*Validator{val},
+	}
+	newValidatorsHash := validatorSet.Hash()
+	require.NotEqual(t, validatorsHash, newValidatorsHash)
+}
+
 // ---------------------
 // Sort validators by priority and address
 type validatorsByPriority []*Validator

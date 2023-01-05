@@ -12,6 +12,14 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
+const (
+	// RelayerBlsKeySize is the size of validator's relayer bls public key.
+	RelayerBlsKeySize = 48
+
+	// RelayerAddressSize is the size of validator's relayer address.
+	RelayerAddressSize = 20
+)
+
 // Volatile state for each Validator
 // NOTE: The ProposerPriority is not included in Validator.Hash();
 // make sure to update that method if changes are made here
@@ -21,6 +29,9 @@ type Validator struct {
 	VotingPower int64         `json:"voting_power"`
 
 	ProposerPriority int64 `json:"proposer_priority"`
+
+	RelayerBlsKey  []byte `json:"relayer_bls_key"` // bls public key of authorized relayer/operator
+	RelayerAddress []byte `json:"relayer_address"` // address of authorized relayer/operator
 }
 
 // NewValidator returns a new validator with the given pubkey and voting power.
@@ -48,6 +59,13 @@ func (v *Validator) ValidateBasic() error {
 
 	if len(v.Address) != crypto.AddressSize {
 		return fmt.Errorf("validator address is the wrong size: %v", v.Address)
+	}
+
+	if len(v.RelayerBlsKey) != 0 && len(v.RelayerBlsKey) != RelayerBlsKeySize {
+		return fmt.Errorf("validator relayer bls key is the wrong size: %v", v.RelayerBlsKey)
+	}
+	if len(v.RelayerAddress) != 0 && len(v.RelayerAddress) != RelayerAddressSize {
+		return fmt.Errorf("validator relayer address is the wrong size: %v", v.RelayerAddress)
 	}
 
 	return nil
@@ -121,8 +139,10 @@ func (v *Validator) Bytes() []byte {
 	}
 
 	pbv := tmproto.SimpleValidator{
-		PubKey:      &pk,
-		VotingPower: v.VotingPower,
+		PubKey:         &pk,
+		VotingPower:    v.VotingPower,
+		RelayerBlsKey:  v.RelayerBlsKey,
+		RelayerAddress: v.RelayerAddress,
 	}
 
 	bz, err := pbv.Marshal()
@@ -132,7 +152,17 @@ func (v *Validator) Bytes() []byte {
 	return bz
 }
 
-// ToProto converts Valiator to protobuf
+// SetRelayerBlsKey will update the bls public key of relayer.
+func (v *Validator) SetRelayerBlsKey(blsKey []byte) {
+	v.RelayerBlsKey = blsKey
+}
+
+// SetRelayerAddress will update the relayer address of validator.
+func (v *Validator) SetRelayerAddress(address []byte) {
+	v.RelayerAddress = address
+}
+
+// ToProto converts Validator to protobuf
 func (v *Validator) ToProto() (*tmproto.Validator, error) {
 	if v == nil {
 		return nil, errors.New("nil validator")
@@ -148,6 +178,8 @@ func (v *Validator) ToProto() (*tmproto.Validator, error) {
 		PubKey:           pk,
 		VotingPower:      v.VotingPower,
 		ProposerPriority: v.ProposerPriority,
+		RelayerBlsKey:    v.RelayerBlsKey,
+		RelayerAddress:   v.RelayerAddress,
 	}
 
 	return &vp, nil
@@ -169,7 +201,8 @@ func ValidatorFromProto(vp *tmproto.Validator) (*Validator, error) {
 	v.PubKey = pk
 	v.VotingPower = vp.GetVotingPower()
 	v.ProposerPriority = vp.GetProposerPriority()
-
+	v.RelayerBlsKey = vp.GetRelayerBlsKey()
+	v.RelayerAddress = vp.GetRelayerAddress()
 	return v, nil
 }
 
