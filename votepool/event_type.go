@@ -9,4 +9,7 @@ const (
 
 	// FromBscCrossChainEvent defines the type of cross chain events from BSC to the current chain.
 	FromBscCrossChainEvent EventType = 2
+
+	// DataChallengeEvent defines the type of events for data availability challenges.
+	DataAvailabilityChallengeEvent EventType = 3
 )

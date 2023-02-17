@@ -46,7 +46,9 @@ func (v *Vote) ValidateBasic() error {
 	if len(v.EventHash) != eventHashLen {
 		return errors.New("invalid event hash")
 	}
-	if v.EventType != ToBscCrossChainEvent && v.EventType != FromBscCrossChainEvent {
+	if v.EventType != ToBscCrossChainEvent &&
+		v.EventType != FromBscCrossChainEvent &&
+		v.EventType != DataAvailabilityChallengeEvent {
 		return errors.New("invalid event type")
 	}
 	if len(v.PubKey) != pubKeyLen {
