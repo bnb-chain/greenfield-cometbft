@@ -1005,7 +1005,15 @@ func makeBlock(state sm.State, lastBlock *types.Block, lastBlockMeta *types.Bloc
 			lastBlockMeta.BlockID, []types.CommitSig{vote.CommitSig()})
 	}
 
-	return state.MakeBlock(height, []types.Tx{}, lastCommit, nil, state.Validators.GetProposer().Address)
+	reveal := makeReveal(state, privVal, height)
+	return state.MakeBlock(height, []types.Tx{}, lastCommit, nil, reveal, state.Validators.GetProposer().Address)
+}
+
+func makeReveal(state sm.State, privVal types.PrivValidator, height int64) []byte {
+	reveal := &tmproto.Reveal{Height: height}
+	_ = privVal.SignReveal(state.ChainID, reveal)
+
+	return reveal.Signature
 }
 
 type badApp struct {

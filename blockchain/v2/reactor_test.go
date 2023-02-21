@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"bytes"
 	"fmt"
 	"net"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
 	dbm "github.com/tendermint/tm-db"
 
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -23,6 +25,7 @@ import (
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/p2p/conn"
 	bcproto "github.com/tendermint/tendermint/proto/tendermint/blockchain"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/tendermint/tendermint/proxy"
 	sm "github.com/tendermint/tendermint/state"
 	"github.com/tendermint/tendermint/store"
@@ -469,9 +472,26 @@ func makeTxs(height int64) (txs []types.Tx) {
 	return txs
 }
 
-func makeBlock(height int64, state sm.State, lastCommit *types.Commit) *types.Block {
-	block, _ := state.MakeBlock(height, makeTxs(height), lastCommit, nil, state.Validators.GetProposer().Address)
+func makeBlock(height int64, state sm.State, lastCommit *types.Commit, privVals []types.PrivValidator) *types.Block {
+	proposerAddr := state.Validators.GetProposer().Address
+	reveal := makeReveal(state, proposerAddr, privVals, height)
+	block, _ := state.MakeBlock(height, makeTxs(height), lastCommit, nil, reveal, proposerAddr)
 	return block
+}
+
+func makeReveal(state sm.State, proposerAddr []byte, privVals []types.PrivValidator, height int64) []byte {
+	var proposer types.PrivValidator
+	for _, val := range privVals {
+		pubKey, _ := val.GetPubKey()
+		if bytes.Equal(pubKey.Address().Bytes(), proposerAddr) {
+			proposer = val
+			break
+		}
+	}
+	reveal := &tmproto.Reveal{Height: height}
+	_ = proposer.SignReveal(state.ChainID, reveal)
+
+	return reveal.Signature
 }
 
 type testApp struct {
@@ -560,7 +580,7 @@ func newReactorStore(
 				lastBlockMeta.BlockID, []types.CommitSig{vote.CommitSig()})
 		}
 
-		thisBlock := makeBlock(blockHeight, state, lastCommit)
+		thisBlock := makeBlock(blockHeight, state, lastCommit, privVals)
 
 		thisParts := thisBlock.MakePartSet(types.BlockPartSizeBytes)
 		blockID := types.BlockID{Hash: thisBlock.Hash(), PartSetHeader: thisParts.Header()}

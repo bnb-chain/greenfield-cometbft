@@ -93,7 +93,9 @@ func (blockExec *BlockExecutor) SetEventBus(eventBus types.BlockEventPublisher) 
 // The rest is given to txs, up to the max gas.
 func (blockExec *BlockExecutor) CreateProposalBlock(
 	height int64,
-	state State, commit *types.Commit,
+	state State,
+	commit *types.Commit,
+	randaoReveal []byte,
 	proposerAddr []byte,
 ) (*types.Block, *types.PartSet) {
 
@@ -107,7 +109,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 
 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxDataBytes, maxGas)
 
-	return state.MakeBlock(height, txs, commit, evidence, proposerAddr)
+	return state.MakeBlock(height, txs, commit, evidence, randaoReveal, proposerAddr)
 }
 
 // ValidateBlock validates the given block against the given state.
@@ -419,7 +421,7 @@ func updateState(
 		if err != nil {
 			return state, fmt.Errorf("error changing validator set: %v", err)
 		}
-		// Change results from this height but only applies to the next next height.
+		// Change results from this height but only applies to the next height.
 		lastHeightValsChanged = header.Height + 1 + 1
 	}
 
@@ -462,6 +464,7 @@ func updateState(
 		LastHeightConsensusParamsChanged: lastHeightParamsChanged,
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
+		LastRandaoMix:                    header.RandaoMix,
 	}, nil
 }
 
