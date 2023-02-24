@@ -39,7 +39,7 @@ func makeAndCommitGoodBlock(
 	privVals map[string]types.PrivValidator,
 	evidence []types.Evidence) (sm.State, types.BlockID, *types.Commit, error) {
 	// A good block passes
-	state, blockID, err := makeAndApplyGoodBlock(state, height, lastCommit, proposerAddr, blockExec, evidence)
+	state, blockID, err := makeAndApplyGoodBlock(state, height, lastCommit, proposerAddr, privVals, blockExec, evidence)
 	if err != nil {
 		return state, types.BlockID{}, nil, err
 	}
@@ -53,8 +53,10 @@ func makeAndCommitGoodBlock(
 }
 
 func makeAndApplyGoodBlock(state sm.State, height int64, lastCommit *types.Commit, proposerAddr []byte,
+	privVals map[string]types.PrivValidator,
 	blockExec *sm.BlockExecutor, evidence []types.Evidence) (sm.State, types.BlockID, error) {
-	block, _ := state.MakeBlock(height, makeTxs(height), lastCommit, evidence, proposerAddr)
+	reveal := makeReveal(state, proposerAddr, privVals, height)
+	block, _ := state.MakeBlock(height, makeTxs(height), lastCommit, evidence, reveal, proposerAddr)
 	if err := blockExec.ValidateBlock(state, block); err != nil {
 		return state, types.BlockID{}, err
 	}
@@ -83,6 +85,21 @@ func makeValidCommit(
 		sigs = append(sigs, vote.CommitSig())
 	}
 	return types.NewCommit(height, 0, blockID, sigs), nil
+}
+
+func makeReveal(state sm.State, proposerAddr []byte, privVals map[string]types.PrivValidator, height int64) []byte {
+	var proposer types.PrivValidator
+	for _, val := range privVals {
+		pubKey, _ := val.GetPubKey()
+		if bytes.Equal(pubKey.Address().Bytes(), proposerAddr) {
+			proposer = val
+			break
+		}
+	}
+	reveal := &tmproto.Reveal{Height: height}
+	_ = proposer.SignReveal(state.ChainID, reveal)
+
+	return reveal.Signature
 }
 
 // make some bogus txs
@@ -138,6 +155,7 @@ func makeBlock(state sm.State, height int64) *types.Block {
 		height,
 		makeTxs(state.LastBlockHeight),
 		new(types.Commit),
+		nil,
 		nil,
 		state.Validators.GetProposer().Address,
 	)

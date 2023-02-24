@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/tendermint/tendermint/abci/example/kvstore"
@@ -306,10 +308,13 @@ func TestCreateProposalBlock(t *testing.T) {
 		evidencePool,
 	)
 
+	reveal := &tmproto.Reveal{Height: height}
+	_ = privVals[0].SignReveal(state.ChainID, reveal)
+
 	commit := types.NewCommit(height-1, 0, types.BlockID{}, nil)
 	block, _ := blockExec.CreateProposalBlock(
 		height,
-		state, commit,
+		state, commit, reveal.Signature,
 		proposerAddr,
 	)
 
@@ -341,7 +346,7 @@ func TestMaxProposalBlockSize(t *testing.T) {
 	logger := log.TestingLogger()
 
 	var height int64 = 1
-	state, stateDB, _ := state(1, height)
+	state, stateDB, privVals := state(1, height)
 	stateStore := sm.NewStore(stateDB, sm.StoreOptions{
 		DiscardABCIResponses: false,
 	})
@@ -387,9 +392,12 @@ func TestMaxProposalBlockSize(t *testing.T) {
 	)
 
 	commit := types.NewCommit(height-1, 0, types.BlockID{}, nil)
+	reveal := &tmproto.Reveal{Height: height}
+	_ = privVals[0].SignReveal(state.ChainID, reveal)
+
 	block, _ := blockExec.CreateProposalBlock(
 		height,
-		state, commit,
+		state, commit, reveal.Signature,
 		proposerAddr,
 	)
 

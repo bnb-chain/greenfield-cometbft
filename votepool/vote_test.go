@@ -36,7 +36,7 @@ func TestVote_ValidateBasic(t *testing.T) {
 			vote: Vote{
 				PubKey:    pubKey,
 				Signature: sign,
-				EventType: 3,
+				EventType: 10,
 				EventHash: eventHash,
 				expireAt:  time.Time{},
 			},

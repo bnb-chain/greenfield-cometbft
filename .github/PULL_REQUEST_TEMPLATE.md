@@ -1,7 +1,17 @@
-## Description
+### Description
 
-_Please add a description of the changes that this PR introduces and the files that
-are the most critical to review._ 
+add a description of your changes here...
 
-Closes: #XXX
+### Rationale
 
+tell us why we need these changes...
+
+### Example
+
+add an example CLI or API response...
+
+### Changes
+
+Notable changes:
+* add each change in a bullet point here
+* ...

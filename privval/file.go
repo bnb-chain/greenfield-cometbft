@@ -2,6 +2,7 @@ package privval
 
 import (
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"os"
@@ -9,8 +10,10 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
+	"github.com/tendermint/tendermint/crypto/tmhash"
+
+	"github.com/tendermint/tendermint/crypto"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -263,6 +266,19 @@ func (pv *FilePV) SignProposal(chainID string, proposal *tmproto.Proposal) error
 	if err := pv.signProposal(chainID, proposal); err != nil {
 		return fmt.Errorf("error signing proposal: %v", err)
 	}
+	return nil
+}
+
+// SignReveal signs a randao reveal, along with the chainID. Implements PrivValidator.
+func (pv *FilePV) SignReveal(chainID string, reveal *tmproto.Reveal) error {
+	chainIDBytes := tmhash.Sum([]byte(chainID + "/"))
+	heightBytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(heightBytes, uint64(reveal.Height))
+	sig, err := pv.Key.PrivKey.Sign(append(chainIDBytes, heightBytes...))
+	if err != nil {
+		return fmt.Errorf("error signing reveal: %v", err)
+	}
+	reveal.Signature = sig
 	return nil
 }
 

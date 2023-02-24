@@ -83,6 +83,24 @@ func DefaultValidationRequestHandler(
 		} else {
 			res = mustWrapMsg(&privvalproto.SignedProposalResponse{Proposal: *proposal, Error: nil})
 		}
+	case *privvalproto.Message_SignRevealRequest:
+		if r.SignRevealRequest.GetChainId() != chainID {
+			res = mustWrapMsg(&privvalproto.SignedProposalResponse{
+				Proposal: tmproto.Proposal{}, Error: &privvalproto.RemoteSignerError{
+					Code:        0,
+					Description: "unable to sign reveal"}})
+			return res, fmt.Errorf("want chainID: %s, got chainID: %s", r.SignRevealRequest.GetChainId(), chainID)
+		}
+
+		reveal := r.SignRevealRequest.Reveal
+
+		err = privVal.SignReveal(chainID, reveal)
+		if err != nil {
+			res = mustWrapMsg(&privvalproto.SignedRevealResponse{
+				Reveal: tmproto.Reveal{}, Error: &privvalproto.RemoteSignerError{Code: 0, Description: err.Error()}})
+		} else {
+			res = mustWrapMsg(&privvalproto.SignedRevealResponse{Reveal: *reveal, Error: nil})
+		}
 	case *privvalproto.Message_PingRequest:
 		err, res = nil, mustWrapMsg(&privvalproto.PingResponse{})
 

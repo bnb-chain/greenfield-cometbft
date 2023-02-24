@@ -6,10 +6,9 @@ import (
 	"time"
 
 	lru "github.com/hashicorp/golang-lru"
-	"github.com/tendermint/tendermint/libs/service"
 
 	"github.com/tendermint/tendermint/libs/log"
-
+	"github.com/tendermint/tendermint/libs/service"
 	"github.com/tendermint/tendermint/libs/sync"
 	"github.com/tendermint/tendermint/types"
 )
@@ -137,8 +136,7 @@ type Pool struct {
 
 // NewVotePool creates a Pool, the init validators should be supplied.
 func NewVotePool(logger log.Logger, validators []*types.Validator, eventBus *types.EventBus) (*Pool, error) {
-	// only used for cross chain votes currently.
-	eventTypes := []EventType{ToBscCrossChainEvent, FromBscCrossChainEvent}
+	eventTypes := []EventType{ToBscCrossChainEvent, FromBscCrossChainEvent, DataAvailabilityChallengeEvent}
 
 	ticker := time.NewTicker(pruneVoteInterval)
 	stores := make(map[EventType]*voteStore, len(eventTypes))
