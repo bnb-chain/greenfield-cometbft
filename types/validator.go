@@ -13,11 +13,11 @@ import (
 )
 
 const (
-	// RelayerBlsKeySize is the size of validator's relayer bls public key.
-	RelayerBlsKeySize = 48
+	// BlsPubKeySize is the size of validator's relayer bls public key.
+	BlsPubKeySize = 48
 
-	// RelayerAddressSize is the size of validator's relayer address.
-	RelayerAddressSize = 20
+	// AddressSize is the size of validator's relayer address.
+	AddressSize = 20
 )
 
 // Volatile state for each Validator
@@ -32,6 +32,8 @@ type Validator struct {
 
 	RelayerBlsKey  []byte `json:"relayer_bls_key"` // bls public key of authorized relayer/operator
 	RelayerAddress []byte `json:"relayer_address"` // address of authorized relayer/operator
+
+	ChallengerAddress []byte `json:"challenger_address"` // address of authorized challenger/operator
 }
 
 // NewValidator returns a new validator with the given pubkey and voting power.
@@ -61,11 +63,14 @@ func (v *Validator) ValidateBasic() error {
 		return fmt.Errorf("validator address is the wrong size: %v", v.Address)
 	}
 
-	if len(v.RelayerBlsKey) != 0 && len(v.RelayerBlsKey) != RelayerBlsKeySize {
+	if len(v.RelayerBlsKey) != 0 && len(v.RelayerBlsKey) != BlsPubKeySize {
 		return fmt.Errorf("validator relayer bls key is the wrong size: %v", v.RelayerBlsKey)
 	}
-	if len(v.RelayerAddress) != 0 && len(v.RelayerAddress) != RelayerAddressSize {
+	if len(v.RelayerAddress) != 0 && len(v.RelayerAddress) != AddressSize {
 		return fmt.Errorf("validator relayer address is the wrong size: %v", v.RelayerAddress)
+	}
+	if len(v.ChallengerAddress) != 0 && len(v.ChallengerAddress) != AddressSize {
+		return fmt.Errorf("validator challenger address is the wrong size: %v", v.ChallengerAddress)
 	}
 
 	return nil
@@ -107,15 +112,19 @@ func (v *Validator) CompareProposerPriority(other *Validator) *Validator {
 // 2. public key
 // 3. voting power
 // 4. proposer priority
+// 5. relayer address
+// 6. challenger address
 func (v *Validator) String() string {
 	if v == nil {
 		return "nil-Validator"
 	}
-	return fmt.Sprintf("Validator{%v %v VP:%v A:%v}",
+	return fmt.Sprintf("Validator{%v %v VP:%v A:%v R:%v C:%v}",
 		v.Address,
 		v.PubKey,
 		v.VotingPower,
-		v.ProposerPriority)
+		v.ProposerPriority,
+		v.RelayerAddress,
+		v.ChallengerAddress)
 }
 
 // ValidatorListString returns a prettified validator list for logging purposes.
@@ -139,10 +148,11 @@ func (v *Validator) Bytes() []byte {
 	}
 
 	pbv := tmproto.SimpleValidator{
-		PubKey:         &pk,
-		VotingPower:    v.VotingPower,
-		RelayerBlsKey:  v.RelayerBlsKey,
-		RelayerAddress: v.RelayerAddress,
+		PubKey:            &pk,
+		VotingPower:       v.VotingPower,
+		RelayerBlsKey:     v.RelayerBlsKey,
+		RelayerAddress:    v.RelayerAddress,
+		ChallengerAddress: v.ChallengerAddress,
 	}
 
 	bz, err := pbv.Marshal()
@@ -162,6 +172,11 @@ func (v *Validator) SetRelayerAddress(address []byte) {
 	v.RelayerAddress = address
 }
 
+// SetChallengerAddress will update the challenger address of validator.
+func (v *Validator) SetChallengerAddress(address []byte) {
+	v.ChallengerAddress = address
+}
+
 // ToProto converts Validator to protobuf
 func (v *Validator) ToProto() (*tmproto.Validator, error) {
 	if v == nil {
@@ -174,12 +189,13 @@ func (v *Validator) ToProto() (*tmproto.Validator, error) {
 	}
 
 	vp := tmproto.Validator{
-		Address:          v.Address,
-		PubKey:           pk,
-		VotingPower:      v.VotingPower,
-		ProposerPriority: v.ProposerPriority,
-		RelayerBlsKey:    v.RelayerBlsKey,
-		RelayerAddress:   v.RelayerAddress,
+		Address:           v.Address,
+		PubKey:            pk,
+		VotingPower:       v.VotingPower,
+		ProposerPriority:  v.ProposerPriority,
+		RelayerBlsKey:     v.RelayerBlsKey,
+		RelayerAddress:    v.RelayerAddress,
+		ChallengerAddress: v.ChallengerAddress,
 	}
 
 	return &vp, nil
@@ -203,6 +219,7 @@ func ValidatorFromProto(vp *tmproto.Validator) (*Validator, error) {
 	v.ProposerPriority = vp.GetProposerPriority()
 	v.RelayerBlsKey = vp.GetRelayerBlsKey()
 	v.RelayerAddress = vp.GetRelayerAddress()
+	v.ChallengerAddress = vp.GetChallengerAddress()
 	return v, nil
 }
 
