@@ -17,7 +17,7 @@ message Validator {
   tendermint.crypto.PublicKey pub_key            = 2 [(gogoproto.nullable) = false];
   int64                       voting_power       = 3;
   int64                       proposer_priority  = 4;
-  bytes                       relayer_bls_key    = 5;
+  bytes                       bls_key            = 5;
   bytes                       relayer_address    = 6;
   bytes                       challenger_address = 7;
 }
@@ -25,7 +25,7 @@ message Validator {
 message SimpleValidator {
   tendermint.crypto.PublicKey pub_key             = 1;
   int64                       voting_power        = 2;
-  bytes                       relayer_bls_key     = 3;
+  bytes                       bls_key             = 3;
   bytes                       relayer_address     = 4;
   bytes                       challenger_address  = 5;
 }

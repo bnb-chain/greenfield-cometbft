@@ -30,8 +30,8 @@ func NewFromValidatorVerifier() *FromValidatorVerifier {
 
 func (f *FromValidatorVerifier) initValidators(validators []*types.Validator) {
 	for _, val := range validators {
-		if len(val.RelayerBlsKey) > 0 {
-			f.validators[string(val.RelayerBlsKey[:])] = val
+		if len(val.BlsKey) > 0 {
+			f.validators[string(val.BlsKey[:])] = val
 		}
 	}
 }
@@ -48,8 +48,8 @@ func (f *FromValidatorVerifier) updateValidators(changes []*types.Validator) {
 	valSet := &types.ValidatorSet{Validators: vals}
 	_ = valSet.UpdateWithChangeSet(changes) // use valSet's validators even if there are errors
 	for _, val := range valSet.Validators {
-		if len(val.RelayerBlsKey) > 0 {
-			f.validators[string(val.RelayerBlsKey[:])] = val
+		if len(val.BlsKey) > 0 {
+			f.validators[string(val.BlsKey[:])] = val
 		}
 	}
 }

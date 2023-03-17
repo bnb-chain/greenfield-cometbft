@@ -16,12 +16,12 @@ func TestVoteFromValidatorVerifier(t *testing.T) {
 	pubKey1 := ed25519.GenPrivKey().PubKey()
 	blsPrivKey1, _ := blst.RandKey()
 	blsPubKey1 := blsPrivKey1.PublicKey().Marshal()
-	val1 := &types.Validator{Address: pubKey1.Address(), PubKey: pubKey1, RelayerBlsKey: blsPubKey1, VotingPower: 10}
+	val1 := &types.Validator{Address: pubKey1.Address(), PubKey: pubKey1, BlsKey: blsPubKey1, VotingPower: 10}
 
 	pubKey2 := ed25519.GenPrivKey().PubKey()
 	blsPrivKey2, _ := blst.RandKey()
 	blsPubKey2 := blsPrivKey2.PublicKey().Marshal()
-	val2 := &types.Validator{Address: pubKey2.Address(), PubKey: pubKey2, RelayerBlsKey: blsPubKey2, VotingPower: 10}
+	val2 := &types.Validator{Address: pubKey2.Address(), PubKey: pubKey2, BlsKey: blsPubKey2, VotingPower: 10}
 
 	vals := make([]*types.Validator, 0)
 	vals = append(vals, val1)
@@ -45,12 +45,12 @@ func TestVoteFromValidatorVerifier_UpdateValidators(t *testing.T) {
 	pubKey1 := ed25519.GenPrivKey().PubKey()
 	blsPrivKey1, _ := blst.RandKey()
 	blsPubKey1 := blsPrivKey1.PublicKey().Marshal()
-	val1 := &types.Validator{Address: pubKey1.Address(), PubKey: pubKey1, RelayerBlsKey: blsPubKey1, VotingPower: 10}
+	val1 := &types.Validator{Address: pubKey1.Address(), PubKey: pubKey1, BlsKey: blsPubKey1, VotingPower: 10}
 
 	pubKey2 := ed25519.GenPrivKey().PubKey()
 	blsPrivKey2, _ := blst.RandKey()
 	blsPubKey2 := blsPrivKey2.PublicKey().Marshal()
-	val2 := &types.Validator{Address: pubKey2.Address(), PubKey: pubKey2, RelayerBlsKey: blsPubKey2, VotingPower: 10}
+	val2 := &types.Validator{Address: pubKey2.Address(), PubKey: pubKey2, BlsKey: blsPubKey2, VotingPower: 10}
 
 	vals := make([]*types.Validator, 0)
 	vals = append(vals, val1)
@@ -70,7 +70,7 @@ func TestVoteFromValidatorVerifier_UpdateValidators(t *testing.T) {
 	blsPrivKey3, _ := blst.RandKey()
 	blsPubKey3 := blsPrivKey3.PublicKey().Marshal()
 
-	addVal := &types.Validator{PubKey: pubKey3, Address: pubKey3.Address(), RelayerBlsKey: blsPubKey3, VotingPower: 10}
+	addVal := &types.Validator{PubKey: pubKey3, Address: pubKey3.Address(), BlsKey: blsPubKey3, VotingPower: 10}
 	verifier.updateValidators([]*types.Validator{addVal})
 
 	require.Equal(t, 2, len(verifier.validators))

@@ -38,12 +38,12 @@ func makeAndConnectReactors(config *cfg.Config, n int) ([]blsCommon.SecretKey, [
 	pubKey1 := ed25519.GenPrivKey().PubKey()
 	blsPrivKey1, _ := blst.RandKey()
 	blsPubKey1 := blsPrivKey1.PublicKey().Marshal()
-	val1 := &types.Validator{Address: pubKey1.Address(), PubKey: pubKey1, RelayerBlsKey: blsPubKey1, VotingPower: 10}
+	val1 := &types.Validator{Address: pubKey1.Address(), PubKey: pubKey1, BlsKey: blsPubKey1, VotingPower: 10}
 
 	pubKey2 := ed25519.GenPrivKey().PubKey()
 	blsPrivKey2, _ := blst.RandKey()
 	blsPubKey2 := blsPrivKey2.PublicKey().Marshal()
-	val2 := &types.Validator{Address: pubKey2.Address(), PubKey: pubKey2, RelayerBlsKey: blsPubKey2, VotingPower: 10}
+	val2 := &types.Validator{Address: pubKey2.Address(), PubKey: pubKey2, BlsKey: blsPubKey2, VotingPower: 10}
 
 	pks := []blsCommon.SecretKey{
 		blsPrivKey1, blsPrivKey2,
@@ -92,7 +92,7 @@ func TestReactorBroadcastVotes(t *testing.T) {
 	eventHash1 := common.HexToHash("0xeefacfed87736ae1d8e8640f6fd7951862997782e5e79842557923e2779d5d5a").Bytes()
 	sign1 := secKey.Sign(eventHash1).Marshal()
 	vote1 := Vote{
-		PubKey:    vals[0].RelayerBlsKey,
+		PubKey:    vals[0].BlsKey,
 		Signature: sign1,
 		EventType: testEventType,
 		EventHash: eventHash1,
@@ -105,7 +105,7 @@ func TestReactorBroadcastVotes(t *testing.T) {
 	eventHash2 := common.HexToHash("0x7e19be15d0d524a1ca5e39be503d18584c23426920bdc23b159c37a2341913d0").Bytes()
 	sign2 := secKey.Sign(eventHash2).Marshal()
 	vote2 := Vote{
-		PubKey:    vals[0].RelayerBlsKey,
+		PubKey:    vals[0].BlsKey,
 		Signature: sign2,
 		EventType: testEventType,
 		EventHash: eventHash2,

@@ -30,9 +30,8 @@ type Validator struct {
 
 	ProposerPriority int64 `json:"proposer_priority"`
 
-	RelayerBlsKey  []byte `json:"relayer_bls_key"` // bls public key of authorized relayer/operator
-	RelayerAddress []byte `json:"relayer_address"` // address of authorized relayer/operator
-
+	BlsKey            []byte `json:"bls_key"`            // bls public key
+	RelayerAddress    []byte `json:"relayer_address"`    // address of authorized relayer/operator
 	ChallengerAddress []byte `json:"challenger_address"` // address of authorized challenger/operator
 }
 
@@ -63,8 +62,8 @@ func (v *Validator) ValidateBasic() error {
 		return fmt.Errorf("validator address is the wrong size: %v", v.Address)
 	}
 
-	if len(v.RelayerBlsKey) != 0 && len(v.RelayerBlsKey) != BlsPubKeySize {
-		return fmt.Errorf("validator relayer bls key is the wrong size: %v", v.RelayerBlsKey)
+	if len(v.BlsKey) != 0 && len(v.BlsKey) != BlsPubKeySize {
+		return fmt.Errorf("validator relayer bls key is the wrong size: %v", v.BlsKey)
 	}
 	if len(v.RelayerAddress) != 0 && len(v.RelayerAddress) != AddressSize {
 		return fmt.Errorf("validator relayer address is the wrong size: %v", v.RelayerAddress)
@@ -150,7 +149,7 @@ func (v *Validator) Bytes() []byte {
 	pbv := tmproto.SimpleValidator{
 		PubKey:            &pk,
 		VotingPower:       v.VotingPower,
-		RelayerBlsKey:     v.RelayerBlsKey,
+		BlsKey:            v.BlsKey,
 		RelayerAddress:    v.RelayerAddress,
 		ChallengerAddress: v.ChallengerAddress,
 	}
@@ -162,9 +161,9 @@ func (v *Validator) Bytes() []byte {
 	return bz
 }
 
-// SetRelayerBlsKey will update the bls public key of relayer.
-func (v *Validator) SetRelayerBlsKey(blsKey []byte) {
-	v.RelayerBlsKey = blsKey
+// SetBlsKey will update the bls public key of relayer.
+func (v *Validator) SetBlsKey(blsKey []byte) {
+	v.BlsKey = blsKey
 }
 
 // SetRelayerAddress will update the relayer address of validator.
@@ -193,7 +192,7 @@ func (v *Validator) ToProto() (*tmproto.Validator, error) {
 		PubKey:            pk,
 		VotingPower:       v.VotingPower,
 		ProposerPriority:  v.ProposerPriority,
-		RelayerBlsKey:     v.RelayerBlsKey,
+		BlsKey:            v.BlsKey,
 		RelayerAddress:    v.RelayerAddress,
 		ChallengerAddress: v.ChallengerAddress,
 	}
@@ -217,7 +216,7 @@ func ValidatorFromProto(vp *tmproto.Validator) (*Validator, error) {
 	v.PubKey = pk
 	v.VotingPower = vp.GetVotingPower()
 	v.ProposerPriority = vp.GetProposerPriority()
-	v.RelayerBlsKey = vp.GetRelayerBlsKey()
+	v.BlsKey = vp.GetBlsKey()
 	v.RelayerAddress = vp.GetRelayerAddress()
 	v.ChallengerAddress = vp.GetChallengerAddress()
 	return v, nil

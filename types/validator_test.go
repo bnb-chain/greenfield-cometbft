@@ -51,12 +51,12 @@ func TestValidatorValidateBasic(t *testing.T) {
 	rand.Read(challenger)
 
 	val := NewValidator(pubKey, 1)
-	val.SetRelayerBlsKey(blsPubKey)
+	val.SetBlsKey(blsPubKey)
 	val.SetRelayerAddress(relayer)
 	val.SetChallengerAddress(challenger)
 
 	wrongBlsPubKey := val.Copy()
-	wrongBlsPubKey.SetRelayerBlsKey([]byte{'a'})
+	wrongBlsPubKey.SetBlsKey([]byte{'a'})
 
 	wrongRelayer := val.Copy()
 	wrongRelayer.SetRelayerAddress([]byte{'a'})
