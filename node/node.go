@@ -517,10 +517,7 @@ func createVotePoolReactor(config *cfg.Config,
 	}
 
 	votePoolLogger := logger.With("module", "votepool")
-	votePool, err := votepool.NewVotePool(logger, vals, eventBus)
-	if err != nil {
-		return nil, nil, err
-	}
+	votePool := votepool.NewVotePool(logger, vals, eventBus)
 	votePoolReactor := votepool.NewReactor(votePool, eventBus)
 	votePoolReactor.SetLogger(votePoolLogger)
 	return votePoolReactor, votePool, nil

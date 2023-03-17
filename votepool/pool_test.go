@@ -39,10 +39,7 @@ func makeVotePool() (blsCommon.SecretKey, *types.Validator, blsCommon.SecretKey,
 		panic(err)
 	}
 
-	votePool, err := NewVotePool(logger, vals, eventBus)
-	if err != nil {
-		panic(err)
-	}
+	votePool := NewVotePool(logger, vals, eventBus)
 	err = votePool.Start()
 	if err != nil {
 		panic(err)

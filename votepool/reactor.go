@@ -149,11 +149,13 @@ func (voteR *Reactor) broadcastVotes(peer p2p.Peer) {
 	}
 	sub, err := voteR.eventBus.Subscribe(context.Background(), string(peer.ID()), eventVotePoolAdded, eventBusSubscribeCap)
 	if err != nil {
-		panic(err)
+		voteR.Logger.Error("Cannot subscribe to vote update event", "err", err.Error())
+		return
 	}
 	cache, ok := peer.Get(peerVoteCacheKey).(*lru.Cache)
 	if !ok { // this should not happen
-		panic(fmt.Sprintf("Peer %v has no cache state", peer))
+		voteR.Logger.Error(fmt.Sprintf("Peer %v has no cache state", peer))
+		return
 	}
 	for {
 		select {
