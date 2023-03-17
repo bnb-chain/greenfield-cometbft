@@ -109,5 +109,5 @@ func (sc *RetrySignerClient) SignReveal(chainID string, reveal *tmproto.Reveal) 
 		}
 		time.Sleep(sc.timeout)
 	}
-	return fmt.Errorf("exhausted all attempts to sign proposal: %w", err)
+	return fmt.Errorf("exhausted all attempts to sign reveal: %w", err)
 }

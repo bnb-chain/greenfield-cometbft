@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	_ "net/http/pprof" //nolint: gosec // securely exposed on separate, optional port
+	_ "net/http/pprof" //#nosec //nolint: gosec // securely exposed on separate, optional port
 	"strconv"
 	"strings"
 	"time"
@@ -532,10 +532,7 @@ func createVotePoolReactor(config *cfg.Config,
 	}
 
 	votePoolLogger := logger.With("module", "votepool")
-	votePool, err := votepool.NewVotePool(logger, vals, eventBus)
-	if err != nil {
-		return nil, nil, err
-	}
+	votePool := votepool.NewVotePool(logger, vals, eventBus)
 	votePoolReactor := votepool.NewReactor(votePool, eventBus)
 	votePoolReactor.SetLogger(votePoolLogger)
 	return votePoolReactor, votePool, nil

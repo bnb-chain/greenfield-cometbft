@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-// VoteQueue represents a priority queue for Votes. The expiredAt filed of a Vote will be used as priority.
+// VoteQueue represents a priority queue for Votes. The expiredAt field of a Vote will be used as priority.
 type VoteQueue struct {
 	itemHeap *itemHeap
 }

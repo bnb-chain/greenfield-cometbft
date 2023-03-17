@@ -259,9 +259,8 @@ func (state State) MakeBlock(
 
 	// Calculate randao mix.
 	randaoMix := make([]byte, ed25519.SignatureSize)
-	copy(randaoMix, state.LastRandaoMix)
-	if len(randaoMix) == 0 {
-		randaoMix = make([]byte, ed25519.SignatureSize)
+	if len(state.LastRandaoMix) != 0 {
+		copy(randaoMix, state.LastRandaoMix)
 	}
 	if len(randaoReveal) == 0 {
 		randaoReveal = make([]byte, ed25519.SignatureSize)

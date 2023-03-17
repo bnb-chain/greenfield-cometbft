@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.0.3
+
+This is a maintenance release.
+
+* [\#10](https://github.com/bnb-chain/greenfield-tendermint/pull/10) feat: add challenger address to validator
+* [\#18](https://github.com/bnb-chain/greenfield-tendermint/pull/18) feat: rename validator's bls key field
+* [\#11](https://github.com/bnb-chain/greenfield-tendermint/pull/11) [\#19](https://github.com/bnb-chain/greenfield-tendermint/pull/19) ci & doc: add gosec workflow, refine readme, change license
+* [\#20](https://github.com/bnb-chain/greenfield-tendermint/pull/20) refactor: refine codes of votepool
+* [\#21](https://github.com/bnb-chain/greenfield-tendermint/pull/21) refactor: refine codes of randao
+
+
 ## v0.0.2
 
 This release mainly includes the following features:
