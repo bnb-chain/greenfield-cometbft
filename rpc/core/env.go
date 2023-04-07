@@ -17,6 +17,7 @@ import (
 	"github.com/cometbft/cometbft/state/indexer"
 	"github.com/cometbft/cometbft/state/txindex"
 	"github.com/cometbft/cometbft/types"
+	"github.com/cometbft/cometbft/votepool"
 )
 
 const (
@@ -93,6 +94,7 @@ type Environment struct {
 	ConsensusReactor *consensus.Reactor
 	EventBus         *types.EventBus // thread safe
 	Mempool          mempl.Mempool
+	VotePool         votepool.VotePool
 
 	Logger log.Logger
 

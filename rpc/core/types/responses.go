@@ -10,6 +10,7 @@ import (
 	"github.com/cometbft/cometbft/p2p"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cometbft/cometbft/types"
+	"github.com/cometbft/cometbft/votepool"
 )
 
 // List of blocks
@@ -239,6 +240,11 @@ type ResultBroadcastEvidence struct {
 	Hash []byte `json:"hash"`
 }
 
+// Result of query votes
+type ResultQueryVote struct {
+	Votes []*votepool.Vote `json:"votes"`
+}
+
 // empty results
 type (
 	ResultUnsafeFlushMempool struct{}
@@ -246,6 +252,8 @@ type (
 	ResultSubscribe          struct{}
 	ResultUnsubscribe        struct{}
 	ResultHealth             struct{}
+	ResultBroadcastVote      struct{}
+	ResultFlushVote          struct{}
 )
 
 // Event data from a subscription

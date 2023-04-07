@@ -12,6 +12,14 @@ import (
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 )
 
+const (
+	// BlsPubKeySize is the size of validator's relayer bls public key.
+	BlsPubKeySize = 48
+
+	// AddressSize is the size of validator's relayer address.
+	AddressSize = 20
+)
+
 // Volatile state for each Validator
 // NOTE: The ProposerPriority is not included in Validator.Hash();
 // make sure to update that method if changes are made here
@@ -21,6 +29,10 @@ type Validator struct {
 	VotingPower int64         `json:"voting_power"`
 
 	ProposerPriority int64 `json:"proposer_priority"`
+
+	BlsKey            []byte `json:"bls_key"`            // bls public key
+	RelayerAddress    []byte `json:"relayer_address"`    // address of authorized relayer/operator
+	ChallengerAddress []byte `json:"challenger_address"` // address of authorized challenger/operator
 }
 
 // NewValidator returns a new validator with the given pubkey and voting power.
@@ -48,6 +60,16 @@ func (v *Validator) ValidateBasic() error {
 
 	if len(v.Address) != crypto.AddressSize {
 		return fmt.Errorf("validator address is the wrong size: %v", v.Address)
+	}
+
+	if len(v.BlsKey) != 0 && len(v.BlsKey) != BlsPubKeySize {
+		return fmt.Errorf("validator relayer bls key is the wrong size: %v", v.BlsKey)
+	}
+	if len(v.RelayerAddress) != 0 && len(v.RelayerAddress) != AddressSize {
+		return fmt.Errorf("validator relayer address is the wrong size: %v", v.RelayerAddress)
+	}
+	if len(v.ChallengerAddress) != 0 && len(v.ChallengerAddress) != AddressSize {
+		return fmt.Errorf("validator challenger address is the wrong size: %v", v.ChallengerAddress)
 	}
 
 	return nil
@@ -89,15 +111,19 @@ func (v *Validator) CompareProposerPriority(other *Validator) *Validator {
 // 2. public key
 // 3. voting power
 // 4. proposer priority
+// 5. relayer address
+// 6. challenger address
 func (v *Validator) String() string {
 	if v == nil {
 		return "nil-Validator"
 	}
-	return fmt.Sprintf("Validator{%v %v VP:%v A:%v}",
+	return fmt.Sprintf("Validator{%v %v VP:%v A:%v R:%v C:%v}",
 		v.Address,
 		v.PubKey,
 		v.VotingPower,
-		v.ProposerPriority)
+		v.ProposerPriority,
+		v.RelayerAddress,
+		v.ChallengerAddress)
 }
 
 // ValidatorListString returns a prettified validator list for logging purposes.
@@ -121,8 +147,11 @@ func (v *Validator) Bytes() []byte {
 	}
 
 	pbv := cmtproto.SimpleValidator{
-		PubKey:      &pk,
-		VotingPower: v.VotingPower,
+		PubKey:            &pk,
+		VotingPower:       v.VotingPower,
+		BlsKey:            v.BlsKey,
+		RelayerAddress:    v.RelayerAddress,
+		ChallengerAddress: v.ChallengerAddress,
 	}
 
 	bz, err := pbv.Marshal()
@@ -132,7 +161,22 @@ func (v *Validator) Bytes() []byte {
 	return bz
 }
 
-// ToProto converts Valiator to protobuf
+// SetBlsKey will update the bls public key of relayer.
+func (v *Validator) SetBlsKey(blsKey []byte) {
+	v.BlsKey = blsKey
+}
+
+// SetRelayerAddress will update the relayer address of validator.
+func (v *Validator) SetRelayerAddress(address []byte) {
+	v.RelayerAddress = address
+}
+
+// SetChallengerAddress will update the challenger address of validator.
+func (v *Validator) SetChallengerAddress(address []byte) {
+	v.ChallengerAddress = address
+}
+
+// ToProto converts Validator to protobuf
 func (v *Validator) ToProto() (*cmtproto.Validator, error) {
 	if v == nil {
 		return nil, errors.New("nil validator")
@@ -144,10 +188,13 @@ func (v *Validator) ToProto() (*cmtproto.Validator, error) {
 	}
 
 	vp := cmtproto.Validator{
-		Address:          v.Address,
-		PubKey:           pk,
-		VotingPower:      v.VotingPower,
-		ProposerPriority: v.ProposerPriority,
+		Address:           v.Address,
+		PubKey:            pk,
+		VotingPower:       v.VotingPower,
+		ProposerPriority:  v.ProposerPriority,
+		BlsKey:            v.BlsKey,
+		RelayerAddress:    v.RelayerAddress,
+		ChallengerAddress: v.ChallengerAddress,
 	}
 
 	return &vp, nil
@@ -169,7 +216,9 @@ func ValidatorFromProto(vp *cmtproto.Validator) (*Validator, error) {
 	v.PubKey = pk
 	v.VotingPower = vp.GetVotingPower()
 	v.ProposerPriority = vp.GetProposerPriority()
-
+	v.BlsKey = vp.GetBlsKey()
+	v.RelayerAddress = vp.GetRelayerAddress()
+	v.ChallengerAddress = vp.GetChallengerAddress()
 	return v, nil
 }
 

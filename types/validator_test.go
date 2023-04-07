@@ -1,6 +1,7 @@
 package types
 
 import (
+	crytporand "crypto/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,6 +42,28 @@ func TestValidatorProtoBuf(t *testing.T) {
 func TestValidatorValidateBasic(t *testing.T) {
 	priv := NewMockPV()
 	pubKey, _ := priv.GetPubKey()
+
+	blsPubKey := make([]byte, BlsPubKeySize)
+	_, _ = crytporand.Read(blsPubKey)
+	relayer := make([]byte, AddressSize)
+	_, _ = crytporand.Read(relayer)
+	challenger := make([]byte, AddressSize)
+	_, _ = crytporand.Read(challenger)
+
+	val := NewValidator(pubKey, 1)
+	val.SetBlsKey(blsPubKey)
+	val.SetRelayerAddress(relayer)
+	val.SetChallengerAddress(challenger)
+
+	wrongBlsPubKey := val.Copy()
+	wrongBlsPubKey.SetBlsKey([]byte{'a'})
+
+	wrongRelayer := val.Copy()
+	wrongRelayer.SetRelayerAddress([]byte{'a'})
+
+	wrongChallenger := val.Copy()
+	wrongChallenger.SetChallengerAddress([]byte{'b'})
+
 	testCases := []struct {
 		val *Validator
 		err bool
@@ -83,6 +106,26 @@ func TestValidatorValidateBasic(t *testing.T) {
 			},
 			err: true,
 			msg: "validator address is the wrong size: 61",
+		},
+		{
+			val: val,
+			err: false,
+			msg: "",
+		},
+		{
+			val: wrongBlsPubKey,
+			err: true,
+			msg: "validator relayer bls key is the wrong size: [97]",
+		},
+		{
+			val: wrongRelayer,
+			err: true,
+			msg: "validator relayer address is the wrong size: [97]",
+		},
+		{
+			val: wrongChallenger,
+			err: true,
+			msg: "validator challenger address is the wrong size: [98]",
 		},
 	}
 

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package tendermint.votepool;
+
+option go_package = "github.com/tendermint/tendermint/proto/tendermint/votepool";
+
+message Vote {
+  bytes  pub_key    = 1;
+  bytes  signature  = 2;
+  uint32 event_type = 3;
+  bytes  event_hash = 4;
+}
+
+message Message {
+  oneof sum {
+    Vote vote = 1;
+  }
+}
