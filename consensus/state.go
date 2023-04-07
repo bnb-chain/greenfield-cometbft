@@ -1223,6 +1223,11 @@ func (cs *State) createProposalBlock() (*types.Block, error) {
 		return nil, errors.New("propose step; cannot propose anything without commit for the previous block")
 	}
 
+	reveal := &cmtproto.Reveal{Height: cs.Height}
+	if err := cs.privValidator.SignReveal(cs.state.ChainID, reveal); err != nil {
+		return nil, fmt.Errorf("propose step; cannot generate randao reveal, error: %w", err)
+	}
+
 	if cs.privValidatorPubKey == nil {
 		// If this node is a validator & proposer in the current round, it will
 		// miss the opportunity to create a block.
@@ -1231,7 +1236,7 @@ func (cs *State) createProposalBlock() (*types.Block, error) {
 
 	proposerAddr := cs.privValidatorPubKey.Address()
 
-	ret, err := cs.blockExec.CreateProposalBlock(cs.Height, cs.state, commit, proposerAddr)
+	ret, err := cs.blockExec.CreateProposalBlock(cs.Height, cs.state, commit, reveal.Signature, proposerAddr)
 	if err != nil {
 		panic(err)
 	}

@@ -10,6 +10,8 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 	gogotypes "github.com/cosmos/gogoproto/types"
 
+	"github.com/cometbft/cometbft/crypto/ed25519"
+
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/merkle"
 	"github.com/cometbft/cometbft/crypto/tmhash"
@@ -348,6 +350,9 @@ type Header struct {
 	// consensus info
 	EvidenceHash    cmtbytes.HexBytes `json:"evidence_hash"`    // evidence included in the block
 	ProposerAddress Address           `json:"proposer_address"` // original proposer of the block
+
+	// randao info
+	RandaoMix cmtbytes.HexBytes `json:"randao_mix"`
 }
 
 // Populate the Header with state-derived data.
@@ -357,6 +362,7 @@ func (h *Header) Populate(
 	timestamp time.Time, lastBlockID BlockID,
 	valHash, nextValHash []byte,
 	consensusHash, appHash, lastResultsHash []byte,
+	randaoMix,
 	proposerAddress Address,
 ) {
 	h.Version = version
@@ -369,6 +375,7 @@ func (h *Header) Populate(
 	h.AppHash = appHash
 	h.LastResultsHash = lastResultsHash
 	h.ProposerAddress = proposerAddress
+	h.RandaoMix = randaoMix
 }
 
 // ValidateBasic performs stateless validation on a Header returning an error
@@ -428,6 +435,11 @@ func (h Header) ValidateBasic() error {
 		return fmt.Errorf("wrong LastResultsHash: %v", err)
 	}
 
+	// Validate randao mix.
+	if len(h.RandaoMix) > 0 && len(h.RandaoMix) != ed25519.SignatureSize {
+		return fmt.Errorf("wrong RandaoMix, length is wrong")
+	}
+
 	return nil
 }
 
@@ -471,6 +483,7 @@ func (h *Header) Hash() cmtbytes.HexBytes {
 		cdcEncode(h.LastResultsHash),
 		cdcEncode(h.EvidenceHash),
 		cdcEncode(h.ProposerAddress),
+		cdcEncode(h.RandaoMix),
 	})
 }
 
@@ -534,6 +547,7 @@ func (h *Header) ToProto() *cmtproto.Header {
 		LastResultsHash:    h.LastResultsHash,
 		LastCommitHash:     h.LastCommitHash,
 		ProposerAddress:    h.ProposerAddress,
+		RandaoMix:          h.RandaoMix,
 	}
 }
 
@@ -566,6 +580,7 @@ func HeaderFromProto(ph *cmtproto.Header) (Header, error) {
 	h.LastResultsHash = ph.LastResultsHash
 	h.LastCommitHash = ph.LastCommitHash
 	h.ProposerAddress = ph.ProposerAddress
+	h.RandaoMix = ph.RandaoMix
 
 	return *h, h.ValidateBasic()
 }

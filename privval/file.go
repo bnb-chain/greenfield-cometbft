@@ -2,12 +2,15 @@ package privval
 
 import (
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"os"
 	"time"
 
 	"github.com/cosmos/gogoproto/proto"
+
+	"github.com/cometbft/cometbft/crypto/tmhash"
 
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/ed25519"
@@ -264,6 +267,19 @@ func (pv *FilePV) SignProposal(chainID string, proposal *cmtproto.Proposal) erro
 	if err := pv.signProposal(chainID, proposal); err != nil {
 		return fmt.Errorf("error signing proposal: %v", err)
 	}
+	return nil
+}
+
+// SignReveal signs a randao reveal, along with the chainID. Implements PrivValidator.
+func (pv *FilePV) SignReveal(chainID string, reveal *cmtproto.Reveal) error {
+	chainIDBytes := tmhash.Sum([]byte(chainID + "/"))
+	heightBytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(heightBytes, uint64(reveal.Height))
+	sig, err := pv.Key.PrivKey.Sign(append(chainIDBytes, heightBytes...))
+	if err != nil {
+		return fmt.Errorf("error signing reveal: %v", err)
+	}
+	reveal.Signature = sig
 	return nil
 }
 

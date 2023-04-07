@@ -57,6 +57,13 @@ func exampleProposal() *types.Proposal {
 	}
 }
 
+func exampleReveal() *cmtproto.Reveal {
+	return &cmtproto.Reveal{
+		Height:    3,
+		Signature: []byte("it's a signature"),
+	}
+}
+
 //nolint:lll // ignore line length for tests
 func TestPrivvalVectors(t *testing.T) {
 	pk := ed25519.GenPrivKeyFromSecret([]byte("it's a secret")).PubKey()
@@ -71,6 +78,9 @@ func TestPrivvalVectors(t *testing.T) {
 	proposal := exampleProposal()
 	proposalpb := proposal.ToProto()
 
+	// Generate a simple reveal
+	revealpb := exampleReveal()
+
 	// Create a Reuseable remote error
 	remoteError := &privproto.RemoteSignerError{Code: 1, Description: "it's a error"}
 
@@ -79,8 +89,8 @@ func TestPrivvalVectors(t *testing.T) {
 		msg      proto.Message
 		expBytes string
 	}{
-		{"ping request", &privproto.PingRequest{}, "3a00"},
-		{"ping response", &privproto.PingResponse{}, "4200"},
+		{"ping request", &privproto.PingRequest{}, "4a00"},
+		{"ping response", &privproto.PingResponse{}, "5200"},
 		{"pubKey request", &privproto.PubKeyRequest{}, "0a00"},
 		{"pubKey response", &privproto.PubKeyResponse{PubKey: ppk, Error: nil}, "12240a220a20556a436f1218d30942efe798420f51dc9b6a311b929c578257457d05c5fcf230"},
 		{"pubKey response with error", &privproto.PubKeyResponse{PubKey: cryptoproto.PublicKey{}, Error: remoteError}, "12140a0012100801120c697427732061206572726f72"},
@@ -90,6 +100,9 @@ func TestPrivvalVectors(t *testing.T) {
 		{"Proposal Request", &privproto.SignProposalRequest{Proposal: proposalpb}, "2a700a6e08011003180220022a4a0a208b01023386c371778ecb6368573e539afc3cc860ec3a2f614e54fe5652f4fc80122608c0843d122072db3d959635dff1bb567bedaa70573392c5159666a3f8caf11e413aac52207a320608f49a8ded053a10697427732061207369676e6174757265"},
 		{"Proposal Response", &privproto.SignedProposalResponse{Proposal: *proposalpb, Error: nil}, "32700a6e08011003180220022a4a0a208b01023386c371778ecb6368573e539afc3cc860ec3a2f614e54fe5652f4fc80122608c0843d122072db3d959635dff1bb567bedaa70573392c5159666a3f8caf11e413aac52207a320608f49a8ded053a10697427732061207369676e6174757265"},
 		{"Proposal Response with error", &privproto.SignedProposalResponse{Proposal: cmtproto.Proposal{}, Error: remoteError}, "32250a112a021200320b088092b8c398feffffff0112100801120c697427732061206572726f72"},
+		{"Reveal Request", &privproto.SignRevealRequest{Reveal: revealpb}, "3a160a1408031210697427732061207369676e6174757265"},
+		{"Reveal Response", &privproto.SignedRevealResponse{Reveal: *revealpb, Error: nil}, "42160a1408031210697427732061207369676e6174757265"},
+		{"Reveal Response with error", &privproto.SignedRevealResponse{Reveal: cmtproto.Reveal{}, Error: remoteError}, "42140a0012100801120c697427732061206572726f72"},
 	}
 
 	for _, tc := range testCases {

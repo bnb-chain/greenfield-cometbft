@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	dbm "github.com/cometbft/cometbft-db"
 
 	"github.com/cometbft/cometbft/abci/example/kvstore"
@@ -307,10 +309,13 @@ func TestCreateProposalBlock(t *testing.T) {
 		evidencePool,
 	)
 
+	reveal := &cmtproto.Reveal{Height: height}
+	_ = privVals[0].SignReveal(state.ChainID, reveal)
+
 	commit := types.NewCommit(height-1, 0, types.BlockID{}, nil)
 	block, err := blockExec.CreateProposalBlock(
 		height,
-		state, commit,
+		state, commit, reveal.Signature,
 		proposerAddr,
 	)
 	require.NoError(t, err)
@@ -344,7 +349,7 @@ func TestMaxProposalBlockSize(t *testing.T) {
 	logger := log.TestingLogger()
 
 	var height int64 = 1
-	state, stateDB, _ := state(1, height)
+	state, stateDB, privVals := state(1, height)
 	stateStore := sm.NewStore(stateDB, sm.StoreOptions{
 		DiscardABCIResponses: false,
 	})
@@ -390,9 +395,12 @@ func TestMaxProposalBlockSize(t *testing.T) {
 	)
 
 	commit := types.NewCommit(height-1, 0, types.BlockID{}, nil)
-	block, err := blockExec.CreateProposalBlock(
+	reveal := &cmtproto.Reveal{Height: height}
+	_ = privVals[0].SignReveal(state.ChainID, reveal)
+
+	block, _ := blockExec.CreateProposalBlock(
 		height,
-		state, commit,
+		state, commit, reveal.Signature,
 		proposerAddr,
 	)
 	require.NoError(t, err)

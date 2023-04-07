@@ -94,3 +94,20 @@ func (sc *RetrySignerClient) SignProposal(chainID string, proposal *cmtproto.Pro
 	}
 	return fmt.Errorf("exhausted all attempts to sign proposal: %w", err)
 }
+
+// SignReveal signs a randao reveal, along with the chainID. Implements PrivValidator.
+func (sc *RetrySignerClient) SignReveal(chainID string, reveal *cmtproto.Reveal) error {
+	var err error
+	for i := 0; i < sc.retries || sc.retries == 0; i++ {
+		err = sc.next.SignReveal(chainID, reveal)
+		if err == nil {
+			return nil
+		}
+		// If remote signer errors, we don't retry.
+		if _, ok := err.(*RemoteSignerError); ok {
+			return err
+		}
+		time.Sleep(sc.timeout)
+	}
+	return fmt.Errorf("exhausted all attempts to sign proposal: %w", err)
+}

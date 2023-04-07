@@ -41,7 +41,7 @@ func makeAndCommitGoodBlock(
 	evidence []types.Evidence,
 ) (sm.State, types.BlockID, *types.Commit, error) {
 	// A good block passes
-	state, blockID, err := makeAndApplyGoodBlock(state, height, lastCommit, proposerAddr, blockExec, evidence)
+	state, blockID, err := makeAndApplyGoodBlock(state, height, lastCommit, proposerAddr, privVals, blockExec, evidence)
 	if err != nil {
 		return state, types.BlockID{}, nil, err
 	}
@@ -55,14 +55,14 @@ func makeAndCommitGoodBlock(
 }
 
 func makeAndApplyGoodBlock(state sm.State, height int64, lastCommit *types.Commit, proposerAddr []byte,
-	blockExec *sm.BlockExecutor, evidence []types.Evidence,
-) (sm.State, types.BlockID, error) {
-	block := state.MakeBlock(height, test.MakeNTxs(height, 10), lastCommit, evidence, proposerAddr)
+	privVals map[string]types.PrivValidator,
+	blockExec *sm.BlockExecutor, evidence []types.Evidence) (sm.State, types.BlockID, error) {
+	reveal := makeReveal(state, proposerAddr, privVals, height)
+	block := state.MakeBlock(height, test.MakeNTxs(height, 10), lastCommit, evidence, reveal, proposerAddr)
 	partSet, err := block.MakePartSet(types.BlockPartSizeBytes)
 	if err != nil {
 		return state, types.BlockID{}, err
 	}
-
 	if err := blockExec.ValidateBlock(state, block); err != nil {
 		return state, types.BlockID{}, err
 	}
@@ -80,7 +80,7 @@ func makeBlock(state sm.State, height int64, c *types.Commit) *types.Block {
 		height,
 		test.MakeNTxs(state.LastBlockHeight, 10),
 		c,
-		nil,
+		nil, nil,
 		state.Validators.GetProposer().Address,
 	)
 }
@@ -101,6 +101,21 @@ func makeValidCommit(
 		sigs = append(sigs, vote.CommitSig())
 	}
 	return types.NewCommit(height, 0, blockID, sigs), nil
+}
+
+func makeReveal(state sm.State, proposerAddr []byte, privVals map[string]types.PrivValidator, height int64) []byte {
+	var proposer types.PrivValidator
+	for _, val := range privVals {
+		pubKey, _ := val.GetPubKey()
+		if bytes.Equal(pubKey.Address().Bytes(), proposerAddr) {
+			proposer = val
+			break
+		}
+	}
+	reveal := &cmtproto.Reveal{Height: height}
+	_ = proposer.SignReveal(state.ChainID, reveal)
+
+	return reveal.Signature
 }
 
 func makeState(nVals, height int) (sm.State, dbm.DB, map[string]types.PrivValidator) {
