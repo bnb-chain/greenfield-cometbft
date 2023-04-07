@@ -220,8 +220,10 @@ func TestByzantinePrevoteEquivocation(t *testing.T) {
 		}
 		proposerAddr := lazyProposer.privValidatorPubKey.Address()
 
+		reveal := &cmtproto.Reveal{Height: height}
+		_ = lazyProposer.privValidator.SignReveal(lazyProposer.state.ChainID, reveal)
 		block, err := lazyProposer.blockExec.CreateProposalBlock(
-			lazyProposer.Height, lazyProposer.state, commit, proposerAddr)
+			lazyProposer.Height, lazyProposer.state, commit, reveal.Signature, proposerAddr)
 		require.NoError(t, err)
 		blockParts, err := block.MakePartSet(types.BlockPartSizeBytes)
 		require.NoError(t, err)

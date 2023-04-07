@@ -35,6 +35,8 @@ func (tm2pb) Header(header *Header) cmtproto.Header {
 
 		EvidenceHash:    header.EvidenceHash,
 		ProposerAddress: header.ProposerAddress,
+
+		RandaoMix: header.RandaoMix,
 	}
 }
 

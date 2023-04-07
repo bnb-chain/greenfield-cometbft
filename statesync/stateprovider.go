@@ -169,6 +169,7 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	state.Validators = currentLightBlock.ValidatorSet
 	state.NextValidators = nextLightBlock.ValidatorSet
 	state.LastHeightValidatorsChanged = nextLightBlock.Height
+	state.LastRandaoMix = lastLightBlock.RandaoMix
 
 	// We'll also need to fetch consensus params via RPC, using light client verification.
 	primaryURL, ok := s.providers[s.lc.Primary()]

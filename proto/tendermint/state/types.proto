@@ -47,7 +47,6 @@ message State {
 
   // immutable
   string chain_id       = 2 [(gogoproto.customname) = "ChainID"];
-  int64  initial_height = 14;
 
   // LastBlockHeight=0 at genesis (ie. block(H=0) does not exist)
   int64                    last_block_height = 3;
@@ -77,4 +76,10 @@ message State {
 
   // the latest AppHash we've received from calling abci.Commit()
   bytes app_hash = 13;
+
+  // immutable
+  int64  initial_height = 14;
+
+  // last randao mix from the previous block header
+  bytes last_randao_mix = 15;
 }

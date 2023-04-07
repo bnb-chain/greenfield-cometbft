@@ -96,6 +96,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	height int64,
 	state State,
 	commit *types.Commit,
+	randaoReveal []byte,
 	proposerAddr []byte,
 ) (*types.Block, error) {
 
@@ -108,7 +109,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size())
 
 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxDataBytes, maxGas)
-	block := state.MakeBlock(height, txs, commit, evidence, proposerAddr)
+	block := state.MakeBlock(height, txs, commit, evidence, randaoReveal, proposerAddr)
 
 	localLastCommit := buildLastCommitInfo(block, blockExec.store, state.InitialHeight)
 	rpp, err := blockExec.proxyApp.PrepareProposalSync(
@@ -140,7 +141,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 		return nil, err
 	}
 
-	return state.MakeBlock(height, txl, commit, evidence, proposerAddr), nil
+	return state.MakeBlock(height, txl, commit, evidence, randaoReveal, proposerAddr), nil
 }
 
 func (blockExec *BlockExecutor) ProcessProposal(
@@ -494,7 +495,7 @@ func updateState(
 		if err != nil {
 			return state, fmt.Errorf("error changing validator set: %v", err)
 		}
-		// Change results from this height but only applies to the next next height.
+		// Change results from this height but only applies to the next height.
 		lastHeightValsChanged = header.Height + 1 + 1
 	}
 
@@ -537,6 +538,7 @@ func updateState(
 		LastHeightConsensusParamsChanged: lastHeightParamsChanged,
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
+		LastRandaoMix:                    header.RandaoMix,
 	}, nil
 }
 

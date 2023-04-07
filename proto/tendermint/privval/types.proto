@@ -56,6 +56,18 @@ message SignedProposalResponse {
   RemoteSignerError         error    = 2;
 }
 
+// SignRevealRequest is a request to sign a reveal
+message SignRevealRequest {
+  tendermint.types.Reveal reveal   = 1;
+  string                  chain_id = 2;
+}
+
+// SignedRevealResponse is response containing a signed reveal or an error
+message SignedRevealResponse {
+  tendermint.types.Reveal reveal   = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError         error  = 2;
+}
+
 // PingRequest is a request to confirm that the connection is alive.
 message PingRequest {}
 
@@ -70,7 +82,9 @@ message Message {
     SignedVoteResponse     signed_vote_response     = 4;
     SignProposalRequest    sign_proposal_request    = 5;
     SignedProposalResponse signed_proposal_response = 6;
-    PingRequest            ping_request             = 7;
-    PingResponse           ping_response            = 8;
+    SignRevealRequest      sign_reveal_request      = 7;
+    SignedRevealResponse   sign_reveal_response     = 8;
+    PingRequest            ping_request             = 9;
+    PingResponse           ping_response            = 10;
   }
 }
