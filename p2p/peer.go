@@ -6,10 +6,11 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/cosmos/gogoproto/proto"
+
 	"github.com/cometbft/cometbft/libs/cmap"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cometbft/cometbft/libs/service"
-	"github.com/cosmos/gogoproto/proto"
 
 	cmtconn "github.com/cometbft/cometbft/p2p/conn"
 )

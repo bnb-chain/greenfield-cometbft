@@ -3,9 +3,9 @@
 package mocks
 
 import (
-	abcicli "github.com/cometbft/cometbft/abci/client"
 	mock "github.com/stretchr/testify/mock"
 
+	abcicli "github.com/cometbft/cometbft/abci/client"
 	types "github.com/cometbft/cometbft/abci/types"
 )
 

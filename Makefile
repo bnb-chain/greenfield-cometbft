@@ -8,7 +8,7 @@ COMMIT_HASH := $(shell git rev-parse --short HEAD)
 LD_FLAGS = -X github.com/cometbft/cometbft/version.TMGitCommitHash=$(COMMIT_HASH)
 BUILD_FLAGS = -mod=readonly -ldflags "$(LD_FLAGS)"
 HTTPS_GIT := https://github.com/cometbft/cometbft.git
-CGO_ENABLED ?= 0
+CGO_ENABLED ?= 1
 
 # handle nostrip
 ifeq (,$(findstring nostrip,$(COMETBFT_BUILD_OPTIONS)))
