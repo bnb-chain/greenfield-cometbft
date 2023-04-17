@@ -1,27 +1,10 @@
-# CometBFT
+# Greenfield Tendermint
 
-[Byzantine-Fault Tolerant][bft] [State Machine Replication][smr]. Or
-[Blockchain], for short.
-
-[![Version][version-badge]][version-url]
-[![API Reference][api-badge]][api-url]
-[![Go version][go-badge]][go-url]
-[![Discord chat][discord-badge]][discord-url]
-[![License][license-badge]][license-url]
-[![Sourcegraph][sg-badge]][sg-url]
-
-| Branch  | Tests                                    | Linting                               |
-|---------|------------------------------------------|---------------------------------------|
-| main    | [![Tests][tests-badge]][tests-url]       | [![Lint][lint-badge]][lint-url]       |
-| v0.37.x | [![Tests][tests-badge-v037x]][tests-url] | [![Lint][lint-badge-v037x]][lint-url] |
-| v0.34.x | [![Tests][tests-badge-v034x]][tests-url] | [![Lint][lint-badge-v034x]][lint-url] |
-
+Greenfield Tendermint, forked from [CometBFT](https://github.com/cometbft/cometbft),
+is the consensus layer of Greenfield blockchain.
 CometBFT is a Byzantine Fault Tolerant (BFT) middleware that takes a
 state transition machine - written in any programming language - and securely
 replicates it on many machines.
-
-It is a fork of [Tendermint Core][tm-core] and implements the Tendermint
-consensus algorithm.
 
 For protocol details, refer to the [CometBFT Specification](./spec/README.md).
 
@@ -29,40 +12,26 @@ For detailed analysis of the consensus protocol, including safety and liveness
 proofs, read our paper, "[The latest gossip on BFT
 consensus](https://arxiv.org/abs/1807.04938)".
 
-## Documentation
+## Disclaimer
+**The software and related documentation are under active development, all subject to potential future change without
+notification and not ready for production use. The code and security audit have not been fully completed and not ready
+for any bug bounty. We advise you to be careful and experiment on the network at your own risk. Stay safe out there.**
 
-Complete documentation can be found on the
-[website](https://docs.cometbft.com/).
+## Key features
 
-## Releases
+We implement several key features based on the CometBFT fork:
 
-Please do not depend on `main` as your production branch. Use
-[releases](https://github.com/cometbft/cometbft/releases) instead.
-
-We haven't released v1.0 yet
-since we are making breaking changes to the protocol and the APIs. See below for
-more details about [versioning](#versioning).
-
-In any case, if you intend to run CometBFT in production, we're happy to help.
-
-To contact us, you can also 
-[join the chat](https://discord.com/channels/669268347736686612/669283915743232011).
-
-More on how releases are conducted can be found [here](./RELEASES.md).
-
-## Security
-
-To report a security vulnerability, see our [bug bounty
-program](https://hackerone.com/cosmos). For examples of the kinds of bugs we're
-looking for, see [our security policy](SECURITY.md).
+* Vote Pool. Vote pool is used to collect votes from different validators for off-chain consensus.
+Currently, it is mainly used for cross chain and data availability challenge in Greenfield blockchain.
+* RANDAO. RANDAO is introduced for on-chain randomness. Overall, the idea is very similar to the RANDAO
+in Ethereum beacon chain, you can refer to [here](https://eth2book.info/altair/part2/building_blocks/randomness)
+for more information. It has some limitations, please use it with caution.
 
 ## Minimum requirements
 
-| CometBFT version | Requirement | Notes             |
-|------------------|-------------|-------------------|
-| v0.34.x          | Go version  | Go 1.19 or higher |
-| v0.37.x          | Go version  | Go 1.20 or higher |
-| main             | Go version  | Go 1.20 or higher |
+| Requirement | Notes             |
+|-------------|-------------------|
+| Go version  | Go 1.20 or higher |
 
 ### Install
 
@@ -81,48 +50,8 @@ Before contributing to the project, please take a look at the [contributing
 guidelines](CONTRIBUTING.md) and the [style guide](STYLE_GUIDE.md). You may also
 find it helpful to read the [specifications](./spec/README.md), and familiarize
 yourself with our [Architectural Decision Records
-(ADRs)](./docs/architecture/README.md) and [Request For Comments
-(RFCs)](./docs/rfc/README.md).
+(ADRs)](./docs/architecture/README.md) and [Request For Comments (RFCs)](./docs/rfc/README.md).
 
-## Versioning
-
-### Semantic Versioning
-
-CometBFT uses [Semantic Versioning](http://semver.org/) to determine when and
-how the version changes. According to SemVer, anything in the public API can
-change at any time before version 1.0.0
-
-To provide some stability to users of 0.X.X versions of CometBFT, the MINOR
-version is used to signal breaking changes across CometBFT's API. This API
-includes all publicly exposed types, functions, and methods in non-internal Go
-packages as well as the types and methods accessible via the CometBFT RPC
-interface.
-
-Breaking changes to these public APIs will be documented in the CHANGELOG.
-
-### Upgrades
-
-In an effort to avoid accumulating technical debt prior to 1.0.0, we do not
-guarantee that breaking changes (i.e. bumps in the MINOR version) will work with
-existing CometBFT blockchains. In these cases you will have to start a new
-blockchain, or write something custom to get the old data into the new chain.
-However, any bump in the PATCH version should be compatible with existing
-blockchain histories.
-
-For more information on upgrading, see [UPGRADING.md](./UPGRADING.md).
-
-### Supported Versions
-
-Because we are a small core team, we have limited capacity to ship patch
-updates, including security updates. Consequently, we strongly recommend keeping
-CometBFT up-to-date. Upgrading instructions can be found in
-[UPGRADING.md](./UPGRADING.md).
-
-Currently supported versions include:
-
-- v0.34.x: The CometBFT v0.34 series is compatible with the Tendermint Core
-  v0.34 series
-- v0.37.x: (release candidate)
 
 ## Resources
 
@@ -143,22 +72,19 @@ Currently supported versions include:
 
 ### Research
 
-Below are links to the original Tendermint consensus algorithm and relevant
-whitepapers which CosmosBFT will continue to build on.
-
 - [The latest gossip on BFT consensus](https://arxiv.org/abs/1807.04938)
 - [Master's Thesis on Tendermint](https://atrium.lib.uoguelph.ca/xmlui/handle/10214/9769)
 - [Original Whitepaper: "Tendermint: Consensus Without Mining"](https://tendermint.com/static/docs/tendermint.pdf)
 
-## Join us
+## License
 
-CometBFT is currently maintained by [Informal
-Systems](https://informal.systems). If you'd like to work full-time on CometBFT,
-[we're hiring](https://informal.systems/careers)!
+The Greenfield Tendermint library (i.e. all code outside the `cmd` directory) is licensed under the
+[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html),
+also included in our repository in the `COPYING.LESSER` file.
 
-Funding for CometBFT development comes primarily from the [Interchain
-Foundation](https://interchain.io), a Swiss non-profit. Informal Systems also
-maintains [cometbft.com](https://cometbft.com).
+The Greenfield Tendermint binaries (i.e. all code inside the `cmd` directory) is licensed under the
+[GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html), also
+included in our repository in the `COPYING` file.
 
 [bft]: https://en.wikipedia.org/wiki/Byzantine_fault_tolerance
 [smr]: https://en.wikipedia.org/wiki/State_machine_replication
