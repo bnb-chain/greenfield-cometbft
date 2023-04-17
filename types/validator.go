@@ -147,11 +147,10 @@ func (v *Validator) Bytes() []byte {
 	}
 
 	pbv := cmtproto.SimpleValidator{
-		PubKey:            &pk,
-		VotingPower:       v.VotingPower,
-		BlsKey:            v.BlsKey,
-		RelayerAddress:    v.RelayerAddress,
-		ChallengerAddress: v.ChallengerAddress,
+		PubKey:         &pk,
+		VotingPower:    v.VotingPower,
+		BlsKey:         v.BlsKey,
+		RelayerAddress: v.RelayerAddress,
 	}
 
 	bz, err := pbv.Marshal()

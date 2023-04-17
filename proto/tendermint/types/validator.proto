@@ -27,5 +27,4 @@ message SimpleValidator {
   int64                       voting_power        = 2;
   bytes                       bls_key             = 3;
   bytes                       relayer_address     = 4;
-  bytes                       challenger_address  = 5;
 }
