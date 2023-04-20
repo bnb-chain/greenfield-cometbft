@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.4
+
+This is a maintenance release.
+
+* [\#30](https://github.com/bnb-chain/greenfield-tendermint/pull/30) chore: remove challenger address in tendermint
+
 ## v0.0.3
 
 This is a maintenance release.
