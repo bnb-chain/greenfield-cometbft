@@ -264,12 +264,6 @@ func TestValidateValidatorUpdates(t *testing.T) {
 			false,
 		},
 		{
-			"updating a validator with challenger address is OK",
-			[]abci.ValidatorUpdate{{PubKey: pk1, Power: 20, ChallengerAddress: ([]byte)("challenger")}},
-			defaultValidatorParams,
-			false,
-		},
-		{
 			"removing a validator is OK",
 			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 0}},
 			defaultValidatorParams,
@@ -313,8 +307,6 @@ func TestUpdateValidators(t *testing.T) {
 	updated.SetBlsKey(blsPubKey)
 	relayer := ed25519.GenPrivKey().PubKey().Address().Bytes()
 	updated.SetRelayerAddress(relayer)
-	challenger := ed25519.GenPrivKey().PubKey().Address().Bytes()
-	updated.SetChallengerAddress(challenger)
 
 	testCases := []struct {
 		name string
@@ -354,10 +346,9 @@ func TestUpdateValidators(t *testing.T) {
 			true,
 		},
 		{
-			"updating a validator with relayer bls public key, relayer and challenger address is OK",
+			"updating a validator with bls public key, and relayer address is OK",
 			types.NewValidatorSet([]*types.Validator{val1}),
-			[]abci.ValidatorUpdate{{PubKey: pk, Power: 20,
-				BlsKey: blsPubKey, RelayerAddress: relayer, ChallengerAddress: challenger}},
+			[]abci.ValidatorUpdate{{PubKey: pk, Power: 20, BlsKey: blsPubKey, RelayerAddress: relayer}},
 			types.NewValidatorSet([]*types.Validator{updated}),
 			false,
 		},
@@ -379,13 +370,11 @@ func TestUpdateValidators(t *testing.T) {
 				assert.Equal(t, tc.resultingSet.Validators[0].Address, tc.currentSet.Validators[0].Address)
 				assert.Equal(t, tc.resultingSet.Validators[0].BlsKey, tc.currentSet.Validators[0].BlsKey)
 				assert.Equal(t, tc.resultingSet.Validators[0].RelayerAddress, tc.currentSet.Validators[0].RelayerAddress)
-				assert.Equal(t, tc.resultingSet.Validators[0].ChallengerAddress, tc.currentSet.Validators[0].ChallengerAddress)
 
 				if tc.resultingSet.Size() > 1 {
 					assert.Equal(t, tc.resultingSet.Validators[1].Address, tc.currentSet.Validators[1].Address)
 					assert.Equal(t, tc.resultingSet.Validators[1].BlsKey, tc.currentSet.Validators[1].BlsKey)
 					assert.Equal(t, tc.resultingSet.Validators[1].RelayerAddress, tc.currentSet.Validators[1].RelayerAddress)
-					assert.Equal(t, tc.resultingSet.Validators[1].ChallengerAddress, tc.currentSet.Validators[1].ChallengerAddress)
 				}
 
 			}
@@ -442,12 +431,10 @@ func TestEndBlockValidatorUpdates(t *testing.T) {
 	currentValPower := currentVal.VotingPower
 	blsPubKey := ed25519.GenPrivKey().PubKey().Bytes()
 	relayer := ed25519.GenPrivKey().PubKey().Address().Bytes()
-	challenger := ed25519.GenPrivKey().PubKey().Address().Bytes()
 
 	app.ValidatorUpdates = []abci.ValidatorUpdate{
 		{PubKey: pk, Power: 10}, // add a new validator
-		{PubKey: currentValPk, Power: currentValPower,
-			BlsKey: blsPubKey, RelayerAddress: relayer, ChallengerAddress: challenger}, // updating a validator's bls pub key and addresses
+		{PubKey: currentValPk, Power: currentValPower, BlsKey: blsPubKey, RelayerAddress: relayer}, // updating a validator's bls pub key and addresses
 	}
 
 	state, _, err = blockExec.ApplyBlock(state, blockID, block)
@@ -467,7 +454,6 @@ func TestEndBlockValidatorUpdates(t *testing.T) {
 		}
 		assert.Equal(t, blsPubKey, val.BlsKey)
 		assert.Equal(t, relayer, val.RelayerAddress)
-		assert.Equal(t, challenger, val.ChallengerAddress)
 	}
 
 	// test we threw an event
@@ -481,7 +467,6 @@ func TestEndBlockValidatorUpdates(t *testing.T) {
 
 			assert.Equal(t, blsPubKey, event.ValidatorUpdates[1].BlsKey)
 			assert.EqualValues(t, relayer, event.ValidatorUpdates[1].RelayerAddress)
-			assert.EqualValues(t, challenger, event.ValidatorUpdates[1].ChallengerAddress)
 		}
 	case <-updatesSub.Cancelled():
 		t.Fatalf("updatesSub was cancelled (reason: %v)", updatesSub.Err())
