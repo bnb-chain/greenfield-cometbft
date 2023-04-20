@@ -1664,8 +1664,6 @@ func TestValidatorSetHash(t *testing.T) {
 	val.SetBlsKey(blsPubKey)
 	relayer := ed25519.GenPrivKey().PubKey().Address().Bytes()
 	val.SetRelayerAddress(relayer)
-	challenger := ed25519.GenPrivKey().PubKey().Address().Bytes()
-	val.SetChallengerAddress(challenger)
 
 	validatorSet = ValidatorSet{
 		Validators: []*Validator{val},
