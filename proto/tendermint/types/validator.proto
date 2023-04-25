@@ -19,7 +19,6 @@ message Validator {
   int64                       proposer_priority  = 4;
   bytes                       bls_key            = 5;
   bytes                       relayer_address    = 6;
-  bytes                       challenger_address = 7;
 }
 
 message SimpleValidator {
