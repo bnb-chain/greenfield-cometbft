@@ -318,6 +318,10 @@ func (app *PersistentKVStoreApplication) updateValidator(v types.ValidatorUpdate
 	return types.ResponseDeliverTx{Code: code.CodeTypeOK}
 }
 
+func (app *PersistentKVStoreApplication) EthQuery(query types.RequestEthQuery) types.ResponseEthQuery {
+	panic("should not happen")
+}
+
 // -----------------------------
 
 const (

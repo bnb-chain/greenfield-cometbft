@@ -356,3 +356,24 @@ func newLocalReqRes(req *types.Request, res *types.Response) *ReqRes {
 	reqRes.Response = res
 	return reqRes
 }
+
+// -------------------------------------------------------
+
+func (app *localClient) EthQueryAsync(req types.RequestEthQuery) *ReqRes {
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
+
+	res := app.Application.EthQuery(req)
+	return app.callback(
+		types.ToRequestEthQuery(req),
+		types.ToResponseEthQuery(res),
+	)
+}
+
+func (app *localClient) EthQuerySync(req types.RequestEthQuery) (*types.ResponseEthQuery, error) {
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
+
+	res := app.Application.EthQuery(req)
+	return &res, nil
+}

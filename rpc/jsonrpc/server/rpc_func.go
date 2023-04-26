@@ -11,7 +11,7 @@ import (
 
 // RegisterRPCFuncs adds a route for each function in the funcMap, as well as
 // general jsonrpc and websocket handlers for all functions. "result" is the
-// interface on which the result objects are registered, and is popualted with
+// interface on which the result objects are registered, and is populated with
 // every RPCResponse
 func RegisterRPCFuncs(mux *http.ServeMux, funcMap map[string]*RPCFunc, logger log.Logger) {
 	// HTTP endpoints
@@ -71,7 +71,7 @@ func NewWSRPCFunc(f interface{}, args string, options ...Option) *RPCFunc {
 	return newRPCFunc(f, args, options...)
 }
 
-// cacheableWithArgs returns whether or not a call to this function is cacheable,
+// cacheableWithArgs returns whether a call to this function is cacheable,
 // given the specified arguments.
 func (f *RPCFunc) cacheableWithArgs(args []reflect.Value) bool {
 	if !f.cacheable {
@@ -137,7 +137,7 @@ func funcReturnTypes(f interface{}) []reflect.Type {
 	return typez
 }
 
-//-------------------------------------------------------------
+// -------------------------------------------------------------
 
 // NOTE: assume returns is result struct and error. If error is not nil, return it
 func unreflectResult(returns []reflect.Value) (interface{}, error) {

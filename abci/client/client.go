@@ -19,10 +19,13 @@ const (
 // Client defines an interface for an ABCI client.
 // All `Async` methods return a `ReqRes` object.
 // All `Sync` methods return the appropriate protobuf ResponseXxx struct and an error.
-// Note these are client errors, eg. ABCI socket connectivity issues.
+// Note these are client errors, e.g. ABCI socket connectivity issues.
 // Application-related errors are reflected in response via ABCI error codes and logs.
 type Client interface {
 	service.Service
+
+	EthQueryAsync(types.RequestEthQuery) *ReqRes
+	EthQuerySync(types.RequestEthQuery) (*types.ResponseEthQuery, error)
 
 	SetResponseCallback(Callback)
 	Error() error
@@ -62,7 +65,7 @@ type Client interface {
 	ProcessProposalSync(types.RequestProcessProposal) (*types.ResponseProcessProposal, error)
 }
 
-//----------------------------------------
+// ----------------------------------------
 
 // NewClient returns a new ABCI client of the specified transport type.
 // It returns an error if the transport is not "socket" or "grpc"
@@ -107,7 +110,7 @@ func NewReqRes(req *types.Request) *ReqRes {
 	}
 }
 
-// Sets sets the callback. If reqRes is already done, it will call the cb
+// SetCallback sets the callback. If reqRes is already done, it will call the cb
 // immediately. Note, reqRes.cb should not change if reqRes.done and only one
 // callback is supported.
 func (r *ReqRes) SetCallback(cb func(res *types.Response)) {

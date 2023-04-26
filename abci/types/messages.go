@@ -127,7 +127,14 @@ func ToRequestProcessProposal(req RequestProcessProposal) *Request {
 	}
 }
 
-//----------------------------------------
+// ----------------------------------------
+func ToRequestEthQuery(req RequestEthQuery) *Request {
+	return &Request{
+		Value: &Request_EthQuery{&req},
+	}
+}
+
+// ----------------------------------------
 
 func ToResponseException(errStr string) *Response {
 	return &Response{
@@ -228,5 +235,11 @@ func ToResponsePrepareProposal(res ResponsePrepareProposal) *Response {
 func ToResponseProcessProposal(res ResponseProcessProposal) *Response {
 	return &Response{
 		Value: &Response_ProcessProposal{&res},
+	}
+}
+
+func ToResponseEthQuery(res ResponseEthQuery) *Response {
+	return &Response{
+		Value: &Response_EthQuery{&res},
 	}
 }
