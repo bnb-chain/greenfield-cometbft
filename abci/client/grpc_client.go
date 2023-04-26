@@ -157,7 +157,7 @@ func (cli *grpcClient) SetResponseCallback(resCb Callback) {
 	cli.mtx.Unlock()
 }
 
-//----------------------------------------
+// ----------------------------------------
 // GRPC calls are synchronous, but some callbacks expect to be called asynchronously
 // (eg. the mempool expects to be able to lock to remove bad txs from cache).
 // To accommodate, we finish each call in its own go-routine,
@@ -347,7 +347,7 @@ func (cli *grpcClient) finishSyncCall(reqres *ReqRes) *types.Response {
 	return <-ch
 }
 
-//----------------------------------------
+// ----------------------------------------
 
 func (cli *grpcClient) FlushSync() error {
 	reqres := cli.FlushAsync()
@@ -435,4 +435,20 @@ func (cli *grpcClient) PrepareProposalSync(
 func (cli *grpcClient) ProcessProposalSync(params types.RequestProcessProposal) (*types.ResponseProcessProposal, error) {
 	reqres := cli.ProcessProposalAsync(params)
 	return cli.finishSyncCall(reqres).GetProcessProposal(), cli.Error()
+}
+
+// ----------------------------------------
+
+func (cli *grpcClient) EthQueryAsync(params types.RequestEthQuery) *ReqRes {
+	req := types.ToRequestEthQuery(params)
+	res, err := cli.client.EthQuery(context.Background(), req.GetEthQuery(), grpc.WaitForReady(true))
+	if err != nil {
+		cli.StopForError(err)
+	}
+	return cli.finishAsyncCall(req, &types.Response{Value: &types.Response_EthQuery{EthQuery: res}})
+}
+
+func (cli *grpcClient) EthQuerySync(req types.RequestEthQuery) (*types.ResponseEthQuery, error) {
+	reqres := cli.EthQueryAsync(req)
+	return cli.finishSyncCall(reqres).GetEthQuery(), cli.Error()
 }

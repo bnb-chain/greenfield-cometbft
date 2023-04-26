@@ -9,7 +9,7 @@ import (
 	"github.com/cometbft/cometbft/abci/types"
 )
 
-//go:generate ../scripts/mockery_generate.sh AppConnConsensus|AppConnMempool|AppConnQuery|AppConnSnapshot
+//go:generate ../scripts/mockery_generate.sh AppConnConsensus|AppConnMempool|AppConnQuery|AppConnSnapshot|AppConnEthQuery
 
 //----------------------------------------------------------------------------------------
 // Enforce which abci msgs can be sent on a connection at the type level
@@ -55,7 +55,13 @@ type AppConnSnapshot interface {
 	ApplySnapshotChunkSync(types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error)
 }
 
-//-----------------------------------------------------------------------------------------
+type AppConnEthQuery interface {
+	Error() error
+
+	EthQuerySync(query types.RequestEthQuery) (*types.ResponseEthQuery, error)
+}
+
+// -----------------------------------------------------------------------------------------
 // Implements AppConnConsensus (subset of abcicli.Client)
 
 type appConnConsensus struct {
@@ -86,7 +92,8 @@ func (app *appConnConsensus) InitChainSync(req types.RequestInitChain) (*types.R
 }
 
 func (app *appConnConsensus) PrepareProposalSync(
-	req types.RequestPrepareProposal) (*types.ResponsePrepareProposal, error) {
+	req types.RequestPrepareProposal,
+) (*types.ResponsePrepareProposal, error) {
 	defer addTimeSample(app.metrics.MethodTimingSeconds.With("method", "prepare_proposal", "type", "sync"))()
 	return app.appConn.PrepareProposalSync(req)
 }
@@ -223,13 +230,15 @@ func (app *appConnSnapshot) OfferSnapshotSync(req types.RequestOfferSnapshot) (*
 }
 
 func (app *appConnSnapshot) LoadSnapshotChunkSync(
-	req types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error) {
+	req types.RequestLoadSnapshotChunk,
+) (*types.ResponseLoadSnapshotChunk, error) {
 	defer addTimeSample(app.metrics.MethodTimingSeconds.With("method", "load_snapshot_chunk", "type", "sync"))()
 	return app.appConn.LoadSnapshotChunkSync(req)
 }
 
 func (app *appConnSnapshot) ApplySnapshotChunkSync(
-	req types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error) {
+	req types.RequestApplySnapshotChunk,
+) (*types.ResponseApplySnapshotChunk, error) {
 	defer addTimeSample(app.metrics.MethodTimingSeconds.With("method", "apply_snapshot_chunk", "type", "sync"))()
 	return app.appConn.ApplySnapshotChunkSync(req)
 }
@@ -241,4 +250,25 @@ func (app *appConnSnapshot) ApplySnapshotChunkSync(
 func addTimeSample(m metrics.Histogram) func() {
 	start := time.Now()
 	return func() { m.Observe(time.Since(start).Seconds()) }
+}
+
+// -----------------------------------------------------------------------------------------
+// Implements AppConnEthQuery (subset of abcicli.Client)
+
+type appConnEthQuery struct {
+	appConn abcicli.Client
+}
+
+func NewAppConnEthQuery(appConn abcicli.Client) AppConnEthQuery {
+	return &appConnEthQuery{
+		appConn: appConn,
+	}
+}
+
+func (app *appConnEthQuery) Error() error {
+	return app.appConn.Error()
+}
+
+func (app *appConnEthQuery) EthQuerySync(query types.RequestEthQuery) (*types.ResponseEthQuery, error) {
+	return app.appConn.EthQuerySync(query)
 }

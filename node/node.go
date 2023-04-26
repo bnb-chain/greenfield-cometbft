@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	_ "net/http/pprof" //#nosec //nolint: gosec // securely exposed on separate, optional port
+	_ "net/http/pprof" // #nosec //nolint: gosec // securely exposed on separate, optional port
 	"strings"
 	"time"
 
@@ -57,7 +57,7 @@ import (
 	_ "github.com/lib/pq" // provide the psql db driver
 )
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 // DBContext specifies config information for loading a new DB.
 type DBContext struct {
@@ -189,7 +189,7 @@ func StateProvider(stateProvider statesync.StateProvider) Option {
 	}
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 // Node is the highest level interface to a full CometBFT node.
 // It includes all configuration information and running services.
@@ -1107,6 +1107,8 @@ func (n *Node) ConfigureRPC() error {
 		ProxyAppQuery:   n.proxyApp.Query(),
 		ProxyAppMempool: n.proxyApp.Mempool(),
 
+		ProxyAppEthQuery: n.proxyApp.EthQuery(),
+
 		StateStore:     n.stateStore,
 		BlockStore:     n.blockStore,
 		EvidencePool:   n.evidencePool,
@@ -1340,7 +1342,7 @@ func (n *Node) Config() *cfg.Config {
 	return n.config
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 func (n *Node) Listeners() []string {
 	return []string{
@@ -1409,7 +1411,7 @@ func makeNodeInfo(
 	return nodeInfo, err
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 var genesisDocKey = []byte("genesisDoc")
 

@@ -30,7 +30,7 @@ func makeJSONRPCHandler(funcMap map[string]*RPCFunc, logger log.Logger) http.Han
 			return
 		}
 
-		// if its an empty request (like from a browser), just display a list of
+		// if it's an empty request (like from a browser), just display a list of
 		// functions
 		if len(b) == 0 {
 			writeListOfEndpoints(w, r, funcMap)
@@ -80,38 +80,76 @@ func makeJSONRPCHandler(funcMap map[string]*RPCFunc, logger log.Logger) http.Han
 				cache = false
 				continue
 			}
-			rpcFunc, ok := funcMap[request.Method]
-			if !ok || (rpcFunc.ws) {
-				responses = append(responses, types.RPCMethodNotFoundError(request.ID))
-				cache = false
-				continue
-			}
 			ctx := &types.Context{JSONReq: &request, HTTPReq: r}
 			args := []reflect.Value{reflect.ValueOf(ctx)}
-			if len(request.Params) > 0 {
-				fnArgs, err := jsonParamsToArgs(rpcFunc, request.Params)
-				if err != nil {
-					responses = append(
-						responses,
-						types.RPCInvalidParamsError(request.ID, fmt.Errorf("error converting json params to arguments: %w", err)),
-					)
+			rpcFunc, ok := funcMap[request.Method]
+
+			if !ok {
+				// try eth_query
+				var isEthQuery bool
+				for _, method := range types.SupportedEthQueryRequests {
+					if method == request.Method {
+						isEthQuery = true
+						break
+					}
+				}
+				if !isEthQuery {
+					responses = append(responses, types.RPCMethodNotFoundError(request.ID))
 					cache = false
 					continue
 				}
-				args = append(args, fnArgs...)
-			}
 
-			if cache && !rpcFunc.cacheableWithArgs(args) {
-				cache = false
-			}
+				rpcFunc = funcMap["eth_query"]
+				bz, err := json.Marshal(request)
+				if err != nil {
+					responses = append(responses, types.RPCInvalidRequestError(request.ID, err))
+					continue
+				}
+				args = append(args, reflect.ValueOf(bz))
 
-			returns := rpcFunc.f.Call(args)
-			result, err := unreflectResult(returns)
-			if err != nil {
-				responses = append(responses, types.RPCInternalError(request.ID, err))
-				continue
+				if cache && !rpcFunc.cacheableWithArgs(args) {
+					cache = false
+				}
+
+				returns := rpcFunc.f.Call(args)
+				result, err := unreflectResult(returns)
+				if err != nil {
+					responses = append(responses, types.RPCInternalError(request.ID, err))
+					continue
+				}
+				responses = append(responses, types.NewEthRPCSuccessResponse(request.ID, result, request.Method))
+			} else {
+				// normal tendermint request
+				if rpcFunc.ws {
+					responses = append(responses, types.RPCMethodNotFoundError(request.ID))
+					cache = false
+					continue
+				}
+				if len(request.Params) > 0 {
+					fnArgs, err := jsonParamsToArgs(rpcFunc, request.Params)
+					if err != nil {
+						responses = append(
+							responses,
+							types.RPCInvalidParamsError(request.ID, fmt.Errorf("error converting json params to arguments: %w", err)),
+						)
+						cache = false
+						continue
+					}
+					args = append(args, fnArgs...)
+				}
+
+				if cache && !rpcFunc.cacheableWithArgs(args) {
+					cache = false
+				}
+
+				returns := rpcFunc.f.Call(args)
+				result, err := unreflectResult(returns)
+				if err != nil {
+					responses = append(responses, types.RPCInternalError(request.ID, err))
+					continue
+				}
+				responses = append(responses, types.NewRPCSuccessResponse(request.ID, result))
 			}
-			responses = append(responses, types.NewRPCSuccessResponse(request.ID, result))
 		}
 
 		if len(responses) > 0 {
