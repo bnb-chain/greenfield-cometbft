@@ -362,7 +362,7 @@ func (h *Header) Populate(
 	timestamp time.Time, lastBlockID BlockID,
 	valHash, nextValHash []byte,
 	consensusHash, appHash, lastResultsHash []byte,
-	randaoMix,
+	randaoMix []byte,
 	proposerAddress Address,
 ) {
 	h.Version = version
@@ -507,6 +507,7 @@ func (h *Header) StringIndented(indent string) string {
 %s  Results:        %v
 %s  Evidence:       %v
 %s  Proposer:       %v
+%s  RandaoMix:      %v
 %s}#%v`,
 		indent, h.Version,
 		indent, h.ChainID,
@@ -522,8 +523,9 @@ func (h *Header) StringIndented(indent string) string {
 		indent, h.LastResultsHash,
 		indent, h.EvidenceHash,
 		indent, h.ProposerAddress,
-		indent, h.Hash(),
-	)
+		indent, h.RandaoMix,
+		indent, h.Hash())
+
 }
 
 // ToProto converts Header to protobuf
