@@ -35,11 +35,11 @@ for more information. It has some limitations, please use it with caution.
 
 ### Install
 
-See the [install instructions](./docs/introduction/install.md).
+See the [install guide](./docs/guides/install.md).
 
 ### Quick Start
 
-- [Single node](./docs/introduction/quick-start.md)
+- [Single node](./docs/guides/quick-start.md)
 - [Local cluster using docker-compose](./docs/networks/docker-compose.md)
 
 ## Contributing
