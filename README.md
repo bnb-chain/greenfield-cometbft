@@ -1,6 +1,6 @@
-# Greenfield Tendermint
+# Greenfield CometBFT
 
-Greenfield Tendermint, forked from [CometBFT](https://github.com/cometbft/cometbft),
+Greenfield CometBFT, forked from [CometBFT](https://github.com/cometbft/cometbft),
 is the consensus layer of Greenfield blockchain.
 CometBFT is a Byzantine Fault Tolerant (BFT) middleware that takes a
 state transition machine - written in any programming language - and securely
@@ -78,11 +78,11 @@ yourself with our [Architectural Decision Records
 
 ## License
 
-The Greenfield Tendermint library (i.e. all code outside the `cmd` directory) is licensed under the
+The Greenfield CometBFT library (i.e. all code outside the `cmd` directory) is licensed under the
 [GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html),
 also included in our repository in the `COPYING.LESSER` file.
 
-The Greenfield Tendermint binaries (i.e. all code inside the `cmd` directory) is licensed under the
+The Greenfield CometBFT binaries (i.e. all code inside the `cmd` directory) is licensed under the
 [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html), also
 included in our repository in the `COPYING` file.
 
