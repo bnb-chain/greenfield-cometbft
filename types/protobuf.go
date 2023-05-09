@@ -35,6 +35,8 @@ func (tm2pb) Header(header *Header) cmtproto.Header {
 
 		EvidenceHash:    header.EvidenceHash,
 		ProposerAddress: header.ProposerAddress,
+
+		RandaoMix: header.RandaoMix,
 	}
 }
 
@@ -107,7 +109,10 @@ func (pb2tm) ValidatorUpdates(vals []abci.ValidatorUpdate) ([]*Validator, error)
 		if err != nil {
 			return nil, err
 		}
-		tmVals[i] = NewValidator(pub, v.Power)
+		updated := NewValidator(pub, v.Power)
+		updated.SetBlsKey(v.BlsKey)
+		updated.SetRelayerAddress(v.RelayerAddress)
+		tmVals[i] = updated
 	}
 	return tmVals, nil
 }

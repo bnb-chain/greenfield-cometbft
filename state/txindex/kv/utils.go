@@ -3,10 +3,11 @@ package kv
 import (
 	"fmt"
 
+	"github.com/google/orderedcode"
+
 	"github.com/cometbft/cometbft/libs/pubsub/query"
 	"github.com/cometbft/cometbft/state/indexer"
 	"github.com/cometbft/cometbft/types"
-	"github.com/google/orderedcode"
 )
 
 type HeightInfo struct {

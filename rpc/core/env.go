@@ -17,6 +17,7 @@ import (
 	"github.com/cometbft/cometbft/state/indexer"
 	"github.com/cometbft/cometbft/state/txindex"
 	"github.com/cometbft/cometbft/types"
+	"github.com/cometbft/cometbft/votepool"
 )
 
 const (
@@ -44,7 +45,7 @@ func SetEnvironment(e *Environment) {
 	env = e
 }
 
-//----------------------------------------------
+// ----------------------------------------------
 // These interfaces are used by RPC and must be thread safe
 
 type Consensus interface {
@@ -77,6 +78,9 @@ type Environment struct {
 	ProxyAppQuery   proxy.AppConnQuery
 	ProxyAppMempool proxy.AppConnMempool
 
+	// for EVM json-rpc call
+	ProxyAppEthQuery proxy.AppConnEthQuery
+
 	// interfaces defined in types and above
 	StateStore     sm.Store
 	BlockStore     sm.BlockStore
@@ -93,6 +97,7 @@ type Environment struct {
 	ConsensusReactor *consensus.Reactor
 	EventBus         *types.EventBus // thread safe
 	Mempool          mempl.Mempool
+	VotePool         votepool.VotePool
 
 	Logger log.Logger
 
@@ -102,7 +107,7 @@ type Environment struct {
 	genChunks []string
 }
 
-//----------------------------------------------
+// ----------------------------------------------
 
 func validatePage(pagePtr *int, perPage, totalCount int) (int, error) {
 	if perPage < 1 {

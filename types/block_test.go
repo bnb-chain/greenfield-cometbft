@@ -334,7 +334,8 @@ func TestHeaderHash(t *testing.T) {
 			LastResultsHash:    tmhash.Sum([]byte("last_results_hash")),
 			EvidenceHash:       tmhash.Sum([]byte("evidence_hash")),
 			ProposerAddress:    crypto.AddressHash([]byte("proposer_address")),
-		}, hexBytesFromString("F740121F553B5418C3EFBD343C2DBFE9E007BB67B0D020A0741374BAB65242A4")},
+			RandaoMix:          tmhash.Sum([]byte("random_mix")),
+		}, hexBytesFromString("9C301304E5EC0CFDE729FE6DE7DD2D4EA7D0B1B8546DB07CF9A8B4811BE47334")},
 		{"nil header yields nil", nil, nil},
 		{"nil ValidatorsHash yields nil", &Header{
 			Version:            cmtversion.Consensus{Block: 1, App: 2},

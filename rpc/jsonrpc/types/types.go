@@ -2,14 +2,39 @@ package types
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 
 	cmtjson "github.com/cometbft/cometbft/libs/json"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
+
+// Supported EVM json-rpc requests
+const (
+	EthBlockNumber      = "eth_blockNumber"
+	EthGetBlockByNumber = "eth_getBlockByNumber"
+	EthGetBalance       = "eth_getBalance"
+	EthChainID          = "eth_chainId"
+	NetVersion          = "net_version"
+	EthNetworkID        = "eth_networkId"
+)
+
+var SupportedEthQueryRequests = []string{
+	EthBlockNumber,
+	EthGetBlockByNumber,
+	EthGetBalance,
+	EthChainID,
+	NetVersion,
+	EthNetworkID,
+}
 
 // a wrapper to emulate a sum type: jsonrpcid = string | int
 // TODO: refactor when Go 2.0 arrives https://github.com/golang/go/issues/19412
@@ -45,7 +70,7 @@ func idFromInterface(idInterface interface{}) (jsonrpcid, error) {
 	}
 }
 
-//----------------------------------------
+// ----------------------------------------
 // REQUEST
 
 type RPCRequest struct {
@@ -99,7 +124,7 @@ func (req RPCRequest) String() string {
 }
 
 func MapToRequest(id jsonrpcid, method string, params map[string]interface{}) (RPCRequest, error) {
-	var paramsMap = make(map[string]json.RawMessage, len(params))
+	paramsMap := make(map[string]json.RawMessage, len(params))
 	for name, value := range params {
 		valueJSON, err := cmtjson.Marshal(value)
 		if err != nil {
@@ -117,7 +142,7 @@ func MapToRequest(id jsonrpcid, method string, params map[string]interface{}) (R
 }
 
 func ArrayToRequest(id jsonrpcid, method string, params []interface{}) (RPCRequest, error) {
-	var paramsMap = make([]json.RawMessage, len(params))
+	paramsMap := make([]json.RawMessage, len(params))
 	for i, value := range params {
 		valueJSON, err := cmtjson.Marshal(value)
 		if err != nil {
@@ -134,7 +159,7 @@ func ArrayToRequest(id jsonrpcid, method string, params []interface{}) (RPCReque
 	return NewRPCRequest(id, method, payload), nil
 }
 
-//----------------------------------------
+// ----------------------------------------
 // RESPONSE
 
 type RPCError struct {
@@ -199,7 +224,75 @@ func NewRPCSuccessResponse(id jsonrpcid, res interface{}) RPCResponse {
 	return RPCResponse{JSONRPC: "2.0", ID: id, Result: rawMsg}
 }
 
-func NewRPCErrorResponse(id jsonrpcid, code int, msg string, data string) RPCResponse {
+func NewEthRPCSuccessResponse(id jsonrpcid, res interface{}, method string) RPCResponse {
+	var rawMsg json.RawMessage
+
+	var result []byte
+	if res != nil {
+		var js []byte
+		js, err := cmtjson.Marshal(res)
+		if err != nil {
+			return RPCInternalError(id, fmt.Errorf("error marshaling response: %w", err))
+		}
+		rawMsg = json.RawMessage(js)
+
+		var v interface{}
+		err = json.Unmarshal(rawMsg, &v)
+		if err != nil {
+			return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
+		}
+
+		// remove the nested structs and convert from base64 to hex string
+		ethResponse := v.(map[string]interface{})["response"]
+		response := ethResponse.(map[string]interface{})["response"]
+		bz, err := base64.StdEncoding.DecodeString(response.(string))
+		if err != nil {
+			return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
+		}
+		if len(bz) == 0 {
+			bz = []byte{0x0}
+		}
+
+		switch method {
+		// return hex string for eth_blockNumber, eth_chainId, eth_networkId, eth_getBalance
+		case EthBlockNumber, EthChainID, EthNetworkID, EthGetBalance:
+			result, err = json.Marshal("0x" + hex.EncodeToString(bz))
+			if err != nil {
+				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
+			}
+		// return int string for net_version
+		case NetVersion:
+			hexStr := hex.EncodeToString(bz)
+			netVersion, err := strconv.ParseInt(hexStr, 16, 64)
+			if err != nil {
+				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
+			}
+			result, err = json.Marshal(strconv.FormatInt(netVersion, 10))
+			if err != nil {
+				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
+			}
+		case EthGetBlockByNumber:
+			hexStr := hex.EncodeToString(bz)
+			height, err := strconv.ParseInt(hexStr, 16, 64)
+			if err != nil {
+				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
+			}
+			block := formatBlock(height)
+			result, err = json.Marshal(block)
+			if err != nil {
+				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
+			}
+		default:
+			panic("unknown method")
+		}
+	} else {
+		panic("empty response")
+	}
+
+	return RPCResponse{JSONRPC: "2.0", ID: id, Result: result}
+}
+
+func NewRPCErrorResponse(id jsonrpcid, code int, msg, data string) RPCResponse {
 	return RPCResponse{
 		JSONRPC: "2.0",
 		ID:      id,
@@ -246,7 +339,7 @@ func RPCServerError(id jsonrpcid, err error) RPCResponse {
 	return NewRPCErrorResponse(id, -32000, "Server error", err.Error())
 }
 
-//----------------------------------------
+// ----------------------------------------
 
 // WSRPCConnection represents a websocket connection.
 type WSRPCConnection interface {
@@ -312,7 +405,7 @@ func (ctx *Context) Context() context.Context {
 	return context.Background()
 }
 
-//----------------------------------------
+// ----------------------------------------
 // SOCKETS
 
 // Determine if its a unix or tcp socket.
@@ -324,4 +417,36 @@ func SocketType(listenAddr string) string {
 		socketType = "tcp"
 	}
 	return socketType
+}
+
+func formatBlock(height int64) map[string]interface{} {
+	emptyHash := common.Hash{}
+	emptyAddress := common.Address{}
+	emptyNonce := [8]byte{}
+	emptyLogsBloom := [256]byte{}
+
+	result := map[string]interface{}{
+		"number":           hexutil.Uint64(height),
+		"hash":             emptyHash,
+		"parentHash":       emptyHash,
+		"nonce":            fmt.Sprintf("%x", emptyNonce),
+		"sha3Uncles":       emptyHash,
+		"logsBloom":        fmt.Sprintf("%x", emptyLogsBloom),
+		"stateRoot":        emptyHash,
+		"miner":            emptyAddress,
+		"mixHash":          emptyHash,
+		"difficulty":       (*hexutil.Big)(big.NewInt(0)),
+		"extraData":        "0x",
+		"size":             hexutil.Uint64(0),
+		"gasLimit":         hexutil.Uint64(0),
+		"gasUsed":          (*hexutil.Big)(big.NewInt(0)),
+		"timestamp":        hexutil.Uint64(0),
+		"transactionsRoot": emptyHash,
+		"receiptsRoot":     emptyHash,
+
+		"uncles":          []common.Hash{},
+		"transactions":    []interface{}{},
+		"totalDifficulty": (*hexutil.Big)(big.NewInt(0)),
+	}
+	return result
 }

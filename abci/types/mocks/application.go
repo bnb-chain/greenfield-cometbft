@@ -96,6 +96,20 @@ func (_m *Application) EndBlock(_a0 types.RequestEndBlock) types.ResponseEndBloc
 	return r0
 }
 
+// EthQuery provides a mock function with given fields: _a0
+func (_m *Application) EthQuery(_a0 types.RequestEthQuery) types.ResponseEthQuery {
+	ret := _m.Called(_a0)
+
+	var r0 types.ResponseEthQuery
+	if rf, ok := ret.Get(0).(func(types.RequestEthQuery) types.ResponseEthQuery); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Get(0).(types.ResponseEthQuery)
+	}
+
+	return r0
+}
+
 // Info provides a mock function with given fields: _a0
 func (_m *Application) Info(_a0 types.RequestInfo) types.ResponseInfo {
 	ret := _m.Called(_a0)

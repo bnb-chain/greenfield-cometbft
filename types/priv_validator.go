@@ -2,11 +2,13 @@ package types
 
 import (
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/ed25519"
+	"github.com/cometbft/cometbft/crypto/tmhash"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 )
 
@@ -17,6 +19,7 @@ type PrivValidator interface {
 
 	SignVote(chainID string, vote *cmtproto.Vote) error
 	SignProposal(chainID string, proposal *cmtproto.Proposal) error
+	SignReveal(chainID string, reveal *cmtproto.Reveal) error
 }
 
 type PrivValidatorsByAddress []PrivValidator
@@ -101,6 +104,19 @@ func (pv MockPV) SignProposal(chainID string, proposal *cmtproto.Proposal) error
 	return nil
 }
 
+// SignReveal signs a randao reveal, along with the chainID. Implements PrivValidator.
+func (pv MockPV) SignReveal(chainID string, reveal *cmtproto.Reveal) error {
+	chainIDBytes := tmhash.Sum([]byte(chainID + "/"))
+	heightBytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(heightBytes, uint64(reveal.Height))
+	sig, err := pv.PrivKey.Sign(append(chainIDBytes, heightBytes...))
+	if err != nil {
+		return fmt.Errorf("error signing reveal: %v", err)
+	}
+	reveal.Signature = sig
+	return nil
+}
+
 func (pv MockPV) ExtractIntoValidator(votingPower int64) *Validator {
 	pubKey, _ := pv.GetPubKey()
 	return &Validator{
@@ -135,6 +151,11 @@ func (pv *ErroringMockPV) SignVote(chainID string, vote *cmtproto.Vote) error {
 
 // Implements PrivValidator.
 func (pv *ErroringMockPV) SignProposal(chainID string, proposal *cmtproto.Proposal) error {
+	return ErroringMockPVErr
+}
+
+// SignReveal signs a randao reveal, along with the chainID. Implements PrivValidator.
+func (pv *ErroringMockPV) SignReveal(chainID string, reveal *cmtproto.Reveal) error {
 	return ErroringMockPVErr
 }
 

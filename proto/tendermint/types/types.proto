@@ -79,6 +79,9 @@ message Header {
   // consensus info
   bytes evidence_hash    = 13;  // evidence included in the block
   bytes proposer_address = 14;  // original proposer of the block
+
+  // randao info
+  bytes randao_mix    = 15;  // randao mix
 }
 
 // Data contains the set of transactions included in the block
@@ -154,4 +157,10 @@ message TxProof {
   bytes                   root_hash = 1;
   bytes                   data      = 2;
   tendermint.crypto.Proof proof     = 3;
+}
+
+// Reveal represents randao reveal from block proposer.
+message Reveal {
+  int64 height     = 1;
+  bytes signature  = 2;
 }

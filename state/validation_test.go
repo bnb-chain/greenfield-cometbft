@@ -84,6 +84,8 @@ func TestValidateBlockHeader(t *testing.T) {
 		{"EvidenceHash wrong", func(block *types.Block) { block.EvidenceHash = wrongHash }},
 		{"Proposer wrong", func(block *types.Block) { block.ProposerAddress = ed25519.GenPrivKey().PubKey().Address() }},
 		{"Proposer invalid", func(block *types.Block) { block.ProposerAddress = []byte("wrong size") }},
+
+		{"RandaoMix invalid", func(block *types.Block) { block.RandaoMix = []byte("wrong size") }},
 	}
 
 	// Build up state for multiple heights
@@ -294,8 +296,8 @@ func TestValidateBlockEvidence(t *testing.T) {
 				evidence = append(evidence, newEv)
 				currentBytes += int64(len(newEv.Bytes()))
 			}
-			block := state.MakeBlock(height, test.MakeNTxs(height, 10), lastCommit, evidence, proposerAddr)
-
+			reveal := makeReveal(state, proposerAddr, privVals, height)
+			block := state.MakeBlock(height, test.MakeNTxs(height, 10), lastCommit, evidence, reveal, proposerAddr)
 			err := blockExec.ValidateBlock(state, block)
 			if assert.Error(t, err) {
 				_, ok := err.(*types.ErrEvidenceOverflow)

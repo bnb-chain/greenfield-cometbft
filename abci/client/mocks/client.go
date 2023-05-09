@@ -303,6 +303,45 @@ func (_m *Client) Error() error {
 	return r0
 }
 
+// EthQueryAsync provides a mock function with given fields: _a0
+func (_m *Client) EthQueryAsync(_a0 types.RequestEthQuery) *abcicli.ReqRes {
+	ret := _m.Called(_a0)
+
+	var r0 *abcicli.ReqRes
+	if rf, ok := ret.Get(0).(func(types.RequestEthQuery) *abcicli.ReqRes); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*abcicli.ReqRes)
+		}
+	}
+
+	return r0
+}
+
+// EthQuerySync provides a mock function with given fields: _a0
+func (_m *Client) EthQuerySync(_a0 types.RequestEthQuery) (*types.ResponseEthQuery, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *types.ResponseEthQuery
+	if rf, ok := ret.Get(0).(func(types.RequestEthQuery) *types.ResponseEthQuery); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*types.ResponseEthQuery)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(types.RequestEthQuery) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // FlushAsync provides a mock function with given fields:
 func (_m *Client) FlushAsync() *abcicli.ReqRes {
 	ret := _m.Called()

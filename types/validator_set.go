@@ -2,6 +2,7 @@ package types
 
 import (
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"math"
@@ -9,7 +10,9 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/cometbft/cometbft/crypto/ed25519"
 	"github.com/cometbft/cometbft/crypto/merkle"
+	"github.com/cometbft/cometbft/crypto/tmhash"
 	cmtmath "github.com/cometbft/cometbft/libs/math"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 )
@@ -708,6 +711,33 @@ func (vals *ValidatorSet) VerifyCommit(chainID string, blockID BlockID,
 
 	if got, needed := talliedVotingPower, votingPowerNeeded; got <= needed {
 		return ErrNotEnoughVotingPowerSigned{Got: got, Needed: needed}
+	}
+
+	return nil
+}
+
+// VerifyRandao verify the randao reveal and randao mix. The proposer should be in the list of validators, which already checked.
+func (vals *ValidatorSet) VerifyRandao(chainID string, lastRandaoMix []byte, height int64, proposerAddress Address, randaoMix []byte) error {
+	randaoReveal := make([]byte, ed25519.SignatureSize)
+	if len(lastRandaoMix) == 0 {
+		lastRandaoMix = make([]byte, ed25519.SignatureSize)
+	}
+	for i := range randaoMix {
+		randaoReveal[i] = lastRandaoMix[i] ^ randaoMix[i]
+	}
+
+	var proposer *Validator
+	for _, val := range vals.Validators {
+		if bytes.Equal(val.Address, proposerAddress) {
+			proposer = val
+			break
+		}
+	}
+	chainIDBytes := tmhash.Sum([]byte(chainID + "/"))
+	heightBytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(heightBytes, uint64(height))
+	if !proposer.PubKey.VerifySignature(append(chainIDBytes, heightBytes...), randaoReveal) {
+		return fmt.Errorf("wrong randao reveal, proposer: %s, reveal: %X, len: %d, height: %d", proposer.Address, randaoReveal, len(randaoReveal), height)
 	}
 
 	return nil
