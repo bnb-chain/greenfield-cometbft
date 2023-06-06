@@ -205,14 +205,18 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	}
 
 	fail.Fail() // XXX
+	startTime = time.Now().UnixNano()
 
 	// Save the results before we commit.
 	if err := blockExec.store.SaveABCIResponses(block.Height, abciResponses); err != nil {
 		return state, 0, err
 	}
+	endTime = time.Now().UnixNano()
+	blockExec.metrics.SaveABCIResponse.Observe(float64(endTime-startTime) / 1000000)
 
 	fail.Fail() // XXX
 
+	startTime = time.Now().UnixNano()
 	// validate the validator updates and convert to CometBFT types
 	abciValUpdates := abciResponses.EndBlock.ValidatorUpdates
 	err = validateValidatorUpdates(abciValUpdates, state.ConsensusParams.Validator)
@@ -237,8 +241,11 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
+	endTime = time.Now().UnixNano()
+	blockExec.metrics.UpdateState.Observe(float64(endTime-startTime) / 1000000)
 
 	// Lock mempool, commit app state, update mempoool.
+	startTime = time.Now().UnixNano()
 	appHash, retainHeight, err := blockExec.Commit(state, block, abciResponses.DeliverTxs)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
@@ -246,7 +253,6 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	// Update evpool with the latest state.
 	blockExec.evpool.Update(state, block.Evidence.Evidence)
-
 	fail.Fail() // XXX
 
 	// Update the app hash and save the state.
@@ -254,7 +260,8 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
 	}
-
+	endTime = time.Now().UnixNano()
+	blockExec.metrics.CommitState.Observe(float64(endTime-startTime) / 1000000)
 	fail.Fail() // XXX
 
 	// Events are fired after everything else.

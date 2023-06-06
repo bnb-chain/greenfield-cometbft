@@ -22,6 +22,34 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 
 			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
 		}, labels).With(labelsAndValues...),
+
+		SaveABCIResponse: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "save_abci_response",
+			Help:      "",
+
+			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
+		}, labels).With(labelsAndValues...),
+
+		UpdateState: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "update_state",
+			Help:      "",
+
+			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
+		}, labels).With(labelsAndValues...),
+
+		CommitState: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "commit_state",
+			Help:      "",
+
+			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
+		}, labels).With(labelsAndValues...),
+
 		ConsensusParamUpdates: prometheus.NewCounterFrom(stdprometheus.CounterOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
@@ -40,6 +68,9 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 func NopMetrics() *Metrics {
 	return &Metrics{
 		BlockProcessingTime:   discard.NewHistogram(),
+		SaveABCIResponse:      discard.NewHistogram(),
+		UpdateState:           discard.NewHistogram(),
+		CommitState:           discard.NewHistogram(),
 		ConsensusParamUpdates: discard.NewCounter(),
 		ValidatorSetUpdates:   discard.NewCounter(),
 	}
