@@ -14,42 +14,36 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 		labels = append(labels, labelsAndValues[i])
 	}
 	return &Metrics{
-		BlockProcessingTime: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+		BlockProcessingTime: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
 			Name:      "block_processing_time",
 			Help:      "Time between BeginBlock and EndBlock in ms.",
-
-			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
 		}, labels).With(labelsAndValues...),
-
-		SaveABCIResponse: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+		SaveABCIResponse: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
-			Name:      "save_abci_response",
+			Name:      "save_abciresponse",
 			Help:      "",
-
-			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
 		}, labels).With(labelsAndValues...),
-
-		UpdateState: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+		UpdateState: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
 			Name:      "update_state",
 			Help:      "",
-
-			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
 		}, labels).With(labelsAndValues...),
-
-		CommitState: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+		CommitState: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
 			Name:      "commit_state",
 			Help:      "",
-
-			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
 		}, labels).With(labelsAndValues...),
-
+		SaveState: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "save_state",
+			Help:      "",
+		}, labels).With(labelsAndValues...),
 		ConsensusParamUpdates: prometheus.NewCounterFrom(stdprometheus.CounterOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
@@ -67,10 +61,11 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 
 func NopMetrics() *Metrics {
 	return &Metrics{
-		BlockProcessingTime:   discard.NewHistogram(),
-		SaveABCIResponse:      discard.NewHistogram(),
-		UpdateState:           discard.NewHistogram(),
-		CommitState:           discard.NewHistogram(),
+		BlockProcessingTime:   discard.NewGauge(),
+		SaveABCIResponse:      discard.NewGauge(),
+		UpdateState:           discard.NewGauge(),
+		CommitState:           discard.NewGauge(),
+		SaveState:             discard.NewGauge(),
 		ConsensusParamUpdates: discard.NewCounter(),
 		ValidatorSetUpdates:   discard.NewCounter(),
 	}

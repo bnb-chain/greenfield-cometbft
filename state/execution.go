@@ -199,25 +199,25 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		blockExec.logger, blockExec.proxyApp, block, blockExec.store, state.InitialHeight,
 	)
 	elapseTime := time.Since(startTime).Milliseconds()
-	blockExec.metrics.BlockProcessingTime.Observe(float64(elapseTime))
+	blockExec.metrics.BlockProcessingTime.Set(float64(elapseTime))
 	if err != nil {
 		return state, 0, ErrProxyAppConn(err)
 	}
 
 	fail.Fail() // XXX
-	startTime = time.Now()
 
 	// Save the results before we commit.
+	startTime = time.Now()
 	if err := blockExec.store.SaveABCIResponses(block.Height, abciResponses); err != nil {
 		return state, 0, err
 	}
 	elapseTime = time.Since(startTime).Milliseconds()
-	blockExec.metrics.SaveABCIResponse.Observe(float64(elapseTime))
+	blockExec.metrics.SaveABCIResponse.Set(float64(elapseTime))
 
 	fail.Fail() // XXX
 
-	startTime = time.Now()
 	// validate the validator updates and convert to CometBFT types
+	startTime = time.Now()
 	abciValUpdates := abciResponses.EndBlock.ValidatorUpdates
 	err = validateValidatorUpdates(abciValUpdates, state.ConsensusParams.Validator)
 	if err != nil {
@@ -242,7 +242,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
 	elapseTime = time.Since(startTime).Milliseconds()
-	blockExec.metrics.UpdateState.Observe(float64(elapseTime))
+	blockExec.metrics.UpdateState.Set(float64(elapseTime))
 
 	// Lock mempool, commit app state, update mempoool.
 	startTime = time.Now()
@@ -250,18 +250,21 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
+	elapseTime = time.Since(startTime).Milliseconds()
+	blockExec.metrics.CommitState.Set(float64(elapseTime))
 
 	// Update evpool with the latest state.
 	blockExec.evpool.Update(state, block.Evidence.Evidence)
 	fail.Fail() // XXX
 
 	// Update the app hash and save the state.
+	startTime = time.Now()
 	state.AppHash = appHash
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
 	}
 	elapseTime = time.Since(startTime).Milliseconds()
-	blockExec.metrics.CommitState.Observe(float64(elapseTime))
+	blockExec.metrics.SaveState.Set(float64(elapseTime))
 	fail.Fail() // XXX
 
 	// Events are fired after everything else.

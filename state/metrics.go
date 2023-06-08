@@ -15,13 +15,14 @@ const (
 // Metrics contains metrics exposed by this package.
 type Metrics struct {
 	// Time between BeginBlock and EndBlock in ms.
-	BlockProcessingTime metrics.Histogram `metrics_buckettype:"lin" metrics_bucketsizes:"1, 10, 10"`
+	BlockProcessingTime metrics.Gauge
 
-	SaveABCIResponse metrics.Histogram `metrics_buckettype:"lin" metrics_bucketsizes:"1, 10, 10"`
+	SaveABCIResponse metrics.Gauge
 
-	UpdateState metrics.Histogram `metrics_buckettype:"lin" metrics_bucketsizes:"1, 10, 10"`
+	UpdateState metrics.Gauge
 
-	CommitState metrics.Histogram `metrics_buckettype:"lin" metrics_bucketsizes:"1, 10, 10"`
+	CommitState metrics.Gauge
+	SaveState   metrics.Gauge
 
 	// ConsensusParamUpdates is the total number of times the application has
 	// udated the consensus params since process start.
