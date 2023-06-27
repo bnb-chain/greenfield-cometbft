@@ -305,6 +305,7 @@ func TestCreateProposalBlock(t *testing.T) {
 		stateStore,
 		logger,
 		proxyApp.Consensus(),
+		proxyApp.Prefetch(),
 		mempool,
 		evidencePool,
 	)
@@ -390,6 +391,7 @@ func TestMaxProposalBlockSize(t *testing.T) {
 		stateStore,
 		logger,
 		proxyApp.Consensus(),
+		proxyApp.Prefetch(),
 		mempool,
 		sm.EmptyEvidencePool{},
 	)

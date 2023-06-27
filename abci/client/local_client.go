@@ -1,6 +1,8 @@
 package abcicli
 
 import (
+	"fmt"
+
 	types "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/service"
 	cmtsync "github.com/cometbft/cometbft/libs/sync"
@@ -309,7 +311,8 @@ func (app *localClient) OfferSnapshotSync(req types.RequestOfferSnapshot) (*type
 }
 
 func (app *localClient) LoadSnapshotChunkSync(
-	req types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error) {
+	req types.RequestLoadSnapshotChunk,
+) (*types.ResponseLoadSnapshotChunk, error) {
 	app.mtx.Lock()
 	defer app.mtx.Unlock()
 
@@ -318,7 +321,8 @@ func (app *localClient) LoadSnapshotChunkSync(
 }
 
 func (app *localClient) ApplySnapshotChunkSync(
-	req types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error) {
+	req types.RequestApplySnapshotChunk,
+) (*types.ResponseApplySnapshotChunk, error) {
 	app.mtx.Lock()
 	defer app.mtx.Unlock()
 
@@ -376,4 +380,26 @@ func (app *localClient) EthQuerySync(req types.RequestEthQuery) (*types.Response
 
 	res := app.Application.EthQuery(req)
 	return &res, nil
+}
+
+// -------------------------------------------------------
+
+func (app *localClient) PreDeliverTxAsync(req types.RequestPreDeliverTx) {
+	app.Application.PreDeliverTx(req)
+}
+
+func (app *localClient) PreBeginBlockSync(req types.RequestPreBeginBlock) error {
+	res := app.Application.PreBeginBlock(req)
+	if res.IsErr() {
+		return fmt.Errorf(res.Error)
+	}
+	return nil
+}
+
+func (app *localClient) PreCommitSync(req types.RequestPreCommit) error {
+	res := app.Application.PreCommit(req)
+	if res.IsErr() {
+		return fmt.Errorf(res.Error)
+	}
+	return nil
 }

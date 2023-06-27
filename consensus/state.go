@@ -1201,7 +1201,7 @@ func (cs *State) isProposalComplete() bool {
 // We really only need to return the parts, but the block is returned for
 // convenience so we can log the proposal block.
 //
-// NOTE: keep it side-effect free for clarity.
+// NOTE: keep it side effect free for clarity.
 // CONTRACT: cs.privValidator is not nil.
 func (cs *State) createProposalBlock() (*types.Block, error) {
 	if cs.privValidator == nil {

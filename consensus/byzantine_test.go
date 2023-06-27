@@ -101,7 +101,7 @@ func TestByzantinePrevoteEquivocation(t *testing.T) {
 		evpool.SetLogger(logger.With("module", "evidence"))
 
 		// Make State
-		blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyAppConnCon, mempool, evpool)
+		blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyAppConnCon, nil, mempool, evpool)
 		cs := NewState(thisConfig.Consensus, state, blockExec, blockStore, mempool, evpool)
 		cs.SetLogger(cs.Logger)
 		// set private validator
@@ -598,9 +598,11 @@ func (br *ByzantineReactor) AddPeer(peer p2p.Peer) {
 		br.reactor.sendNewRoundStepMessage(peer)
 	}
 }
+
 func (br *ByzantineReactor) RemovePeer(peer p2p.Peer, reason interface{}) {
 	br.reactor.RemovePeer(peer, reason)
 }
+
 func (br *ByzantineReactor) ReceiveEnvelope(e p2p.Envelope) {
 	br.reactor.ReceiveEnvelope(e)
 }

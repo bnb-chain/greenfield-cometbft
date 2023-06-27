@@ -9,7 +9,7 @@ import (
 	"github.com/cometbft/cometbft/abci/types"
 )
 
-//go:generate ../scripts/mockery_generate.sh AppConnConsensus|AppConnMempool|AppConnQuery|AppConnSnapshot|AppConnEthQuery
+//go:generate ../scripts/mockery_generate.sh AppConnConsensus|AppConnMempool|AppConnQuery|AppConnSnapshot|AppConnEthQuery|AppConnPrefetch
 
 //----------------------------------------------------------------------------------------
 // Enforce which abci msgs can be sent on a connection at the type level
@@ -25,6 +25,12 @@ type AppConnConsensus interface {
 	DeliverTxAsync(types.RequestDeliverTx) *abcicli.ReqRes
 	EndBlockSync(types.RequestEndBlock) (*types.ResponseEndBlock, error)
 	CommitSync() (*types.ResponseCommit, error)
+}
+
+type AppConnPrefetch interface {
+	PreDeliverTxAsync(types.RequestPreDeliverTx)
+	PreBeginBlockSync(types.RequestPreBeginBlock) error
+	PreCommitSync(types.RequestPreCommit) error
 }
 
 type AppConnMempool interface {
@@ -271,4 +277,33 @@ func (app *appConnEthQuery) Error() error {
 
 func (app *appConnEthQuery) EthQuerySync(query types.RequestEthQuery) (*types.ResponseEthQuery, error) {
 	return app.appConn.EthQuerySync(query)
+}
+
+// -----------------------------------------------------------------------------------------
+// Implements AppConnPrefetch (subset of abcicli.Client)
+
+type appConnPrefetch struct {
+	appConn abcicli.Client
+}
+
+func NewAppConnPrefetch(appConn abcicli.Client) AppConnPrefetch {
+	return &appConnPrefetch{
+		appConn: appConn,
+	}
+}
+
+func (app *appConnPrefetch) Error() error {
+	return app.appConn.Error()
+}
+
+func (app *appConnPrefetch) PreDeliverTxAsync(req types.RequestPreDeliverTx) {
+	app.appConn.PreDeliverTxAsync(req)
+}
+
+func (app *appConnPrefetch) PreBeginBlockSync(req types.RequestPreBeginBlock) error {
+	return app.appConn.PreBeginBlockSync(req)
+}
+
+func (app *appConnPrefetch) PreCommitSync(req types.RequestPreCommit) error {
+	return app.appConn.PreCommitSync(req)
 }

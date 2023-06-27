@@ -153,7 +153,7 @@ func (cli *socketClient) sendRequestsRoutine(conn io.Writer) {
 func (cli *socketClient) recvResponseRoutine(conn io.Reader) {
 	r := bufio.NewReader(conn)
 	for {
-		var res = &types.Response{}
+		res := &types.Response{}
 		err := types.ReadMessage(r, res)
 		if err != nil {
 			cli.stopForError(fmt.Errorf("read message: %w", err))
@@ -394,7 +394,8 @@ func (cli *socketClient) OfferSnapshotSync(req types.RequestOfferSnapshot) (*typ
 }
 
 func (cli *socketClient) LoadSnapshotChunkSync(
-	req types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error) {
+	req types.RequestLoadSnapshotChunk,
+) (*types.ResponseLoadSnapshotChunk, error) {
 	reqres := cli.queueRequest(types.ToRequestLoadSnapshotChunk(req))
 	if err := cli.FlushSync(); err != nil {
 		return nil, err
@@ -404,7 +405,8 @@ func (cli *socketClient) LoadSnapshotChunkSync(
 }
 
 func (cli *socketClient) ApplySnapshotChunkSync(
-	req types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error) {
+	req types.RequestApplySnapshotChunk,
+) (*types.ResponseApplySnapshotChunk, error) {
 	reqres := cli.queueRequest(types.ToRequestApplySnapshotChunk(req))
 	if err := cli.FlushSync(); err != nil {
 		return nil, err
@@ -541,4 +543,18 @@ func (cli *socketClient) EthQuerySync(req types.RequestEthQuery) (*types.Respons
 	}
 
 	return reqres.Response.GetEthQuery(), cli.Error()
+}
+
+// ----------------------------------------
+
+func (cli *socketClient) PreDeliverTxAsync(req types.RequestPreDeliverTx) {
+	panic("should not happen")
+}
+
+func (cli *socketClient) PreBeginBlockSync(req types.RequestPreBeginBlock) error {
+	panic("should not happen")
+}
+
+func (cli *socketClient) PreCommitSync(req types.RequestPreCommit) error {
+	panic("should not happen")
 }

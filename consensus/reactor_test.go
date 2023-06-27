@@ -202,7 +202,7 @@ func TestReactorWithEvidence(t *testing.T) {
 		evpool2 := sm.EmptyEvidencePool{}
 
 		// Make State
-		blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyAppConnCon, mempool, evpool)
+		blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyAppConnCon, nil, mempool, evpool)
 		cs := NewState(thisConfig.Consensus, state, blockExec, blockStore, mempool, evpool2)
 		cs.SetLogger(log.TestingLogger().With("module", "consensus"))
 		cs.SetPrivValidator(pv)
@@ -275,8 +275,10 @@ func TestReactorReceiveDoesNotPanicIfAddPeerHasntBeenCalledYet(t *testing.T) {
 		reactor.ReceiveEnvelope(p2p.Envelope{
 			ChannelID: StateChannel,
 			Src:       peer,
-			Message: &cmtcons.HasVote{Height: 1,
-				Round: 1, Index: 1, Type: cmtproto.PrevoteType},
+			Message: &cmtcons.HasVote{
+				Height: 1,
+				Round:  1, Index: 1, Type: cmtproto.PrevoteType,
+			},
 		})
 		reactor.AddPeer(peer)
 	})
@@ -301,8 +303,10 @@ func TestReactorReceivePanicsIfInitPeerHasntBeenCalledYet(t *testing.T) {
 		reactor.ReceiveEnvelope(p2p.Envelope{
 			ChannelID: StateChannel,
 			Src:       peer,
-			Message: &cmtcons.HasVote{Height: 1,
-				Round: 1, Index: 1, Type: cmtproto.PrevoteType},
+			Message: &cmtcons.HasVote{
+				Height: 1,
+				Round:  1, Index: 1, Type: cmtproto.PrevoteType,
+			},
 		})
 	})
 }

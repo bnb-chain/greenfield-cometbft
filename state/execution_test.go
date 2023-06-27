@@ -58,7 +58,7 @@ func TestApplyBlock(t *testing.T) {
 		mock.Anything,
 		mock.Anything,
 		mock.Anything).Return(nil)
-	blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyApp.Consensus(),
+	blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyApp.Consensus(), nil,
 		mp, sm.EmptyEvidencePool{})
 
 	block := makeBlock(state, 1, new(types.Commit))
@@ -231,7 +231,7 @@ func TestBeginBlockByzantineValidators(t *testing.T) {
 		mock.Anything,
 		mock.Anything).Return(nil)
 
-	blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyApp.Consensus(),
+	blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyApp.Consensus(), nil,
 		mp, evpool)
 
 	block := makeBlock(state, 1, new(types.Commit))
@@ -277,6 +277,7 @@ func TestProcessProposal(t *testing.T) {
 		stateStore,
 		logger,
 		proxyApp.Consensus(),
+		nil,
 		new(mpmocks.Mempool),
 		sm.EmptyEvidencePool{},
 	)
@@ -523,6 +524,7 @@ func TestEndBlockValidatorUpdates(t *testing.T) {
 		stateStore,
 		log.TestingLogger(),
 		proxyApp.Consensus(),
+		nil,
 		mp,
 		sm.EmptyEvidencePool{},
 	)
@@ -618,6 +620,7 @@ func TestEndBlockValidatorUpdatesResultingInEmptySet(t *testing.T) {
 		stateStore,
 		log.TestingLogger(),
 		proxyApp.Consensus(),
+		nil,
 		new(mpmocks.Mempool),
 		sm.EmptyEvidencePool{},
 	)
@@ -670,6 +673,7 @@ func TestEmptyPrepareProposal(t *testing.T) {
 		stateStore,
 		log.TestingLogger(),
 		proxyApp.Consensus(),
+		nil,
 		mp,
 		sm.EmptyEvidencePool{},
 	)
@@ -711,6 +715,7 @@ func TestPrepareProposalTxsAllIncluded(t *testing.T) {
 		stateStore,
 		log.TestingLogger(),
 		proxyApp.Consensus(),
+		nil,
 		mp,
 		evpool,
 	)
@@ -762,6 +767,7 @@ func TestPrepareProposalReorderTxs(t *testing.T) {
 		stateStore,
 		log.TestingLogger(),
 		proxyApp.Consensus(),
+		nil,
 		mp,
 		evpool,
 	)
@@ -814,6 +820,7 @@ func TestPrepareProposalErrorOnTooManyTxs(t *testing.T) {
 		stateStore,
 		log.NewNopLogger(),
 		proxyApp.Consensus(),
+		nil,
 		mp,
 		evpool,
 	)
@@ -862,6 +869,7 @@ func TestPrepareProposalErrorOnPrepareProposalError(t *testing.T) {
 		stateStore,
 		log.NewNopLogger(),
 		proxyApp.Consensus(),
+		nil,
 		mp,
 		evpool,
 	)

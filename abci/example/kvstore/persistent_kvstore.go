@@ -322,6 +322,18 @@ func (app *PersistentKVStoreApplication) EthQuery(query types.RequestEthQuery) t
 	panic("should not happen")
 }
 
+func (app *PersistentKVStoreApplication) PreBeginBlock(req types.RequestPreBeginBlock) types.ResponsePrefetch {
+	panic("should not happen")
+}
+
+func (app *PersistentKVStoreApplication) PreDeliverTx(req types.RequestPreDeliverTx) {
+	panic("should not happen")
+}
+
+func (app *PersistentKVStoreApplication) PreCommit(req types.RequestPreCommit) types.ResponsePrefetch {
+	panic("should not happen")
+}
+
 // -----------------------------
 
 const (

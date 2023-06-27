@@ -51,6 +51,17 @@ func (r ResponseProcessProposal) IsStatusUnknown() bool {
 	return r.Status == ResponseProcessProposal_UNKNOWN
 }
 
+// IsOK returns true if Code is OK.
+func (r ResponsePrefetch) IsOK() bool {
+	return r.Code == CodeTypeOK
+}
+
+// IsErr returns true if Code is something other than OK.
+func (r ResponsePrefetch) IsErr() bool {
+	return r.Code != CodeTypeOK
+}
+
+
 //---------------------------------------------------------------------------
 // override JSON marshaling so we emit defaults (ie. disable omitempty)
 
