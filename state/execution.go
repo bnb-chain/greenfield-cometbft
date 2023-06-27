@@ -3,6 +3,8 @@ package state
 import (
 	"errors"
 	"fmt"
+	"runtime"
+	"sync"
 	"time"
 
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -15,7 +17,9 @@ import (
 	"github.com/cometbft/cometbft/types"
 )
 
-// -----------------------------------------------------------------------------
+const maxPreExecuteThread = 64
+
+//-----------------------------------------------------------------------------
 // BlockExecutor handles block execution and state updates.
 // It exposes ApplyBlock(), which validates & executes the block, updates state w/ ABCI responses,
 // then commits and updates the mempool atomically, then saves state.
@@ -26,7 +30,8 @@ type BlockExecutor struct {
 	store Store
 
 	// execute the app against this
-	proxyApp proxy.AppConnConsensus
+	proxyApp         proxy.AppConnConsensus
+	proxyPrefetchApp proxy.AppConnPrefetch
 
 	// events
 	eventBus types.BlockEventPublisher
@@ -55,18 +60,20 @@ func NewBlockExecutor(
 	stateStore Store,
 	logger log.Logger,
 	proxyApp proxy.AppConnConsensus,
+	proxyPrefetchApp proxy.AppConnPrefetch,
 	mempool mempool.Mempool,
 	evpool EvidencePool,
 	options ...BlockExecutorOption,
 ) *BlockExecutor {
 	res := &BlockExecutor{
-		store:    stateStore,
-		proxyApp: proxyApp,
-		eventBus: types.NopEventBus{},
-		mempool:  mempool,
-		evpool:   evpool,
-		logger:   logger,
-		metrics:  NopMetrics(),
+		store:            stateStore,
+		proxyApp:         proxyApp,
+		proxyPrefetchApp: proxyPrefetchApp,
+		eventBus:         types.NopEventBus{},
+		mempool:          mempool,
+		evpool:           evpool,
+		logger:           logger,
+		metrics:          NopMetrics(),
 	}
 
 	for _, option := range options {
@@ -99,7 +106,6 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	randaoReveal []byte,
 	proposerAddr []byte,
 ) (*types.Block, error) {
-
 	maxBytes := state.ConsensusParams.Block.MaxBytes
 	maxGas := state.ConsensusParams.Block.MaxGas
 
@@ -189,9 +195,19 @@ func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block) e
 func (blockExec *BlockExecutor) ApplyBlock(
 	state State, blockID types.BlockID, block *types.Block,
 ) (State, int64, error) {
-
 	if err := validateBlock(state, block); err != nil {
 		return state, 0, ErrInvalidBlock(err)
+	}
+
+	interruptCh := make(chan struct{})
+	// do pre execute for cache
+	var wg sync.WaitGroup
+	if blockExec.proxyPrefetchApp != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			blockExec.prefetch(block, interruptCh)
+		}()
 	}
 
 	startTime := time.Now()
@@ -253,8 +269,11 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	elapseTime = time.Since(startTime).Milliseconds()
 	blockExec.metrics.CommitState.Set(float64(elapseTime))
 
+	close(interruptCh) // stop pre-execution
+
 	// Update evpool with the latest state.
 	blockExec.evpool.Update(state, block.Evidence.Evidence)
+
 	fail.Fail() // XXX
 
 	// Update the app hash and save the state.
@@ -268,8 +287,9 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	fail.Fail() // XXX
 
 	// Events are fired after everything else.
-	// NOTE: if we crash between Commit and Save, events wont be fired during replay
+	// NOTE: if we crash between Commit and Save, events won't be fired during replay
 	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, validatorUpdates)
+	wg.Wait()
 
 	return state, retainHeight, nil
 }
@@ -323,7 +343,7 @@ func (blockExec *BlockExecutor) Commit(
 	return res.Data, res.RetainHeight, err
 }
 
-// ---------------------------------------------------------
+//---------------------------------------------------------
 // Helper functions for executing blocks and updating state
 
 // Executes block's transactions on proxyAppConn.
@@ -335,7 +355,7 @@ func execBlockOnProxyApp(
 	store Store,
 	initialHeight int64,
 ) (*cmtstate.ABCIResponses, error) {
-	var validTxs, invalidTxs = 0, 0
+	validTxs, invalidTxs := 0, 0
 
 	txIndex := 0
 	abciResponses := new(cmtstate.ABCIResponses)
@@ -461,7 +481,8 @@ func extendedCommitInfo(c abci.CommitInfo) abci.ExtendedCommitInfo {
 }
 
 func validateValidatorUpdates(abciUpdates []abci.ValidatorUpdate,
-	params types.ValidatorParams) error {
+	params types.ValidatorParams,
+) error {
 	for _, valUpdate := range abciUpdates {
 		if valUpdate.GetPower() < 0 {
 			return fmt.Errorf("voting power can't be negative %v", valUpdate)
@@ -493,7 +514,6 @@ func updateState(
 	abciResponses *cmtstate.ABCIResponses,
 	validatorUpdates []*types.Validator,
 ) (State, error) {
-
 	// Copy the valset so we can apply changes from EndBlock
 	// and update s.LastValidators and s.Validators.
 	nValSet := state.NextValidators.Copy()
@@ -609,7 +629,7 @@ func fireEvents(
 	}
 }
 
-// ----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
 // Execute block without state. TODO: eliminate
 
 // ExecCommitBlock executes and commits a block on the proxyApp without validating or mutating the state.
@@ -636,4 +656,94 @@ func ExecCommitBlock(
 
 	// ResponseCommit has no error or log, just data
 	return res.Data, nil
+}
+
+//---------------------------------------------------------
+
+func (blockExec *BlockExecutor) prefetch(
+	block *types.Block,
+	interruptCh <-chan struct{},
+) {
+	// 1. calculate preExecuteThread number
+	txs := block.Txs
+	if len(txs) < 100 {
+		return // if txs less than 100, no need to prefetch
+	}
+	preExecuteThread := len(txs)/100 + 3
+	if preExecuteThread > maxPreExecuteThread {
+		preExecuteThread = maxPreExecuteThread
+	}
+
+	// 2. prepare pre-deliver state and execute txs
+	pbh := block.Header.ToProto()
+	if pbh == nil {
+		return
+	}
+
+	err := blockExec.proxyPrefetchApp.PreBeginBlockSync(abci.RequestPreBeginBlock{
+		StateNumber: int64(preExecuteThread),
+		Hash:        block.Hash(),
+		Header:      *pbh,
+	})
+	if err != nil {
+		blockExec.logger.Error("error in proxyAppConn.PreBeginBlock", "err", err)
+		return
+	}
+
+	var wg sync.WaitGroup
+	txChan := make(chan int, preExecuteThread)
+	for i := 0; i < preExecuteThread; i++ {
+		idx := int64(i)
+		wg.Add(1)
+		go func() {
+			defer func() {
+				wg.Done()
+				if r := recover(); r != nil {
+					const size = 64 << 10
+					buf := make([]byte, size)
+					buf = buf[:runtime.Stack(buf, false)]
+					err := fmt.Sprintf("recovered: %v\nstack:\n%v", r, buf)
+					blockExec.logger.Error("pre-execute panic", "err_log", err)
+					return
+				}
+			}()
+
+			for txIdx := range txChan {
+				tx := txs[txIdx]
+				blockExec.proxyPrefetchApp.PreDeliverTxAsync(abci.RequestPreDeliverTx{StateIndex: idx, Tx: tx})
+
+				select {
+				case <-interruptCh:
+					return
+				default:
+				}
+			}
+
+			blockExec.PreCommit(idx, block)
+		}()
+	}
+
+	for i := 0; i < len(txs); i++ {
+		select {
+		case txChan <- i:
+		case <-interruptCh:
+			close(txChan)
+			wg.Wait()
+			return
+		}
+	}
+	close(txChan)
+	wg.Wait()
+}
+
+func (blockExec *BlockExecutor) PreCommit(
+	stateIndex int64,
+	block *types.Block,
+) {
+	if err := blockExec.proxyPrefetchApp.PreCommitSync(abci.RequestPreCommit{StateIndex: stateIndex}); err != nil {
+		blockExec.logger.Error("client error during proxyPrefetchApp.PreCommitSync", "err", err)
+		return
+	}
+
+	blockExec.logger.Debug("pre committed state", "height", block.Height, "num_txs", len(block.Txs))
 }

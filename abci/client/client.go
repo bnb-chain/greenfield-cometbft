@@ -63,6 +63,10 @@ type Client interface {
 	LoadSnapshotChunkSync(types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error)
 	ApplySnapshotChunkSync(types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error)
 	ProcessProposalSync(types.RequestProcessProposal) (*types.ResponseProcessProposal, error)
+
+	PreDeliverTxAsync(types.RequestPreDeliverTx)
+	PreBeginBlockSync(types.RequestPreBeginBlock) error
+	PreCommitSync(types.RequestPreCommit) error
 }
 
 // ----------------------------------------

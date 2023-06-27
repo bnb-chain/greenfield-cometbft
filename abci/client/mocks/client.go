@@ -614,6 +614,39 @@ func (_m *Client) OnStop() {
 	_m.Called()
 }
 
+// PreBeginBlockSync provides a mock function with given fields: _a0
+func (_m *Client) PreBeginBlockSync(_a0 types.RequestPreBeginBlock) error {
+	ret := _m.Called(_a0)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(types.RequestPreBeginBlock) error); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// PreCommitSync provides a mock function with given fields: _a0
+func (_m *Client) PreCommitSync(_a0 types.RequestPreCommit) error {
+	ret := _m.Called(_a0)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(types.RequestPreCommit) error); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// PreDeliverTxAsync provides a mock function with given fields: _a0
+func (_m *Client) PreDeliverTxAsync(_a0 types.RequestPreDeliverTx) {
+	_m.Called(_a0)
+}
+
 // PrepareProposalAsync provides a mock function with given fields: _a0
 func (_m *Client) PrepareProposalAsync(_a0 types.RequestPrepareProposal) *abcicli.ReqRes {
 	ret := _m.Called(_a0)

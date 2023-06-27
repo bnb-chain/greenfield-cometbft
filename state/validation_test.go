@@ -48,6 +48,7 @@ func TestValidateBlockHeader(t *testing.T) {
 		stateStore,
 		log.TestingLogger(),
 		proxyApp.Consensus(),
+		nil,
 		mp,
 		sm.EmptyEvidencePool{},
 	)
@@ -135,6 +136,7 @@ func TestValidateBlockCommit(t *testing.T) {
 		stateStore,
 		log.TestingLogger(),
 		proxyApp.Consensus(),
+		nil,
 		mp,
 		sm.EmptyEvidencePool{},
 	)
@@ -274,6 +276,7 @@ func TestValidateBlockEvidence(t *testing.T) {
 		stateStore,
 		log.TestingLogger(),
 		proxyApp.Consensus(),
+		nil,
 		mp,
 		evpool,
 	)

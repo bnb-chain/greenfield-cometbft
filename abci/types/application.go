@@ -35,6 +35,11 @@ type Application interface {
 
 	// Serve EVM json-rpc request
 	EthQuery(RequestEthQuery) ResponseEthQuery
+
+	// Prefetch
+	PreBeginBlock(RequestPreBeginBlock) ResponsePrefetch
+	PreDeliverTx(RequestPreDeliverTx)
+	PreCommit(RequestPreCommit) ResponsePrefetch
 }
 
 //-------------------------------------------------------
@@ -118,6 +123,18 @@ func (BaseApplication) ProcessProposal(req RequestProcessProposal) ResponseProce
 // -------------------------------------------------------
 func (BaseApplication) EthQuery(req RequestEthQuery) ResponseEthQuery {
 	return ResponseEthQuery{Code: CodeTypeOK}
+}
+
+// -------------------------------------------------------
+
+func (BaseApplication) PreBeginBlock(req RequestPreBeginBlock) ResponsePrefetch {
+	return ResponsePrefetch{Code: CodeTypeOK}
+}
+
+func (BaseApplication) PreDeliverTx(req RequestPreDeliverTx) {}
+
+func (BaseApplication) PreCommit(req RequestPreCommit) ResponsePrefetch {
+	return ResponsePrefetch{Code: CodeTypeOK}
 }
 
 // -------------------------------------------------------
@@ -224,4 +241,16 @@ func (app *GRPCApplication) ProcessProposal(
 func (app *GRPCApplication) EthQuery(ctx context.Context, req *RequestEthQuery) (*ResponseEthQuery, error) {
 	res := app.app.EthQuery(*req)
 	return &res, nil
+}
+
+func (app *GRPCApplication) PreBeginBlock(ctx context.Context, req *RequestPreBeginBlock) (*ResponsePrefetch, error) {
+	panic("should not be called")
+}
+
+func (app *GRPCApplication) PreDeliverTx(ctx context.Context, req *RequestPreDeliverTx) (*ResponsePrefetch, error) {
+	panic("should not be called")
+}
+
+func (app *GRPCApplication) PreCommit(ctx context.Context, req *RequestPreCommit) (*ResponsePrefetch, error) {
+	panic("should not be called")
 }

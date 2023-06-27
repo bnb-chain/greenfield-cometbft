@@ -502,7 +502,8 @@ func TestStateLockNoPOL(t *testing.T) {
 	ensurePrevote(voteCh, height, round)
 
 	// now we're going to enter prevote again, but with invalid args
-	// and then prevote wait, which should timeout. then wait for precommit
+	// and then prevote wait, which should time out.
+	// then wait for precommit
 	ensureNewTimeout(timeoutWaitCh, height, round, cs1.config.Prevote(round).Nanoseconds())
 
 	ensurePrecommit(voteCh, height, round) // precommit

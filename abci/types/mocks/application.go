@@ -180,6 +180,39 @@ func (_m *Application) OfferSnapshot(_a0 types.RequestOfferSnapshot) types.Respo
 	return r0
 }
 
+// PreBeginBlock provides a mock function with given fields: _a0
+func (_m *Application) PreBeginBlock(_a0 types.RequestPreBeginBlock) types.ResponsePrefetch {
+	ret := _m.Called(_a0)
+
+	var r0 types.ResponsePrefetch
+	if rf, ok := ret.Get(0).(func(types.RequestPreBeginBlock) types.ResponsePrefetch); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Get(0).(types.ResponsePrefetch)
+	}
+
+	return r0
+}
+
+// PreCommit provides a mock function with given fields: _a0
+func (_m *Application) PreCommit(_a0 types.RequestPreCommit) types.ResponsePrefetch {
+	ret := _m.Called(_a0)
+
+	var r0 types.ResponsePrefetch
+	if rf, ok := ret.Get(0).(func(types.RequestPreCommit) types.ResponsePrefetch); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Get(0).(types.ResponsePrefetch)
+	}
+
+	return r0
+}
+
+// PreDeliverTx provides a mock function with given fields: _a0
+func (_m *Application) PreDeliverTx(_a0 types.RequestPreDeliverTx) {
+	_m.Called(_a0)
+}
+
 // PrepareProposal provides a mock function with given fields: _a0
 func (_m *Application) PrepareProposal(_a0 types.RequestPrepareProposal) types.ResponsePrepareProposal {
 	ret := _m.Called(_a0)
