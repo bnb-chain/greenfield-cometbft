@@ -11,7 +11,7 @@ require (
 	github.com/go-kit/log v0.2.1
 	github.com/go-logfmt/logfmt v0.5.1
 	github.com/gofrs/uuid v4.3.0+incompatible
-	github.com/golang/protobuf v1.5.2
+	github.com/golang/protobuf v1.5.3
 	github.com/golangci/golangci-lint v1.50.1
 	github.com/google/orderedcode v0.0.1
 	github.com/google/uuid v1.3.0
@@ -33,10 +33,10 @@ require (
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.13.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.5.0
-	golang.org/x/net v0.7.0
-	google.golang.org/grpc v1.52.0
+	golang.org/x/net v0.9.0
+	google.golang.org/grpc v1.56.1
 )
 
 require (
@@ -57,7 +57,7 @@ require (
 	github.com/prysmaticlabs/prysm v0.0.0-20220124113610-e26cde5e091b
 	github.com/vektra/mockery/v2 v2.14.0
 	gonum.org/v1/gonum v0.8.2
-	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
+	google.golang.org/protobuf v1.30.0
 )
 
 require (
@@ -113,9 +113,6 @@ require (
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/esimonov/ifshort v1.0.4 // indirect
 	github.com/ettle/strcase v0.1.1 // indirect
-	github.com/facebookgo/ensure v0.0.0-20200202191622-63f1cf65ac4c // indirect
-	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
-	github.com/facebookgo/subset v0.0.0-20200203212716-c811ad88dec4 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/ferranbt/fastssz v0.0.0-20210905181407-59cf6761a7d5 // indirect
@@ -189,6 +186,7 @@ require (
 	github.com/ldez/gomoddirectives v0.2.3 // indirect
 	github.com/ldez/tagliatelle v0.3.1 // indirect
 	github.com/leonklingele/grouper v1.1.0 // indirect
+	github.com/linxGnu/grocksdb v1.7.16 // indirect
 	github.com/lufeee/execinquery v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/maratori/testableexamples v1.0.0 // indirect
@@ -262,7 +260,6 @@ require (
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/supranational/blst v0.3.5 // indirect
 	github.com/tdakkota/asciicheck v0.1.1 // indirect
-	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tetafro/godot v1.4.11 // indirect
 	github.com/thomaso-mirodin/intmath v0.0.0-20160323211736-5dc6d854e46e // indirect
 	github.com/timakin/bodyclose v0.0.0-20210704033933-f49887972144 // indirect
@@ -277,7 +274,7 @@ require (
 	github.com/yagipy/maintidx v1.0.0 // indirect
 	github.com/yeya24/promlinter v0.2.0 // indirect
 	gitlab.com/bosi/decorder v0.2.3 // indirect
-	go.etcd.io/bbolt v1.3.6 // indirect
+	go.etcd.io/bbolt v1.3.7 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.36.3 // indirect
 	go.opentelemetry.io/otel v1.11.0 // indirect
@@ -289,11 +286,11 @@ require (
 	golang.org/x/exp/typeparams v0.0.0-20220827204233-334a2380cb91 // indirect
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/term v0.6.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/term v0.7.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
-	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
+	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
@@ -310,4 +307,5 @@ replace (
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.23.0
 	github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/btcsuite/btcd/btcutil => github.com/btcsuite/btcd/btcutil v1.1.2
+	github.com/cometbft/cometbft-db => github.com/j75689/cometbft-db v0.0.0-20230628070814-2ca2ef81dec6
 )
