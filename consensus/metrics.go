@@ -53,6 +53,13 @@ type Metrics struct {
 	// Time between this and the last block.
 	BlockIntervalSeconds metrics.Gauge
 
+	// metrics for test
+	ValidateBlock metrics.Gauge
+	SaveBlock     metrics.Gauge
+	WriteSync     metrics.Gauge
+	CopyState     metrics.Gauge
+	UpdateToState metrics.Gauge
+
 	// Number of transactions.
 	NumTxs metrics.Gauge
 	// Size of the block.
@@ -92,7 +99,7 @@ type Metrics struct {
 	// FullPrevoteDelay is the interval in seconds between the proposal
 	// timestamp and the timestamp of the latest prevote in a round where 100%
 	// of the voting power on the network issued prevotes.
-	//metrics:Interval in seconds between the proposal timestamp and the timestamp of the latest prevote in a round where all validators voted.
+	// metrics:Interval in seconds between the proposal timestamp and the timestamp of the latest prevote in a round where all validators voted.
 	FullPrevoteDelay metrics.Gauge `metrics_labels:"proposer_address"`
 
 	// ProposalReceiveCount is the total number of proposals received by this node

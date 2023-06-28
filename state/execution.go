@@ -177,7 +177,7 @@ func (blockExec *BlockExecutor) ProcessProposal(
 // ValidateBlock validates the given block against the given state.
 // If the block is invalid, it returns an error.
 // Validation does not mutate state, but does require historical information from the stateDB,
-// ie. to verify evidence from a validator at an old height.
+// i.e., to verify evidence from a validator at an old height.
 func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block) error {
 	err := validateBlock(state, block)
 	if err != nil {
@@ -284,6 +284,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	}
 	elapseTime = time.Since(startTime).Milliseconds()
 	blockExec.metrics.SaveState.Set(float64(elapseTime))
+
 	fail.Fail() // XXX
 
 	// Events are fired after everything else.

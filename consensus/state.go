@@ -109,12 +109,12 @@ type State struct {
 	internalMsgQueue chan msgInfo
 	timeoutTicker    TimeoutTicker
 
-	// information about about added votes and block parts are written on this channel
+	// information about added votes and block parts are written on this channel
 	// so statistics can be computed by reactor
 	statsMsgQueue chan msgInfo
 
 	// we use eventBus to trigger msg broadcasts in the reactor,
-	// and to notify external subscribers, eg. through a websocket
+	// and to notify external subscribers, e.g., through a websocket
 	eventBus *types.EventBus
 
 	// a Write-Ahead Log ensures we can recover from any kind of crash
@@ -1641,9 +1641,12 @@ func (cs *State) finalizeCommit(height int64) {
 		panic("cannot finalize commit; proposal block does not hash to commit hash")
 	}
 
+	startTime := time.Now()
 	if err := cs.blockExec.ValidateBlock(cs.state, block); err != nil {
 		panic(fmt.Errorf("+2/3 committed an invalid block: %w", err))
 	}
+	elapseTime := time.Since(startTime).Milliseconds()
+	cs.metrics.ValidateBlock.Set(float64(elapseTime))
 
 	logger.Info(
 		"finalizing commit of block",
@@ -1656,6 +1659,7 @@ func (cs *State) finalizeCommit(height int64) {
 	fail.Fail() // XXX
 
 	// Save to blockStore.
+	startTime = time.Now()
 	if cs.blockStore.Height() < block.Height {
 		// NOTE: the seenCommit is local justification to commit this block,
 		// but may differ from the LastCommit included in the next block
@@ -1666,6 +1670,8 @@ func (cs *State) finalizeCommit(height int64) {
 		// Happens during replay if we already saved the block but didn't commit
 		logger.Debug("calling finalizeCommit on already stored block", "height", block.Height)
 	}
+	elapseTime = time.Since(startTime).Milliseconds()
+	cs.metrics.SaveBlock.Set(float64(elapseTime))
 
 	fail.Fail() // XXX
 
@@ -1680,8 +1686,9 @@ func (cs *State) finalizeCommit(height int64) {
 	// exists.
 	//
 	// Either way, the State should not be resumed until we
-	// successfully call ApplyBlock (ie. later here, or in Handshake after
+	// successfully call ApplyBlock (i.e., later here, or in Handshake after
 	// restart).
+	startTime = time.Now()
 	endMsg := EndHeightMessage{height}
 	if err := cs.wal.WriteSync(endMsg); err != nil { // NOTE: fsync
 		panic(fmt.Sprintf(
@@ -1689,14 +1696,19 @@ func (cs *State) finalizeCommit(height int64) {
 			endMsg, err,
 		))
 	}
+	elapseTime = time.Since(startTime).Milliseconds()
+	cs.metrics.WriteSync.Set(float64(elapseTime))
 
 	fail.Fail() // XXX
 
 	// Create a copy of the state for staging and an event cache for txs.
+	startTime = time.Now()
 	stateCopy := cs.state.Copy()
+	elapseTime = time.Since(startTime).Milliseconds()
+	cs.metrics.CopyState.Set(float64(elapseTime))
 
 	// Execute and commit the block, update and save the state, and update the mempool.
-	// NOTE The block.AppHash wont reflect these txs until the next block.
+	// NOTE The block.AppHash won't reflect these txs until the next block.
 	var (
 		err          error
 		retainHeight int64
@@ -1730,7 +1742,11 @@ func (cs *State) finalizeCommit(height int64) {
 	cs.recordMetrics(height, block)
 
 	// NewHeightStep!
+	startTime = time.Now()
 	cs.updateToState(stateCopy)
+	startTime = time.Now()
+	elapseTime = time.Since(startTime).Milliseconds()
+	cs.metrics.UpdateToState.Set(float64(elapseTime))
 
 	fail.Fail() // XXX
 
