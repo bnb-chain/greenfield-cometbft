@@ -10,6 +10,7 @@ import (
 	dbm "github.com/cometbft/cometbft-db"
 
 	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/crypto/ed25519"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	cmtversion "github.com/cometbft/cometbft/proto/tendermint/version"
@@ -45,6 +46,7 @@ func TestRollback(t *testing.T) {
 	nextState.ConsensusParams = *newParams
 	nextState.LastHeightConsensusParamsChanged = nextHeight + 1
 	nextState.LastHeightValidatorsChanged = nextHeight + 1
+	nextState.LastRandaoMix = makeRandaoMix()
 
 	// update the state
 	require.NoError(t, stateStore.Save(nextState))
@@ -57,6 +59,7 @@ func TestRollback(t *testing.T) {
 			AppHash:         crypto.CRandBytes(tmhash.Size),
 			LastBlockID:     makeBlockIDRandom(),
 			LastResultsHash: initialState.LastResultsHash,
+			RandaoMix:       initialState.LastRandaoMix,
 		},
 	}
 	nextBlock := &types.BlockMeta{
@@ -67,6 +70,7 @@ func TestRollback(t *testing.T) {
 			LastBlockID:     block.BlockID,
 			Time:            nextState.LastBlockTime,
 			LastResultsHash: nextState.LastResultsHash,
+			RandaoMix:       nextState.LastRandaoMix,
 		},
 	}
 	blockStore.On("LoadBlockMeta", height).Return(block)
@@ -285,4 +289,12 @@ func makeBlockIDRandom() types.BlockID {
 			Hash:  partSetHash,
 		},
 	}
+}
+
+func makeRandaoMix() []byte {
+	// Calculate randao mix.
+	randaoMix := make([]byte, ed25519.SignatureSize)
+	_, _ = rand.Read(randaoMix)
+
+	return randaoMix
 }
