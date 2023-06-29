@@ -294,7 +294,7 @@ func makeBlockIDRandom() types.BlockID {
 func makeRandaoMix() []byte {
 	// Calculate randao mix.
 	randaoMix := make([]byte, ed25519.SignatureSize)
-	rand.Read(randaoMix)
+	_, _ = rand.Read(randaoMix)
 
 	return randaoMix
 }
