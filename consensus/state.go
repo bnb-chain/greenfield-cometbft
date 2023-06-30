@@ -1132,9 +1132,10 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 	var block *types.Block
 	var blockParts *types.PartSet
 
+	startTime := time.Now()
 	// Decide on block
 	if cs.ValidBlock != nil {
-		// If there is valid block, choose that.
+		// If there is a valid block, choose that.
 		block, blockParts = cs.ValidBlock, cs.ValidBlockParts
 	} else {
 		// Create a new proposal block from state/txs from the mempool.
@@ -1179,6 +1180,8 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 	} else if !cs.replayMode {
 		cs.Logger.Error("propose step; failed signing proposal", "height", height, "round", round, "err", err)
 	}
+	elapseTime := time.Since(startTime).Milliseconds()
+	cs.metrics.DecideProposal.Set(float64(elapseTime))
 }
 
 // Returns true if the proposal block is complete &&
@@ -1250,6 +1253,8 @@ func (cs *State) createProposalBlock() (*types.Block, error) {
 func (cs *State) enterPrevote(height int64, round int32) {
 	logger := cs.Logger.With("height", height, "round", round)
 
+	startTime := time.Now()
+
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cstypes.RoundStepPrevote <= cs.Step) {
 		logger.Debug(
 			"entering prevote step with invalid args",
@@ -1262,6 +1267,9 @@ func (cs *State) enterPrevote(height int64, round int32) {
 		// Done enterPrevote:
 		cs.updateRoundStep(round, cstypes.RoundStepPrevote)
 		cs.newStep()
+
+		elapseTime := time.Since(startTime).Milliseconds()
+		cs.metrics.PreVote.Set(float64(elapseTime))
 	}()
 
 	logger.Debug("entering prevote step", "current", log.NewLazySprintf("%v/%v/%v", cs.Height, cs.Round, cs.Step))
@@ -1337,6 +1345,8 @@ func (cs *State) defaultDoPrevote(height int64, round int32) {
 func (cs *State) enterPrevoteWait(height int64, round int32) {
 	logger := cs.Logger.With("height", height, "round", round)
 
+	startTime := time.Now()
+
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cstypes.RoundStepPrevoteWait <= cs.Step) {
 		logger.Debug(
 			"entering prevote wait step with invalid args",
@@ -1358,6 +1368,9 @@ func (cs *State) enterPrevoteWait(height int64, round int32) {
 		// Done enterPrevoteWait:
 		cs.updateRoundStep(round, cstypes.RoundStepPrevoteWait)
 		cs.newStep()
+
+		elapseTime := time.Since(startTime).Milliseconds()
+		cs.metrics.PreVoteWait.Set(float64(elapseTime))
 	}()
 
 	// Wait for some more prevotes; enterPrecommit
@@ -1373,6 +1386,8 @@ func (cs *State) enterPrevoteWait(height int64, round int32) {
 func (cs *State) enterPrecommit(height int64, round int32) {
 	logger := cs.Logger.With("height", height, "round", round)
 
+	startTime := time.Now()
+
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cstypes.RoundStepPrecommit <= cs.Step) {
 		logger.Debug(
 			"entering precommit step with invalid args",
@@ -1387,6 +1402,9 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 		// Done enterPrecommit:
 		cs.updateRoundStep(round, cstypes.RoundStepPrecommit)
 		cs.newStep()
+
+		elapseTime := time.Since(startTime).Milliseconds()
+		cs.metrics.PreCommit.Set(float64(elapseTime))
 	}()
 
 	// check for a polka
@@ -1495,6 +1513,8 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 func (cs *State) enterPrecommitWait(height int64, round int32) {
 	logger := cs.Logger.With("height", height, "round", round)
 
+	startTime := time.Now()
+
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cs.TriggeredTimeoutPrecommit) {
 		logger.Debug(
 			"entering precommit wait step with invalid args",
@@ -1517,6 +1537,9 @@ func (cs *State) enterPrecommitWait(height int64, round int32) {
 		// Done enterPrecommitWait:
 		cs.TriggeredTimeoutPrecommit = true
 		cs.newStep()
+
+		elapseTime := time.Since(startTime).Milliseconds()
+		cs.metrics.PreCommitWait.Set(float64(elapseTime))
 	}()
 
 	// wait for some more precommits; enterNewRound
@@ -1526,6 +1549,8 @@ func (cs *State) enterPrecommitWait(height int64, round int32) {
 // Enter: +2/3 precommits for block
 func (cs *State) enterCommit(height int64, commitRound int32) {
 	logger := cs.Logger.With("height", height, "commit_round", commitRound)
+
+	startTime := time.Now()
 
 	if cs.Height != height || cstypes.RoundStepCommit <= cs.Step {
 		logger.Debug(
@@ -1547,6 +1572,9 @@ func (cs *State) enterCommit(height int64, commitRound int32) {
 
 		// Maybe finalize immediately.
 		cs.tryFinalizeCommit(height)
+
+		elapseTime := time.Since(startTime).Milliseconds()
+		cs.metrics.Commit.Set(float64(elapseTime))
 	}()
 
 	blockID, ok := cs.Votes.Precommits(commitRound).TwoThirdsMajority()
@@ -1641,12 +1669,9 @@ func (cs *State) finalizeCommit(height int64) {
 		panic("cannot finalize commit; proposal block does not hash to commit hash")
 	}
 
-	startTime := time.Now()
 	if err := cs.blockExec.ValidateBlock(cs.state, block); err != nil {
 		panic(fmt.Errorf("+2/3 committed an invalid block: %w", err))
 	}
-	elapseTime := time.Since(startTime).Milliseconds()
-	cs.metrics.ValidateBlock.Set(float64(elapseTime))
 
 	logger.Info(
 		"finalizing commit of block",
@@ -1659,7 +1684,6 @@ func (cs *State) finalizeCommit(height int64) {
 	fail.Fail() // XXX
 
 	// Save to blockStore.
-	startTime = time.Now()
 	if cs.blockStore.Height() < block.Height {
 		// NOTE: the seenCommit is local justification to commit this block,
 		// but may differ from the LastCommit included in the next block
@@ -1670,8 +1694,6 @@ func (cs *State) finalizeCommit(height int64) {
 		// Happens during replay if we already saved the block but didn't commit
 		logger.Debug("calling finalizeCommit on already stored block", "height", block.Height)
 	}
-	elapseTime = time.Since(startTime).Milliseconds()
-	cs.metrics.SaveBlock.Set(float64(elapseTime))
 
 	fail.Fail() // XXX
 
@@ -1688,7 +1710,6 @@ func (cs *State) finalizeCommit(height int64) {
 	// Either way, the State should not be resumed until we
 	// successfully call ApplyBlock (i.e., later here, or in Handshake after
 	// restart).
-	startTime = time.Now()
 	endMsg := EndHeightMessage{height}
 	if err := cs.wal.WriteSync(endMsg); err != nil { // NOTE: fsync
 		panic(fmt.Sprintf(
@@ -1696,16 +1717,11 @@ func (cs *State) finalizeCommit(height int64) {
 			endMsg, err,
 		))
 	}
-	elapseTime = time.Since(startTime).Milliseconds()
-	cs.metrics.WriteSync.Set(float64(elapseTime))
 
 	fail.Fail() // XXX
 
 	// Create a copy of the state for staging and an event cache for txs.
-	startTime = time.Now()
 	stateCopy := cs.state.Copy()
-	elapseTime = time.Since(startTime).Milliseconds()
-	cs.metrics.CopyState.Set(float64(elapseTime))
 
 	// Execute and commit the block, update and save the state, and update the mempool.
 	// NOTE The block.AppHash won't reflect these txs until the next block.
@@ -1742,11 +1758,7 @@ func (cs *State) finalizeCommit(height int64) {
 	cs.recordMetrics(height, block)
 
 	// NewHeightStep!
-	startTime = time.Now()
 	cs.updateToState(stateCopy)
-	startTime = time.Now()
-	elapseTime = time.Since(startTime).Milliseconds()
-	cs.metrics.UpdateToState.Set(float64(elapseTime))
 
 	fail.Fail() // XXX
 

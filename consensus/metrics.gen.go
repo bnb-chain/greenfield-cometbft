@@ -94,34 +94,40 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 			Name:      "block_interval_seconds",
 			Help:      "Time between this and the last block.",
 		}, labels).With(labelsAndValues...),
-		ValidateBlock: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+		DecideProposal: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
-			Name:      "validate_block",
+			Name:      "decide_proposal",
 			Help:      "metrics for test",
 		}, labels).With(labelsAndValues...),
-		SaveBlock: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+		PreVote: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
-			Name:      "save_block",
+			Name:      "pre_vote",
 			Help:      "",
 		}, labels).With(labelsAndValues...),
-		WriteSync: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+		PreVoteWait: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
-			Name:      "write_sync",
+			Name:      "pre_vote_wait",
 			Help:      "",
 		}, labels).With(labelsAndValues...),
-		CopyState: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+		PreCommit: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
-			Name:      "copy_state",
+			Name:      "pre_commit",
 			Help:      "",
 		}, labels).With(labelsAndValues...),
-		UpdateToState: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+		PreCommitWait: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
-			Name:      "update_to_state",
+			Name:      "pre_commit_wait",
+			Help:      "",
+		}, labels).With(labelsAndValues...),
+		Commit: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "commit",
 			Help:      "",
 		}, labels).With(labelsAndValues...),
 		NumTxs: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
@@ -234,11 +240,12 @@ func NopMetrics() *Metrics {
 		ByzantineValidators:       discard.NewGauge(),
 		ByzantineValidatorsPower:  discard.NewGauge(),
 		BlockIntervalSeconds:      discard.NewGauge(),
-		ValidateBlock:             discard.NewGauge(),
-		SaveBlock:                 discard.NewGauge(),
-		WriteSync:                 discard.NewGauge(),
-		CopyState:                 discard.NewGauge(),
-		UpdateToState:             discard.NewGauge(),
+		DecideProposal:            discard.NewGauge(),
+		PreVote:                   discard.NewGauge(),
+		PreVoteWait:               discard.NewGauge(),
+		PreCommit:                 discard.NewGauge(),
+		PreCommitWait:             discard.NewGauge(),
+		Commit:                    discard.NewGauge(),
 		NumTxs:                    discard.NewGauge(),
 		BlockSizeBytes:            discard.NewGauge(),
 		TotalTxs:                  discard.NewGauge(),

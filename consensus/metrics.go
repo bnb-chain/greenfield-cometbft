@@ -54,11 +54,12 @@ type Metrics struct {
 	BlockIntervalSeconds metrics.Gauge
 
 	// metrics for test
-	ValidateBlock metrics.Gauge
-	SaveBlock     metrics.Gauge
-	WriteSync     metrics.Gauge
-	CopyState     metrics.Gauge
-	UpdateToState metrics.Gauge
+	DecideProposal metrics.Gauge
+	PreVote        metrics.Gauge
+	PreVoteWait    metrics.Gauge
+	PreCommit      metrics.Gauge
+	PreCommitWait  metrics.Gauge
+	Commit         metrics.Gauge
 
 	// Number of transactions.
 	NumTxs metrics.Gauge

@@ -248,7 +248,7 @@ func (conR *Reactor) ReceiveEnvelope(e p2p.Envelope) {
 		return
 	}
 
-	conR.Logger.Debug("Receive", "src", e.Src, "chId", e.ChannelID, "msg", msg)
+	conR.Logger.Debug("Receive1", "src", e.Src, "chId", e.ChannelID, "msg", msg)
 
 	// Get peer states
 	ps, ok := e.Src.Get(types.PeerStateKey).(*PeerState)
@@ -1064,7 +1064,10 @@ func (ps *PeerState) MarshalJSON() ([]byte, error) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
 
-	return cmtjson.Marshal(ps)
+	type jsonPeerState struct {
+		ps  *PeerState
+	}
+	return cmtjson.Marshal(jsonPeerState{ps})
 }
 
 // GetHeight returns an atomic snapshot of the PeerRoundState's height

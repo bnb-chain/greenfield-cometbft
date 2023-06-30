@@ -91,6 +91,22 @@ func (_m *Mempool) ReapMaxTxs(max int) types.Txs {
 	return r0
 }
 
+// ReapMaxTxsMaxBytesMaxGas provides a mock function with given fields: maxTxs, maxBytes, maxGas
+func (_m *Mempool) ReapMaxTxsMaxBytesMaxGas(maxTxs int, maxBytes int64, maxGas int64) types.Txs {
+	ret := _m.Called(maxTxs, maxBytes, maxGas)
+
+	var r0 types.Txs
+	if rf, ok := ret.Get(0).(func(int, int64, int64) types.Txs); ok {
+		r0 = rf(maxTxs, maxBytes, maxGas)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(types.Txs)
+		}
+	}
+
+	return r0
+}
+
 // RemoveTxByKey provides a mock function with given fields: txKey
 func (_m *Mempool) RemoveTxByKey(txKey types.TxKey) error {
 	ret := _m.Called(txKey)

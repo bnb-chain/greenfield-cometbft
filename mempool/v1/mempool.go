@@ -312,6 +312,11 @@ func (txmp *TxMempool) allEntriesSorted() []*WrappedTx {
 	return all
 }
 
+func (txmp *TxMempool) ReapMaxTxsMaxBytesMaxGas(maxTxs int, maxBytes, maxGas int64) types.Txs {
+	// TODO implement me
+	panic("implement me")
+}
+
 // ReapMaxBytesMaxGas returns a slice of valid transactions that fit within the
 // size and gas constraints. The results are ordered by nonincreasing priority,
 // with ties broken by increasing order of arrival.  Reaping transactions does
