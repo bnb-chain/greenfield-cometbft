@@ -15,7 +15,7 @@ import (
 	"github.com/cometbft/cometbft/types"
 )
 
-var MempoolPacketChannelSize   = 1024 * 200 // 200K messages can be queued
+var MempoolPacketChannelSize = 1024 * 200 // 200K messages can be queued
 
 // Reactor handles mempool tx broadcasting amongst peers.
 // It maintains a map from peer ID to counter, to prevent gossiping txs to the
