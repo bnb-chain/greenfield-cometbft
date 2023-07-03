@@ -15,7 +15,7 @@ import (
 	"github.com/cometbft/cometbft/types"
 )
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // BlockExecutor handles block execution and state updates.
 // It exposes ApplyBlock(), which validates & executes the block, updates state w/ ABCI responses,
 // then commits and updates the mempool atomically, then saves state.
@@ -194,12 +194,12 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		return state, 0, ErrInvalidBlock(err)
 	}
 
-	startTime := time.Now().UnixNano()
+	startTime := time.Now()
 	abciResponses, err := execBlockOnProxyApp(
 		blockExec.logger, blockExec.proxyApp, block, blockExec.store, state.InitialHeight,
 	)
-	endTime := time.Now().UnixNano()
-	blockExec.metrics.BlockProcessingTime.Observe(float64(endTime-startTime) / 1000000)
+	elapseTime := time.Since(startTime).Milliseconds()
+	blockExec.metrics.BlockProcessingTime.Set(float64(elapseTime))
 	if err != nil {
 		return state, 0, ErrProxyAppConn(err)
 	}
@@ -207,13 +207,17 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	fail.Fail() // XXX
 
 	// Save the results before we commit.
+	startTime = time.Now()
 	if err := blockExec.store.SaveABCIResponses(block.Height, abciResponses); err != nil {
 		return state, 0, err
 	}
+	elapseTime = time.Since(startTime).Milliseconds()
+	blockExec.metrics.SaveABCIResponse.Set(float64(elapseTime))
 
 	fail.Fail() // XXX
 
 	// validate the validator updates and convert to CometBFT types
+	startTime = time.Now()
 	abciValUpdates := abciResponses.EndBlock.ValidatorUpdates
 	err = validateValidatorUpdates(abciValUpdates, state.ConsensusParams.Validator)
 	if err != nil {
@@ -237,24 +241,30 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
+	elapseTime = time.Since(startTime).Milliseconds()
+	blockExec.metrics.UpdateState.Set(float64(elapseTime))
 
 	// Lock mempool, commit app state, update mempoool.
+	startTime = time.Now()
 	appHash, retainHeight, err := blockExec.Commit(state, block, abciResponses.DeliverTxs)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
+	elapseTime = time.Since(startTime).Milliseconds()
+	blockExec.metrics.CommitState.Set(float64(elapseTime))
 
 	// Update evpool with the latest state.
 	blockExec.evpool.Update(state, block.Evidence.Evidence)
-
 	fail.Fail() // XXX
 
 	// Update the app hash and save the state.
+	startTime = time.Now()
 	state.AppHash = appHash
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
 	}
-
+	elapseTime = time.Since(startTime).Milliseconds()
+	blockExec.metrics.SaveState.Set(float64(elapseTime))
 	fail.Fail() // XXX
 
 	// Events are fired after everything else.
@@ -313,7 +323,7 @@ func (blockExec *BlockExecutor) Commit(
 	return res.Data, res.RetainHeight, err
 }
 
-//---------------------------------------------------------
+// ---------------------------------------------------------
 // Helper functions for executing blocks and updating state
 
 // Executes block's transactions on proxyAppConn.
@@ -599,7 +609,7 @@ func fireEvents(
 	}
 }
 
-//----------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
 // Execute block without state. TODO: eliminate
 
 // ExecCommitBlock executes and commits a block on the proxyApp without validating or mutating the state.
