@@ -313,6 +313,9 @@ func (mem *CListMempool) reqResCb(
 //   - resCbFirstTime (lock not held) if tx is valid
 func (mem *CListMempool) addTx(memTx *mempoolTx) {
 	e := mem.txs.PushBack(memTx)
+	if e == nil {
+		panic("failed to push tx into mempool")
+	}
 	mem.txsMap.Store(memTx.tx.Key(), e)
 	atomic.AddInt64(&mem.txsBytes, int64(len(memTx.tx)))
 	mem.metrics.TxSizeBytes.Observe(float64(len(memTx.tx)))

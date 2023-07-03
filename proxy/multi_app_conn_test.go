@@ -21,12 +21,12 @@ func TestAppConns_Start_Stop(t *testing.T) {
 	clientCreatorMock := &mocks.ClientCreator{}
 
 	clientMock := &abcimocks.Client{}
-	clientMock.On("SetLogger", mock.Anything).Return().Times(5)
-	clientMock.On("Start").Return(nil).Times(5)
-	clientMock.On("Stop").Return(nil).Times(5)
-	clientMock.On("Quit").Return(quitCh).Times(5)
+	clientMock.On("SetLogger", mock.Anything).Return().Times(6)
+	clientMock.On("Start").Return(nil).Times(6)
+	clientMock.On("Stop").Return(nil).Times(6)
+	clientMock.On("Quit").Return(quitCh).Times(6)
 
-	clientCreatorMock.On("NewABCIClient").Return(clientMock, nil).Times(5)
+	clientCreatorMock.On("NewABCIClient").Return(clientMock, nil).Times(6)
 
 	appConns := NewAppConns(clientCreatorMock, NopMetrics())
 

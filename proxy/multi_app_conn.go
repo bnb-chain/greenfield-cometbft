@@ -194,6 +194,10 @@ func (app *multiAppConn) killTMOnClientError() {
 		if err := app.ethQueryConnClient.Error(); err != nil {
 			killFn(connEthQuery, err, app.Logger)
 		}
+	case <-app.prefetchConnClient.Quit():
+		if err := app.prefetchConnClient.Error(); err != nil {
+			killFn(connPrefetch, err, app.Logger)
+		}
 	}
 }
 
@@ -221,6 +225,11 @@ func (app *multiAppConn) stopAllClients() {
 	if app.ethQueryConnClient != nil {
 		if err := app.ethQueryConnClient.Stop(); err != nil {
 			app.Logger.Error("error while stopping eth query client", "error", err)
+		}
+	}
+	if app.prefetchConnClient != nil {
+		if err := app.prefetchConnClient.Stop(); err != nil {
+			app.Logger.Error("error while stopping prefetch client", "error", err)
 		}
 	}
 }

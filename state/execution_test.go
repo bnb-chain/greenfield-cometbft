@@ -518,7 +518,7 @@ func TestEndBlockValidatorUpdates(t *testing.T) {
 		mock.Anything,
 		mock.Anything,
 		mock.Anything).Return(nil)
-	mp.On("ReapMaxBytesMaxGas", mock.Anything, mock.Anything).Return(types.Txs{})
+	mp.On("ReapMaxTxsMaxBytesMaxGas", mock.Anything, mock.Anything, mock.Anything).Return(types.Txs{})
 
 	blockExec := sm.NewBlockExecutor(
 		stateStore,
@@ -667,7 +667,7 @@ func TestEmptyPrepareProposal(t *testing.T) {
 		mock.Anything,
 		mock.Anything,
 		mock.Anything).Return(nil)
-	mp.On("ReapMaxBytesMaxGas", mock.Anything, mock.Anything).Return(types.Txs{})
+	mp.On("ReapMaxTxsMaxBytesMaxGas", mock.Anything, mock.Anything, mock.Anything).Return(types.Txs{})
 
 	blockExec := sm.NewBlockExecutor(
 		stateStore,
@@ -699,7 +699,7 @@ func TestPrepareProposalTxsAllIncluded(t *testing.T) {
 
 	txs := test.MakeNTxs(height, 10)
 	mp := &mpmocks.Mempool{}
-	mp.On("ReapMaxBytesMaxGas", mock.Anything, mock.Anything).Return(types.Txs(txs[2:]))
+	mp.On("ReapMaxTxsMaxBytesMaxGas", mock.Anything, mock.Anything, mock.Anything).Return(types.Txs(txs[2:]))
 
 	app := abcimocks.NewBaseMock()
 	app.On("PrepareProposal", mock.Anything).Return(abci.ResponsePrepareProposal{
@@ -747,7 +747,7 @@ func TestPrepareProposalReorderTxs(t *testing.T) {
 
 	txs := test.MakeNTxs(height, 10)
 	mp := &mpmocks.Mempool{}
-	mp.On("ReapMaxBytesMaxGas", mock.Anything, mock.Anything).Return(types.Txs(txs))
+	mp.On("ReapMaxTxsMaxBytesMaxGas", mock.Anything, mock.Anything, mock.Anything).Return(types.Txs(txs))
 
 	txs = txs[2:]
 	txs = append(txs[len(txs)/2:], txs[:len(txs)/2]...)
@@ -803,7 +803,7 @@ func TestPrepareProposalErrorOnTooManyTxs(t *testing.T) {
 	maxDataBytes := types.MaxDataBytes(state.ConsensusParams.Block.MaxBytes, 0, nValidators)
 	txs := test.MakeNTxs(height, maxDataBytes/bytesPerTx+2) // +2 so that tx don't fit
 	mp := &mpmocks.Mempool{}
-	mp.On("ReapMaxBytesMaxGas", mock.Anything, mock.Anything).Return(types.Txs(txs))
+	mp.On("ReapMaxTxsMaxBytesMaxGas", mock.Anything, mock.Anything, mock.Anything).Return(types.Txs(txs))
 
 	app := abcimocks.NewBaseMock()
 	app.On("PrepareProposal", mock.Anything).Return(abci.ResponsePrepareProposal{
@@ -850,7 +850,7 @@ func TestPrepareProposalErrorOnPrepareProposalError(t *testing.T) {
 
 	txs := test.MakeNTxs(height, 10)
 	mp := &mpmocks.Mempool{}
-	mp.On("ReapMaxBytesMaxGas", mock.Anything, mock.Anything).Return(types.Txs(txs))
+	mp.On("ReapMaxTxsMaxBytesMaxGas", mock.Anything, mock.Anything, mock.Anything).Return(types.Txs(txs))
 
 	cm := &abciclientmocks.Client{}
 	cm.On("SetLogger", mock.Anything).Return()
