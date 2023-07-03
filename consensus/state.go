@@ -1134,7 +1134,7 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 
 	// Decide on block
 	if cs.ValidBlock != nil {
-		// If there is valid block, choose that.
+		// If there is a valid block, choose that.
 		block, blockParts = cs.ValidBlock, cs.ValidBlockParts
 	} else {
 		// Create a new proposal block from state/txs from the mempool.
