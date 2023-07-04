@@ -180,7 +180,7 @@ func (memR *Reactor) receiveRoutine() {
 			protoTxs := msg.GetTxs()
 			if len(protoTxs) == 0 {
 				memR.Logger.Error("received empty txs from peer", "src", e.Src)
-				return
+				continue
 			}
 			txInfo := mempool.TxInfo{SenderID: memR.ids.GetForPeer(e.Src)}
 			if e.Src != nil {
@@ -200,7 +200,7 @@ func (memR *Reactor) receiveRoutine() {
 		default:
 			memR.Logger.Error("unknown message type", "src", e.Src, "chId", e.ChannelID, "msg", e.Message)
 			memR.Switch.StopPeerForError(e.Src, fmt.Errorf("mempool cannot handle message of type: %T", e.Message))
-			return
+			continue
 		}
 	}
 }

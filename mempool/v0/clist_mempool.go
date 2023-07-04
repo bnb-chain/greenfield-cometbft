@@ -35,7 +35,7 @@ type CListMempool struct {
 	config *config.MempoolConfig
 
 	// Exclusive mutex for Update method to prevent concurrent execution of
-	// CheckTx or ReapMaxBytesMaxGas(ReapMaxTxs) methods.
+	// CheckTx or ReapMaxTxsMaxBytesMaxGas(ReapMaxTxs) methods.
 	updateMtx cmtsync.RWMutex
 	preCheck  mempool.PreCheckFunc
 	postCheck mempool.PostCheckFunc
@@ -519,47 +519,6 @@ func (mem *CListMempool) notifyTxsAvailable() {
 }
 
 // Safe for concurrent use by multiple goroutines.
-func (mem *CListMempool) ReapMaxBytesMaxGas(maxBytes, maxGas int64) types.Txs {
-	mem.updateMtx.RLock()
-	defer mem.updateMtx.RUnlock()
-
-	var (
-		totalGas    int64
-		runningSize int64
-	)
-
-	// TODO: we will get a performance boost if we have a good estimate of avg
-	// size per tx, and set the initial capacity based off of that.
-	// txs := make([]types.Tx, 0, cmtmath.MinInt(mem.txs.Len(), max/mem.avgTxSize))
-	txs := make([]types.Tx, 0, mem.txs.Len())
-	for e := mem.txs.Front(); e != nil; e = e.Next() {
-		memTx := e.Value.(*mempoolTx)
-
-		txs = append(txs, memTx.tx)
-
-		dataSize := types.ComputeProtoSizeForTxs([]types.Tx{memTx.tx})
-
-		// Check total size requirement
-		if maxBytes > -1 && runningSize+dataSize > maxBytes {
-			return txs[:len(txs)-1]
-		}
-
-		runningSize += dataSize
-
-		// Check total gas requirement.
-		// If maxGas is negative, skip this check.
-		// Since newTotalGas < masGas, which
-		// must be non-negative, it follows that this won't overflow.
-		newTotalGas := totalGas + memTx.gasWanted
-		if maxGas > -1 && newTotalGas > maxGas {
-			return txs[:len(txs)-1]
-		}
-		totalGas = newTotalGas
-	}
-	return txs
-}
-
-// Safe for concurrent use by multiple goroutines.
 func (mem *CListMempool) ReapMaxTxs(max int) types.Txs {
 	mem.updateMtx.RLock()
 	defer mem.updateMtx.RUnlock()
@@ -581,7 +540,7 @@ func (mem *CListMempool) ReapMaxTxsMaxBytesMaxGas(maxTxs int, maxBytes, maxGas i
 	mem.updateMtx.RLock()
 	defer mem.updateMtx.RUnlock()
 
-	if maxTxs == 0 {
+	if maxTxs <= 0 {
 		maxTxs = mem.txs.Len()
 	}
 

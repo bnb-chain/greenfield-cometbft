@@ -310,5 +310,5 @@ replace (
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.23.0
 	github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/btcsuite/btcd/btcutil => github.com/btcsuite/btcd/btcutil v1.1.2
-	github.com/cometbft/cometbft-db => github.com/j75689/cometbft-db v0.0.0-20230628070814-2ca2ef81dec6
+	github.com/cometbft/cometbft-db => github.com/bnb-chain/greenfield-cometbft-db v0.0.0-20230704045740-dc62566e0315
 )
