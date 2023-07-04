@@ -124,17 +124,17 @@ func TestSyncer_SyncAny(t *testing.T) {
 
 	// Both peers report back with snapshots. One of them also returns a snapshot we don't want, in
 	// format 2, which will be rejected by the ABCI application.
-	new, err := syncer.AddSnapshot(peerA, s)
+	success, err := syncer.AddSnapshot(peerA, s)
 	require.NoError(t, err)
-	assert.True(t, new)
+	assert.True(t, success)
 
-	new, err = syncer.AddSnapshot(peerB, s)
+	success, err = syncer.AddSnapshot(peerB, s)
 	require.NoError(t, err)
-	assert.False(t, new)
+	assert.False(t, success)
 
-	new, err = syncer.AddSnapshot(peerB, &snapshot{Height: 2, Format: 2, Chunks: 3, Hash: []byte{1}})
+	success, err = syncer.AddSnapshot(peerB, &snapshot{Height: 2, Format: 2, Chunks: 3, Hash: []byte{1}})
 	require.NoError(t, err)
-	assert.True(t, new)
+	assert.True(t, success)
 
 	// We start a sync, with peers sending back chunks when requested. We first reject the snapshot
 	// with height 2 format 2, and accept the snapshot at height 1.

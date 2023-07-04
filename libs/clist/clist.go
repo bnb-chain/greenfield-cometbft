@@ -252,9 +252,9 @@ func newWithMax(maxLength int) *CList {
 
 func (l *CList) Len() int {
 	l.mtx.RLock()
-	len := l.len
+	length := l.len
 	l.mtx.RUnlock()
-	return len
+	return length
 }
 
 func (l *CList) Front() *CElement {

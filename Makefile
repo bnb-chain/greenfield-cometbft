@@ -269,9 +269,12 @@ format:
 	find . -name '*.go' -type f -not -path "*.git*"  -not -name '*.pb.go' -not -name '*pb_test.go' | xargs goimports -w -local github.com/cometbft/cometbft
 .PHONY: format
 
+golangci_lint_cmd=golangci-lint
+
 lint:
 	@echo "--> Running linter"
-	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	@$(golangci_lint_cmd) run --timeout=10m
 .PHONY: lint
 
 vulncheck:
