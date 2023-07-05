@@ -35,7 +35,7 @@ type CListMempool struct {
 	config *config.MempoolConfig
 
 	// Exclusive mutex for Update method to prevent concurrent execution of
-	// CheckTx or ReapMaxBytesMaxGas(ReapMaxTxs) methods.
+	// CheckTx or ReapMaxTxsMaxBytesMaxGas(ReapMaxTxs) methods.
 	updateMtx cmtsync.RWMutex
 	preCheck  mempool.PreCheckFunc
 	postCheck mempool.PostCheckFunc
@@ -74,7 +74,6 @@ func NewCListMempool(
 	height int64,
 	options ...CListMempoolOption,
 ) *CListMempool {
-
 	mp := &CListMempool{
 		config:        cfg,
 		proxyAppConn:  proxyAppConn,
@@ -205,7 +204,6 @@ func (mem *CListMempool) CheckTx(
 	cb func(*abci.Response),
 	txInfo mempool.TxInfo,
 ) error {
-
 	mem.updateMtx.RLock()
 	// use defer to unlock mutex because application (*local client*) might panic
 	defer mem.updateMtx.RUnlock()
@@ -315,6 +313,9 @@ func (mem *CListMempool) reqResCb(
 //   - resCbFirstTime (lock not held) if tx is valid
 func (mem *CListMempool) addTx(memTx *mempoolTx) {
 	e := mem.txs.PushBack(memTx)
+	if e == nil {
+		panic("failed to push tx into mempool")
+	}
 	mem.txsMap.Store(memTx.tx.Key(), e)
 	atomic.AddInt64(&mem.txsBytes, int64(len(memTx.tx)))
 	mem.metrics.TxSizeBytes.Observe(float64(len(memTx.tx)))
@@ -518,20 +519,44 @@ func (mem *CListMempool) notifyTxsAvailable() {
 }
 
 // Safe for concurrent use by multiple goroutines.
-func (mem *CListMempool) ReapMaxBytesMaxGas(maxBytes, maxGas int64) types.Txs {
+func (mem *CListMempool) ReapMaxTxs(max int) types.Txs {
 	mem.updateMtx.RLock()
 	defer mem.updateMtx.RUnlock()
 
+	if max < 0 {
+		max = mem.txs.Len()
+	}
+
+	txs := make([]types.Tx, 0, cmtmath.MinInt(mem.txs.Len(), max))
+	for e := mem.txs.Front(); e != nil && len(txs) <= max; e = e.Next() {
+		memTx := e.Value.(*mempoolTx)
+		txs = append(txs, memTx.tx)
+	}
+	return txs
+}
+
+// Safe for concurrent use by multiple goroutines.
+func (mem *CListMempool) ReapMaxTxsMaxBytesMaxGas(maxTxs int, maxBytes, maxGas int64) types.Txs {
+	mem.updateMtx.RLock()
+	defer mem.updateMtx.RUnlock()
+
+	if maxTxs <= 0 {
+		maxTxs = mem.txs.Len()
+	}
+
 	var (
+		totalTxs    int
 		totalGas    int64
 		runningSize int64
 	)
 
-	// TODO: we will get a performance boost if we have a good estimate of avg
-	// size per tx, and set the initial capacity based off of that.
-	// txs := make([]types.Tx, 0, cmtmath.MinInt(mem.txs.Len(), max/mem.avgTxSize))
-	txs := make([]types.Tx, 0, mem.txs.Len())
+	txs := make([]types.Tx, 0, cmtmath.MinInt(mem.txs.Len(), maxTxs))
 	for e := mem.txs.Front(); e != nil; e = e.Next() {
+		totalTxs++
+		if totalTxs > maxTxs {
+			return txs
+		}
+
 		memTx := e.Value.(*mempoolTx)
 
 		txs = append(txs, memTx.tx)
@@ -554,23 +579,6 @@ func (mem *CListMempool) ReapMaxBytesMaxGas(maxBytes, maxGas int64) types.Txs {
 			return txs[:len(txs)-1]
 		}
 		totalGas = newTotalGas
-	}
-	return txs
-}
-
-// Safe for concurrent use by multiple goroutines.
-func (mem *CListMempool) ReapMaxTxs(max int) types.Txs {
-	mem.updateMtx.RLock()
-	defer mem.updateMtx.RUnlock()
-
-	if max < 0 {
-		max = mem.txs.Len()
-	}
-
-	txs := make([]types.Tx, 0, cmtmath.MinInt(mem.txs.Len(), max))
-	for e := mem.txs.Front(); e != nil && len(txs) <= max; e = e.Next() {
-		memTx := e.Value.(*mempoolTx)
-		txs = append(txs, memTx.tx)
 	}
 	return txs
 }

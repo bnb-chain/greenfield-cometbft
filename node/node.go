@@ -77,6 +77,19 @@ func DefaultDBProvider(ctx *DBContext) (dbm.DB, error) {
 	return dbm.NewDB(ctx.ID, dbType, ctx.Config.DBDir())
 }
 
+func DefaultDBProviderWithDBOptions(externalDBOpts map[string]*dbm.NewDatabaseOption) func(ctx *DBContext) (dbm.DB, error) {
+	if externalDBOpts == nil {
+		return DefaultDBProvider
+	}
+	return func(ctx *DBContext) (dbm.DB, error) {
+		dbType := dbm.BackendType(ctx.Config.DBBackend)
+		if dbOpts, ok := externalDBOpts[ctx.ID]; ok {
+			return dbm.NewDB(ctx.ID, dbType, ctx.Config.DBDir(), dbOpts)
+		}
+		return dbm.NewDB(ctx.ID, dbType, ctx.Config.DBDir())
+	}
+}
+
 // GenesisDocProvider returns a GenesisDoc.
 // It allows the GenesisDoc to be pulled from sources other than the
 // filesystem, for instance from a distributed key-value store cluster.
@@ -838,6 +851,7 @@ func NewNode(config *cfg.Config,
 		stateStore,
 		logger.With("module", "state"),
 		proxyApp.Consensus(),
+		proxyApp.Prefetch(),
 		mempool,
 		evidencePool,
 		sm.BlockExecutorWithMetrics(smMetrics),
@@ -1129,11 +1143,8 @@ func (n *Node) ConfigureRPC() error {
 
 		Config: *n.config.RPC,
 	})
-	if err := rpccore.InitGenesisChunks(); err != nil {
-		return err
-	}
 
-	return nil
+	return rpccore.InitGenesisChunks()
 }
 
 func (n *Node) startRPC() ([]net.Listener, error) {
@@ -1468,11 +1479,8 @@ func saveGenesisDoc(db dbm.DB, genDoc *types.GenesisDoc) error {
 	if err != nil {
 		return fmt.Errorf("failed to save genesis doc due to marshaling error: %w", err)
 	}
-	if err := db.SetSync(genesisDocKey, b); err != nil {
-		return err
-	}
 
-	return nil
+	return db.SetSync(genesisDocKey, b)
 }
 
 func createAndStartPrivValidatorSocketClient(

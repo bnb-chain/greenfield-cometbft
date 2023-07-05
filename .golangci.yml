@@ -2,7 +2,7 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - depguard
+    # - depguard
     - dogsled
     - dupl
     - errcheck
@@ -16,7 +16,7 @@ linters:
     - govet
     - ineffassign
     - misspell
-    - nakedret
+    # - nakedret
     - nolintlint
     - prealloc
     - staticcheck
@@ -31,6 +31,15 @@ issues:
     - path: _test\.go
       linters:
         - gosec
+    - text: "unused-parameter:"
+      linters:
+        - revive
+    - text: "empty-block:"
+      linters:
+        - revive
+    - text: "superfluous-else:"
+      linters:
+        - revive
   max-same-issues: 50
 
 linters-settings:

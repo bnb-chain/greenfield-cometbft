@@ -120,6 +120,7 @@ func TestReactorConcurrency(t *testing.T) {
 		}()
 
 		// 1. flush the mempool
+		time.Sleep(20 * time.Millisecond)
 		reactors[1].mempool.Flush()
 	}
 

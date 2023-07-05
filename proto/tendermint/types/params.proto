@@ -25,8 +25,9 @@ message BlockParams {
   // Max gas per block.
   // Note: must be greater or equal to -1
   int64 max_gas = 2;
-
-  reserved 3;  // was TimeIotaMs see https://github.com/cometbft/cometbft/pull/5792
+  // Max tx nums.
+  // Note: must be greater than 0
+  int64 max_txs = 3;
 }
 
 // EvidenceParams determine how we handle evidence of malfeasance.
@@ -74,4 +75,5 @@ message VersionParams {
 message HashedParams {
   int64 block_max_bytes = 1;
   int64 block_max_gas   = 2;
+  int64 block_max_txs   = 3;
 }

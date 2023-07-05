@@ -108,9 +108,9 @@ func (vals *ValidatorSet) IsNilOrEmpty() bool {
 // CopyIncrementProposerPriority increments ProposerPriority and updates the
 // proposer on a copy, and returns it.
 func (vals *ValidatorSet) CopyIncrementProposerPriority(times int32) *ValidatorSet {
-	copy := vals.Copy()
-	copy.IncrementProposerPriority(times)
-	return copy
+	valCopy := vals.Copy()
+	valCopy.IncrementProposerPriority(times)
+	return valCopy
 }
 
 // IncrementProposerPriority increments ProposerPriority of each validator and
