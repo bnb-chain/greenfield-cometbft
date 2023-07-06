@@ -90,8 +90,9 @@ func (tm2pb) NewValidatorUpdate(pubkey crypto.PubKey, power int64) abci.Validato
 		panic(err)
 	}
 	return abci.ValidatorUpdate{
-		PubKey: pubkeyABCI,
-		Power:  power,
+		PubKey:     pubkeyABCI,
+		Power:      power,
+		NextPubKey: pubkeyABCI,
 	}
 }
 
