@@ -468,7 +468,7 @@ func makeLunaticEvidence(
 	phantomValSet, phantomPrivVals := types.RandValidatorSet(phantomVals, defaultVotingPower)
 
 	conflictingVals := phantomValSet.Copy()
-	require.NoError(t, conflictingVals.UpdateWithChangeSet(byzValSet))
+	require.NoError(t, conflictingVals.UpdateWithChangeSet(byzValSet, nil))
 	conflictingPrivVals := append(phantomPrivVals, byzPrivVals...)
 
 	conflictingPrivVals = orderPrivValsByValSet(t, conflictingVals, conflictingPrivVals)

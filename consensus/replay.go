@@ -332,7 +332,7 @@ func (h *Handshaker) ReplayBlocks(
 			}
 			// If the app returned validators or consensus params, update the state.
 			if len(res.Validators) > 0 {
-				vals, err := types.PB2TM.ValidatorUpdates(res.Validators)
+				vals, _, err := types.PB2TM.ValidatorUpdates(res.Validators)
 				if err != nil {
 					return nil, err
 				}

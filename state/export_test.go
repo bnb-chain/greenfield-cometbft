@@ -30,7 +30,7 @@ func UpdateState(
 	abciResponses *cmtstate.ABCIResponses,
 	validatorUpdates []*types.Validator,
 ) (State, error) {
-	return updateState(state, blockID, header, abciResponses, validatorUpdates)
+	return updateState(state, blockID, header, abciResponses, validatorUpdates, nil)
 }
 
 // ValidateValidatorUpdates is an alias for validateValidatorUpdates exported

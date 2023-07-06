@@ -51,7 +51,7 @@ func TestValidatorSetBasic(t *testing.T) {
 		0x99, 0x1b, 0x78, 0x52, 0xb8, 0x55}, vset.Hash())
 	// add
 	val = randValidator(vset.TotalVotingPower())
-	assert.NoError(t, vset.UpdateWithChangeSet([]*Validator{val}))
+	assert.NoError(t, vset.UpdateWithChangeSet([]*Validator{val}, nil))
 
 	assert.True(t, vset.HasAddress(val.Address))
 	idx, _ = vset.GetByAddress(val.Address)
@@ -66,13 +66,13 @@ func TestValidatorSetBasic(t *testing.T) {
 
 	// update
 	val = randValidator(vset.TotalVotingPower())
-	assert.NoError(t, vset.UpdateWithChangeSet([]*Validator{val}))
+	assert.NoError(t, vset.UpdateWithChangeSet([]*Validator{val}, nil))
 	_, val = vset.GetByAddress(val.Address)
 	val.VotingPower += 100
 	proposerPriority := val.ProposerPriority
 
 	val.ProposerPriority = 0
-	assert.NoError(t, vset.UpdateWithChangeSet([]*Validator{val}))
+	assert.NoError(t, vset.UpdateWithChangeSet([]*Validator{val}, nil))
 	_, val = vset.GetByAddress(val.Address)
 	assert.Equal(t, proposerPriority, val.ProposerPriority)
 
@@ -171,7 +171,7 @@ func BenchmarkValidatorSetCopy(b *testing.B) {
 		privKey := ed25519.GenPrivKey()
 		pubKey := privKey.PubKey()
 		val := NewValidator(pubKey, 10)
-		err := vset.UpdateWithChangeSet([]*Validator{val})
+		err := vset.UpdateWithChangeSet([]*Validator{val}, nil)
 		if err != nil {
 			panic("Failed to add validator")
 		}
@@ -828,17 +828,17 @@ func TestEmptySet(t *testing.T) {
 	v1 := newValidator([]byte("v1"), 100)
 	v2 := newValidator([]byte("v2"), 100)
 	valList = []*Validator{v1, v2}
-	assert.NoError(t, valSet.UpdateWithChangeSet(valList))
+	assert.NoError(t, valSet.UpdateWithChangeSet(valList, nil))
 	verifyValidatorSet(t, valSet)
 
 	// Delete all validators from set
 	v1 = newValidator([]byte("v1"), 0)
 	v2 = newValidator([]byte("v2"), 0)
 	delList := []*Validator{v1, v2}
-	assert.Error(t, valSet.UpdateWithChangeSet(delList))
+	assert.Error(t, valSet.UpdateWithChangeSet(delList, nil))
 
 	// Attempt delete from empty set
-	assert.Error(t, valSet.UpdateWithChangeSet(delList))
+	assert.Error(t, valSet.UpdateWithChangeSet(delList, nil))
 
 }
 
@@ -962,7 +962,7 @@ func executeValSetErrTestCase(t *testing.T, idx int, tt valSetErrTestCase) {
 	valSetCopy := valSet.Copy()
 	valList := createNewValidatorList(tt.updateVals)
 	valListCopy := validatorListCopy(valList)
-	err := valSet.UpdateWithChangeSet(valList)
+	err := valSet.UpdateWithChangeSet(valList, nil)
 
 	// for errors check the validator set has not been changed
 	assert.Error(t, err, "test %d", idx)
@@ -1130,7 +1130,7 @@ func TestValSetUpdatesBasicTestsExecute(t *testing.T) {
 		// create a new set and apply updates, keeping copies for the checks
 		valSet := createNewValidatorSet(tt.startVals)
 		valList := createNewValidatorList(tt.updateVals)
-		err := valSet.UpdateWithChangeSet(valList)
+		err := valSet.UpdateWithChangeSet(valList, nil)
 		assert.NoError(t, err, "test %d", i)
 
 		valListCopy := validatorListCopy(valSet.Validators)
@@ -1180,7 +1180,7 @@ func TestValSetUpdatesOrderIndependenceTestsExecute(t *testing.T) {
 		valSet := createNewValidatorSet(tt.startVals)
 		valSetCopy := valSet.Copy()
 		valList := createNewValidatorList(tt.updateVals)
-		assert.NoError(t, valSetCopy.UpdateWithChangeSet(valList))
+		assert.NoError(t, valSetCopy.UpdateWithChangeSet(valList, nil))
 
 		// save the result as expected for next updates
 		valSetExp := valSetCopy.Copy()
@@ -1194,7 +1194,7 @@ func TestValSetUpdatesOrderIndependenceTestsExecute(t *testing.T) {
 			valList := createNewValidatorList(permutation(tt.updateVals))
 
 			// check there was no error and the set is properly scaled and centered.
-			assert.NoError(t, valSetCopy.UpdateWithChangeSet(valList),
+			assert.NoError(t, valSetCopy.UpdateWithChangeSet(valList, nil),
 				"test %v failed for permutation %v", i, valList)
 			verifyValidatorSet(t, valSetCopy)
 
@@ -1260,7 +1260,7 @@ func TestValSetApplyUpdatesTestsExecute(t *testing.T) {
 
 		// applyUpdates() with the update values
 		valList := createNewValidatorList(tt.updateVals)
-		valSet.applyUpdates(valList)
+		valSet.applyUpdates(valList, nil)
 
 		// check the new list of validators for proper merge
 		assert.Equal(t, toTestValList(valSet.Validators), tt.expectedVals, "test %v", i)
@@ -1338,7 +1338,7 @@ func applyChangesToValSet(t *testing.T, expErr error, valSet *ValidatorSet, vals
 		changes = append(changes, valsList...)
 	}
 	valList := createNewValidatorList(changes)
-	err := valSet.UpdateWithChangeSet(valList)
+	err := valSet.UpdateWithChangeSet(valList, nil)
 	if expErr != nil {
 		assert.Equal(t, expErr, err)
 	} else {
@@ -1738,6 +1738,6 @@ func BenchmarkUpdates(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		// Add m validators to valSetCopy
 		valSetCopy := valSet.Copy()
-		assert.NoError(b, valSetCopy.UpdateWithChangeSet(newValList))
+		assert.NoError(b, valSetCopy.UpdateWithChangeSet(newValList, nil))
 	}
 }

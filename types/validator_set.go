@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	"github.com/cometbft/cometbft/crypto/merkle"
 	"github.com/cometbft/cometbft/crypto/tmhash"
@@ -72,7 +73,7 @@ type ValidatorSet struct {
 // validation.
 func NewValidatorSet(valz []*Validator) *ValidatorSet {
 	vals := &ValidatorSet{}
-	err := vals.updateWithChangeSet(valz, false)
+	err := vals.updateWithChangeSet(valz, nil, false)
 	if err != nil {
 		panic(fmt.Sprintf("Cannot create validator set: %v", err))
 	}
@@ -503,7 +504,7 @@ func computeNewPriorities(updates []*Validator, vals *ValidatorSet, updatedTotal
 // When two elements with same address are seen, the one from updates is selected.
 // Expects updates to be a list of updates sorted by address with no duplicates or errors,
 // must have been validated with verifyUpdates() and priorities computed with computeNewPriorities().
-func (vals *ValidatorSet) applyUpdates(updates []*Validator) {
+func (vals *ValidatorSet) applyUpdates(updates []*Validator, updatePubKey map[string]crypto.PubKey) {
 	existing := vals.Validators
 	sort.Sort(ValidatorsByAddress(existing))
 
@@ -521,6 +522,12 @@ func (vals *ValidatorSet) applyUpdates(updates []*Validator) {
 				// Validator is present in both, advance existing.
 				existing = existing[1:]
 			}
+			// PubKey and Address should be updated if NextPubKey is not nil.
+			if nextPubKey, exist := updatePubKey[updates[0].PubKey.Address().String()]; exist {
+				updates[0].Address = nextPubKey.Address()
+				updates[0].PubKey = nextPubKey
+			}
+
 			updates = updates[1:]
 		}
 		i++
@@ -591,7 +598,7 @@ func (vals *ValidatorSet) applyRemovals(deletes []*Validator) {
 // If 'allowDeletes' is false then delete operations (identified by validators with voting power 0)
 // are not allowed and will trigger an error if present in 'changes'.
 // The 'allowDeletes' flag is set to false by NewValidatorSet() and to true by UpdateWithChangeSet().
-func (vals *ValidatorSet) updateWithChangeSet(changes []*Validator, allowDeletes bool) error {
+func (vals *ValidatorSet) updateWithChangeSet(changes []*Validator, pubKeyUpdates map[string]crypto.PubKey, allowDeletes bool) error {
 	if len(changes) == 0 {
 		return nil
 	}
@@ -629,7 +636,7 @@ func (vals *ValidatorSet) updateWithChangeSet(changes []*Validator, allowDeletes
 	computeNewPriorities(updates, vals, tvpAfterUpdatesBeforeRemovals)
 
 	// Apply updates and removals.
-	vals.applyUpdates(updates)
+	vals.applyUpdates(updates, pubKeyUpdates)
 	vals.applyRemovals(deletes)
 
 	vals.updateTotalVotingPower() // will panic if total voting power > MaxTotalVotingPower
@@ -656,8 +663,8 @@ func (vals *ValidatorSet) updateWithChangeSet(changes []*Validator, allowDeletes
 //
 // If an error is detected during verification steps, it is returned and the validator set
 // is not changed.
-func (vals *ValidatorSet) UpdateWithChangeSet(changes []*Validator) error {
-	return vals.updateWithChangeSet(changes, true)
+func (vals *ValidatorSet) UpdateWithChangeSet(changes []*Validator, pubKeyUpdates map[string]crypto.PubKey) error {
+	return vals.updateWithChangeSet(changes, pubKeyUpdates, true)
 }
 
 // VerifyCommit verifies +2/3 of the set had signed the given commit.

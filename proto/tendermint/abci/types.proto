@@ -413,6 +413,7 @@ message ValidatorUpdate {
   int64                       power              = 2;
   bytes                       bls_key            = 3;
   bytes                       relayer_address    = 4;
+  tendermint.crypto.PublicKey next_pub_key       = 5 [(gogoproto.nullable) = false];
 }
 
 // VoteInfo

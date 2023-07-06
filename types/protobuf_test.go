@@ -36,7 +36,7 @@ func TestABCIValidators(t *testing.T) {
 	tmVal := NewValidator(pkEd, 10)
 
 	abciVal := TM2PB.ValidatorUpdate(tmVal)
-	tmVals, err := PB2TM.ValidatorUpdates([]abci.ValidatorUpdate{abciVal})
+	tmVals, _, err := PB2TM.ValidatorUpdates([]abci.ValidatorUpdate{abciVal})
 	assert.Nil(t, err)
 	assert.Equal(t, tmValExpected, tmVals[0])
 
@@ -47,7 +47,7 @@ func TestABCIValidators(t *testing.T) {
 	tmVal.Address = pkEd.Address()
 
 	abciVal = TM2PB.ValidatorUpdate(tmVal)
-	tmVals, err = PB2TM.ValidatorUpdates([]abci.ValidatorUpdate{abciVal})
+	tmVals, _, err = PB2TM.ValidatorUpdates([]abci.ValidatorUpdate{abciVal})
 	assert.Nil(t, err)
 	assert.Equal(t, tmValExpected, tmVals[0])
 }

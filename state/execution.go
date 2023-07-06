@@ -8,6 +8,7 @@ import (
 	"time"
 
 	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/crypto"
 	cryptoenc "github.com/cometbft/cometbft/crypto/encoding"
 	"github.com/cometbft/cometbft/libs/fail"
 	"github.com/cometbft/cometbft/libs/log"
@@ -238,7 +239,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		return state, 0, fmt.Errorf("error in validator updates: %v", err)
 	}
 
-	validatorUpdates, err := types.PB2TM.ValidatorUpdates(abciValUpdates)
+	validatorUpdates, pubKeyUpdates, err := types.PB2TM.ValidatorUpdates(abciValUpdates)
 	if err != nil {
 		return state, 0, err
 	}
@@ -251,7 +252,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	}
 
 	// Update the state with the block and responses.
-	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates)
+	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates, pubKeyUpdates)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
@@ -499,6 +500,18 @@ func validateValidatorUpdates(abciUpdates []abci.ValidatorUpdate,
 			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
 				valUpdate, pk.Type())
 		}
+
+		// Check if validator's next pubkey matches an ABCI type in the consensus params
+		nextPk, err := cryptoenc.PubKeyFromProto(valUpdate.NextPubKey)
+		if err != nil {
+			return err
+		}
+
+		if !types.IsValidPubkeyType(params, nextPk.Type()) {
+			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
+				valUpdate, pk.Type())
+		}
+
 	}
 	return nil
 }
@@ -510,6 +523,7 @@ func updateState(
 	header *types.Header,
 	abciResponses *cmtstate.ABCIResponses,
 	validatorUpdates []*types.Validator,
+	pubkeyUpdates map[string]crypto.PubKey,
 ) (State, error) {
 	// Copy the valset so we can apply changes from EndBlock
 	// and update s.LastValidators and s.Validators.
@@ -518,7 +532,7 @@ func updateState(
 	// Update the validator set with the latest abciResponses.
 	lastHeightValsChanged := state.LastHeightValidatorsChanged
 	if len(validatorUpdates) > 0 {
-		err := nValSet.UpdateWithChangeSet(validatorUpdates)
+		err := nValSet.UpdateWithChangeSet(validatorUpdates, pubkeyUpdates)
 		if err != nil {
 			return state, fmt.Errorf("error changing validator set: %v", err)
 		}

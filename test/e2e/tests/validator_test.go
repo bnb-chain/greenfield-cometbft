@@ -150,7 +150,7 @@ func (s *validatorSchedule) Increment(heights int64) {
 			// validator set updates are offset by 2, since they only take effect
 			// two blocks after they're returned.
 			if update, ok := s.updates[s.height-2]; ok {
-				if err := s.Set.UpdateWithChangeSet(makeVals(update)); err != nil {
+				if err := s.Set.UpdateWithChangeSet(makeVals(update), nil); err != nil {
 					panic(err)
 				}
 			}

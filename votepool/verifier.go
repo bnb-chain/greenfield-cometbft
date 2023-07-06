@@ -46,7 +46,7 @@ func (f *FromValidatorVerifier) updateValidators(changes []*types.Validator) {
 	}
 	f.validators = make(map[string]*types.Validator)
 	valSet := &types.ValidatorSet{Validators: vals}
-	_ = valSet.UpdateWithChangeSet(changes) // use valSet's validators even if there are errors
+	_ = valSet.UpdateWithChangeSet(changes, nil) // use valSet's validators even if there are errors
 	for _, val := range valSet.Validators {
 		if len(val.BlsKey) > 0 {
 			f.validators[string(val.BlsKey[:])] = val
