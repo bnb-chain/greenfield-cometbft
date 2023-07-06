@@ -522,10 +522,12 @@ func (vals *ValidatorSet) applyUpdates(updates []*Validator, updatePubKey map[st
 				// Validator is present in both, advance existing.
 				existing = existing[1:]
 			}
-			// PubKey and Address should be updated if NextPubKey is not nil.
-			if nextPubKey, exist := updatePubKey[updates[0].PubKey.Address().String()]; exist {
-				updates[0].Address = nextPubKey.Address()
-				updates[0].PubKey = nextPubKey
+			// PubKey and Address should be updated if NextPubKey is not the same.
+			if updates[0].PubKey != nil {
+				if nextPubKey, exist := updatePubKey[updates[0].PubKey.Address().String()]; exist {
+					updates[0].Address = nextPubKey.Address()
+					updates[0].PubKey = nextPubKey
+				}
 			}
 
 			updates = updates[1:]
