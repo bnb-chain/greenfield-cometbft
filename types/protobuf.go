@@ -68,8 +68,9 @@ func (tm2pb) ValidatorUpdate(val *Validator) abci.ValidatorUpdate {
 		panic(err)
 	}
 	return abci.ValidatorUpdate{
-		PubKey: pk,
-		Power:  val.VotingPower,
+		PubKey:     pk,
+		Power:      val.VotingPower,
+		NextPubKey: pk,
 	}
 }
 

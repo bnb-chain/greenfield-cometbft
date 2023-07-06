@@ -353,37 +353,37 @@ func TestValidateValidatorUpdates(t *testing.T) {
 	}{
 		{
 			"adding a validator is OK",
-			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 20}},
+			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 20, NextPubKey: pk2}},
 			defaultValidatorParams,
 			false,
 		},
 		{
 			"updating a validator is OK",
-			[]abci.ValidatorUpdate{{PubKey: pk1, Power: 20}},
+			[]abci.ValidatorUpdate{{PubKey: pk1, Power: 20, NextPubKey: pk1}},
 			defaultValidatorParams,
 			false,
 		},
 		{
 			"updating a validator with bls public key is OK",
-			[]abci.ValidatorUpdate{{PubKey: pk1, Power: 20, BlsKey: ([]byte)("blspukkey")}},
+			[]abci.ValidatorUpdate{{PubKey: pk1, Power: 20, BlsKey: ([]byte)("blspukkey"), NextPubKey: pk1}},
 			defaultValidatorParams,
 			false,
 		},
 		{
 			"updating a validator with relayer address is OK",
-			[]abci.ValidatorUpdate{{PubKey: pk1, Power: 20, RelayerAddress: ([]byte)("relayer")}},
+			[]abci.ValidatorUpdate{{PubKey: pk1, Power: 20, RelayerAddress: ([]byte)("relayer"), NextPubKey: pk1}},
 			defaultValidatorParams,
 			false,
 		},
 		{
 			"removing a validator is OK",
-			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 0}},
+			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 0, NextPubKey: pk2}},
 			defaultValidatorParams,
 			false,
 		},
 		{
 			"adding a validator with negative power results in error",
-			[]abci.ValidatorUpdate{{PubKey: pk2, Power: -100}},
+			[]abci.ValidatorUpdate{{PubKey: pk2, Power: -100, NextPubKey: pk2}},
 			defaultValidatorParams,
 			true,
 		},
@@ -432,35 +432,35 @@ func TestUpdateValidators(t *testing.T) {
 		{
 			"adding a validator is OK",
 			types.NewValidatorSet([]*types.Validator{val1}),
-			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 20}},
+			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 20, NextPubKey: pk2}},
 			types.NewValidatorSet([]*types.Validator{val1, val2}),
 			false,
 		},
 		{
 			"updating a validator is OK",
 			types.NewValidatorSet([]*types.Validator{val1}),
-			[]abci.ValidatorUpdate{{PubKey: pk, Power: 20}},
+			[]abci.ValidatorUpdate{{PubKey: pk, Power: 20, NextPubKey: pk}},
 			types.NewValidatorSet([]*types.Validator{types.NewValidator(pubkey1, 20)}),
 			false,
 		},
 		{
 			"removing a validator is OK",
 			types.NewValidatorSet([]*types.Validator{val1, val2}),
-			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 0}},
+			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 0, NextPubKey: pk2}},
 			types.NewValidatorSet([]*types.Validator{val1}),
 			false,
 		},
 		{
 			"removing a non-existing validator results in error",
 			types.NewValidatorSet([]*types.Validator{val1}),
-			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 0}},
+			[]abci.ValidatorUpdate{{PubKey: pk2, Power: 0, NextPubKey: pk2}},
 			types.NewValidatorSet([]*types.Validator{val1}),
 			true,
 		},
 		{
 			"updating a validator with bls public key, and relayer address is OK",
 			types.NewValidatorSet([]*types.Validator{val1}),
-			[]abci.ValidatorUpdate{{PubKey: pk, Power: 20, BlsKey: blsPubKey, RelayerAddress: relayer}},
+			[]abci.ValidatorUpdate{{PubKey: pk, Power: 20, BlsKey: blsPubKey, RelayerAddress: relayer, NextPubKey: pk}},
 			types.NewValidatorSet([]*types.Validator{updated}),
 			false,
 		},
@@ -560,8 +560,8 @@ func TestEndBlockValidatorUpdates(t *testing.T) {
 	relayer := ed25519.GenPrivKey().PubKey().Address().Bytes()
 
 	app.ValidatorUpdates = []abci.ValidatorUpdate{
-		{PubKey: pk, Power: 10}, // add a new validator
-		{PubKey: currentValPk, Power: currentValPower, BlsKey: blsPubKey, RelayerAddress: relayer}, // updating a validator's bls pub key and addresses
+		{PubKey: pk, Power: 10, NextPubKey: pk}, // add a new validator
+		{PubKey: currentValPk, Power: currentValPower, BlsKey: blsPubKey, RelayerAddress: relayer, NextPubKey: currentValPk}, // updating a validator's bls pub key and addresses
 	}
 
 	state, _, err = blockExec.ApplyBlock(state, blockID, block)
@@ -634,7 +634,7 @@ func TestEndBlockValidatorUpdatesResultingInEmptySet(t *testing.T) {
 	require.NoError(t, err)
 	// Remove the only validator
 	app.ValidatorUpdates = []abci.ValidatorUpdate{
-		{PubKey: vp, Power: 0},
+		{PubKey: vp, Power: 0, NextPubKey: vp},
 	}
 
 	assert.NotPanics(t, func() { state, _, err = blockExec.ApplyBlock(state, blockID, block) })

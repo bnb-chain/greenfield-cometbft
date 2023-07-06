@@ -18,8 +18,9 @@ func Ed25519ValidatorUpdate(pk []byte, power int64) ValidatorUpdate {
 
 	return ValidatorUpdate{
 		// Address:
-		PubKey: pkp,
-		Power:  power,
+		PubKey:     pkp,
+		Power:      power,
+		NextPubKey: pkp,
 	}
 }
 
@@ -33,8 +34,9 @@ func Secp256k1ValidatorUpdate(pk []byte, power int64) ValidatorUpdate {
 
 	return ValidatorUpdate{
 		// Address:
-		PubKey: pkp,
-		Power:  power,
+		PubKey:     pkp,
+		Power:      power,
+		NextPubKey: pkp,
 	}
 }
 

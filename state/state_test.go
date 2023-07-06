@@ -477,7 +477,7 @@ func TestProposerPriorityDoesNotGetResetToZero(t *testing.T) {
 	fvp, err := cryptoenc.PubKeyToProto(val2PubKey)
 	require.NoError(t, err)
 
-	updateAddVal := abci.ValidatorUpdate{PubKey: fvp, Power: val2VotingPower}
+	updateAddVal := abci.ValidatorUpdate{PubKey: fvp, Power: val2VotingPower, NextPubKey: fvp}
 	validatorUpdates, _, err = types.PB2TM.ValidatorUpdates([]abci.ValidatorUpdate{updateAddVal})
 	assert.NoError(t, err)
 	updatedState2, err := sm.UpdateState(updatedState, blockID, &block.Header, abciResponses, validatorUpdates)
@@ -513,7 +513,7 @@ func TestProposerPriorityDoesNotGetResetToZero(t *testing.T) {
 	// Updating a validator does not reset the ProposerPriority to zero:
 	// 1. Add - Val2 VotingPower change to 1 =>
 	updatedVotingPowVal2 := int64(1)
-	updateVal := abci.ValidatorUpdate{PubKey: fvp, Power: updatedVotingPowVal2}
+	updateVal := abci.ValidatorUpdate{PubKey: fvp, Power: updatedVotingPowVal2, NextPubKey: fvp}
 	validatorUpdates, _, err = types.PB2TM.ValidatorUpdates([]abci.ValidatorUpdate{updateVal})
 	assert.NoError(t, err)
 
@@ -784,7 +784,7 @@ func TestLargeGenesisValidator(t *testing.T) {
 	firstAddedValVotingPower := int64(10)
 	fvp, err := cryptoenc.PubKeyToProto(firstAddedValPubKey)
 	require.NoError(t, err)
-	firstAddedVal := abci.ValidatorUpdate{PubKey: fvp, Power: firstAddedValVotingPower}
+	firstAddedVal := abci.ValidatorUpdate{PubKey: fvp, Power: firstAddedValVotingPower, NextPubKey: fvp}
 	validatorUpdates, _, err := types.PB2TM.ValidatorUpdates([]abci.ValidatorUpdate{firstAddedVal})
 	assert.NoError(t, err)
 	abciResponses := &cmtstate.ABCIResponses{
@@ -839,7 +839,7 @@ func TestLargeGenesisValidator(t *testing.T) {
 		addedPubKey := ed25519.GenPrivKey().PubKey()
 		ap, err := cryptoenc.PubKeyToProto(addedPubKey)
 		require.NoError(t, err)
-		addedVal := abci.ValidatorUpdate{PubKey: ap, Power: firstAddedValVotingPower}
+		addedVal := abci.ValidatorUpdate{PubKey: ap, Power: firstAddedValVotingPower, NextPubKey: ap}
 		validatorUpdates, _, err := types.PB2TM.ValidatorUpdates([]abci.ValidatorUpdate{addedVal})
 		assert.NoError(t, err)
 
@@ -860,7 +860,7 @@ func TestLargeGenesisValidator(t *testing.T) {
 	// remove genesis validator:
 	gp, err := cryptoenc.PubKeyToProto(genesisPubKey)
 	require.NoError(t, err)
-	removeGenesisVal := abci.ValidatorUpdate{PubKey: gp, Power: 0}
+	removeGenesisVal := abci.ValidatorUpdate{PubKey: gp, Power: 0, NextPubKey: gp}
 	abciResponses = &cmtstate.ABCIResponses{
 		BeginBlock: &abci.ResponseBeginBlock{},
 		EndBlock:   &abci.ResponseEndBlock{ValidatorUpdates: []abci.ValidatorUpdate{removeGenesisVal}},
