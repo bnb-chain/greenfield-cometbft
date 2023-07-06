@@ -502,14 +502,18 @@ func validateValidatorUpdates(abciUpdates []abci.ValidatorUpdate,
 		}
 
 		// Check if validator's next pubkey matches an ABCI type in the consensus params
-		nextPk, err := cryptoenc.PubKeyFromProto(valUpdate.NextPubKey)
-		if err != nil {
-			return err
-		}
+		if valUpdate.NextPubKey.Size() > 0 {
+			nextPk, err := cryptoenc.PubKeyFromProto(valUpdate.NextPubKey)
+			if err != nil {
+				return err
+			}
 
-		if !types.IsValidPubkeyType(params, nextPk.Type()) {
-			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
-				valUpdate, pk.Type())
+			if !types.IsValidPubkeyType(params, nextPk.Type()) {
+				return fmt.Errorf("validator %v is using next pubkey %s, which is unsupported for consensus",
+					valUpdate, pk.Type())
+			}
+		} else {
+			valUpdate.NextPubKey = valUpdate.PubKey
 		}
 
 	}
