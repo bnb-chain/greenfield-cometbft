@@ -157,7 +157,7 @@ func TestReactorWithEvidence(t *testing.T) {
 		blockDB := dbm.NewMemDB()
 		blockStore := store.NewBlockStore(blockDB)
 
-		mtx := new(cmtsync.Mutex)
+		mtx := new(cmtsync.RWMutex)
 		memplMetrics := mempl.NopMetrics()
 		// one for mempool, one for consensus
 		proxyAppConnCon := abcicli.NewLocalClient(mtx, app)
