@@ -57,8 +57,8 @@ func (app *localClient) FlushAsync() *ReqRes {
 }
 
 func (app *localClient) EchoAsync(msg string) *ReqRes {
-	app.mtx.RLock()
-	defer app.mtx.RUnlock()
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
 
 	return app.callback(
 		types.ToRequestEcho(msg),
@@ -155,8 +155,8 @@ func (app *localClient) EndBlockAsync(req types.RequestEndBlock) *ReqRes {
 }
 
 func (app *localClient) ListSnapshotsAsync(req types.RequestListSnapshots) *ReqRes {
-	app.mtx.RLock()
-	defer app.mtx.RUnlock()
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
 
 	res := app.Application.ListSnapshots(req)
 	return app.callback(
@@ -295,8 +295,8 @@ func (app *localClient) EndBlockSync(req types.RequestEndBlock) (*types.Response
 }
 
 func (app *localClient) ListSnapshotsSync(req types.RequestListSnapshots) (*types.ResponseListSnapshots, error) {
-	app.mtx.RLock()
-	defer app.mtx.RUnlock()
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
 
 	res := app.Application.ListSnapshots(req)
 	return &res, nil
@@ -364,8 +364,8 @@ func newLocalReqRes(req *types.Request, res *types.Response) *ReqRes {
 // -------------------------------------------------------
 
 func (app *localClient) EthQueryAsync(req types.RequestEthQuery) *ReqRes {
-	app.mtx.RLock()
-	defer app.mtx.RUnlock()
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
 
 	res := app.Application.EthQuery(req)
 	return app.callback(
@@ -375,8 +375,8 @@ func (app *localClient) EthQueryAsync(req types.RequestEthQuery) *ReqRes {
 }
 
 func (app *localClient) EthQuerySync(req types.RequestEthQuery) (*types.ResponseEthQuery, error) {
-	app.mtx.RLock()
-	defer app.mtx.RUnlock()
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
 
 	res := app.Application.EthQuery(req)
 	return &res, nil
