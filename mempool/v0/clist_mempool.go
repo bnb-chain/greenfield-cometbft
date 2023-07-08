@@ -2,9 +2,11 @@ package v0
 
 import (
 	"bytes"
+	"encoding/hex"
 	"errors"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/config"
@@ -56,6 +58,8 @@ type CListMempool struct {
 	// Keep a cache of already-seen txs.
 	// This reduces the pressure on the proxyApp.
 	cache mempool.TxCache
+
+	txsInsertedTimeMap sync.Map
 
 	logger  log.Logger
 	metrics *mempool.Metrics
@@ -316,6 +320,7 @@ func (mem *CListMempool) reqResCb(
 func (mem *CListMempool) addTx(memTx *mempoolTx) {
 	e := mem.txs.PushBack(memTx)
 	mem.txsMap.Store(memTx.tx.Key(), e)
+	mem.txsInsertedTimeMap.Store(memTx.tx.Key(), time.Now())
 	atomic.AddInt64(&mem.txsBytes, int64(len(memTx.tx)))
 	mem.metrics.TxSizeBytes.Observe(float64(len(memTx.tx)))
 }
@@ -327,6 +332,11 @@ func (mem *CListMempool) removeTx(tx types.Tx, elem *clist.CElement, removeFromC
 	mem.txs.Remove(elem)
 	elem.DetachPrev()
 	mem.txsMap.Delete(tx.Key())
+	if insertedTime, exist := mem.txsInsertedTimeMap.Load(tx.Key()); exist {
+		mem.logger.Info("removeTx", "tx", hex.EncodeToString(tx.Hash()), "insertedTime", insertedTime.(time.Time), "duration", time.Since(insertedTime.(time.Time)))
+		mem.txsInsertedTimeMap.Delete(tx.Key())
+		mem.metrics.TxCommittedTime.Set(float64(time.Since(insertedTime.(time.Time)).Milliseconds()))
+	}
 	atomic.AddInt64(&mem.txsBytes, int64(-len(tx)))
 
 	if removeFromCache {
