@@ -40,4 +40,10 @@ type Metrics struct {
 
 	// Number of times transactions are rechecked in the mempool.
 	RecheckTimes metrics.Counter
+
+	// Time of transactions are committed to the blockchain. (ms)
+	TxCommittedTime metrics.Gauge
+
+	// Number of transactions are received from peer.
+	ReceiveTxs metrics.Gauge
 }
