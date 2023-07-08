@@ -187,6 +187,7 @@ func (memR *Reactor) receiveRoutine() {
 				txInfo.SenderP2PID = e.Src.ID()
 			}
 
+			memR.mempool.metrics.ReceiveTxs.Set(float64(len(protoTxs)))
 			var err error
 			for _, tx := range protoTxs {
 				ntx := types.Tx(tx)

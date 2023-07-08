@@ -52,6 +52,18 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 			Name:      "recheck_times",
 			Help:      "Number of times transactions are rechecked in the mempool.",
 		}, labels).With(labelsAndValues...),
+		TxCommittedTime: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "tx_committed_times",
+			Help:      "Number of times transactions are committed to the blockchain. (ms)",
+		}, labels).With(labelsAndValues...),
+		ReceiveTxs: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "receive_txs",
+			Help:      "Number of transactions are received from peer.",
+		}, labels).With(labelsAndValues...),
 	}
 }
 
@@ -63,5 +75,7 @@ func NopMetrics() *Metrics {
 		RejectedTxs:  discard.NewCounter(),
 		EvictedTxs:   discard.NewCounter(),
 		RecheckTimes: discard.NewCounter(),
+		TxCommittedTime: discard.NewGauge(),
+		ReceiveTxs: discard.NewGauge(),
 	}
 }
