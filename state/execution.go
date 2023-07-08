@@ -106,7 +106,6 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	randaoReveal []byte,
 	proposerAddr []byte,
 ) (*types.Block, error) {
-	maxTxs := state.ConsensusParams.Block.MaxTxs
 	maxBytes := state.ConsensusParams.Block.MaxBytes
 	maxGas := state.ConsensusParams.Block.MaxGas
 
@@ -115,7 +114,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	// Fetch a limited amount of valid txs
 	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size())
 
-	txs := blockExec.mempool.ReapMaxTxsMaxBytesMaxGas(int(maxTxs), maxDataBytes, maxGas)
+	txs := blockExec.mempool.ReapMaxTxsMaxBytesMaxGas(2400, maxDataBytes, maxGas)
 	block := state.MakeBlock(height, txs, commit, evidence, randaoReveal, proposerAddr)
 
 	localLastCommit := buildLastCommitInfo(block, blockExec.store, state.InitialHeight)

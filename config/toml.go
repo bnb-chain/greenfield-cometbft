@@ -594,7 +594,7 @@ var testGenesisFmt = `{
 		"block": {
 			"max_bytes": "3145728",
 			"max_gas": "-1",
-			"max_txs": "2400"
+			"time_iota_ms": "10"
 		},
 		"evidence": {
 			"max_age_num_blocks": "100000",

@@ -42,7 +42,6 @@ type ConsensusParams struct {
 // BlockParams define limits on the block size and gas plus minimum time
 // between blocks.
 type BlockParams struct {
-	MaxTxs   int64 `json:"max_txs"`
 	MaxBytes int64 `json:"max_bytes"`
 	MaxGas   int64 `json:"max_gas"`
 }
@@ -77,7 +76,6 @@ func DefaultConsensusParams() *ConsensusParams {
 // DefaultBlockParams returns a default BlockParams.
 func DefaultBlockParams() BlockParams {
 	return BlockParams{
-		MaxTxs:   2400,
 		MaxBytes: 3145728, // 3MB
 		MaxGas:   -1,
 	}
@@ -118,10 +116,6 @@ func IsValidPubkeyType(params ValidatorParams, pubkeyType string) bool {
 // Validate validates the ConsensusParams to ensure all values are within their
 // allowed limits, and returns an error if they are not.
 func (params ConsensusParams) ValidateBasic() error {
-	if params.Block.MaxTxs <= 0 {
-		return fmt.Errorf("block.MaxTxs must be greater than 0. Got %d",
-			params.Block.MaxGas)
-	}
 	if params.Block.MaxBytes <= 0 {
 		return fmt.Errorf("block.MaxBytes must be greater than 0. Got %d",
 			params.Block.MaxBytes)
@@ -182,7 +176,6 @@ func (params ConsensusParams) Hash() []byte {
 	hp := cmtproto.HashedParams{
 		BlockMaxBytes: params.Block.MaxBytes,
 		BlockMaxGas:   params.Block.MaxGas,
-		BlockMaxTxs:   params.Block.MaxTxs,
 	}
 
 	bz, err := hp.Marshal()
@@ -232,7 +225,6 @@ func (params *ConsensusParams) ToProto() cmtproto.ConsensusParams {
 		Block: &cmtproto.BlockParams{
 			MaxBytes: params.Block.MaxBytes,
 			MaxGas:   params.Block.MaxGas,
-			MaxTxs:   params.Block.MaxTxs,
 		},
 		Evidence: &cmtproto.EvidenceParams{
 			MaxAgeNumBlocks: params.Evidence.MaxAgeNumBlocks,
@@ -253,7 +245,6 @@ func ConsensusParamsFromProto(pbParams cmtproto.ConsensusParams) ConsensusParams
 		Block: BlockParams{
 			MaxBytes: pbParams.Block.MaxBytes,
 			MaxGas:   pbParams.Block.MaxGas,
-			MaxTxs:   pbParams.Block.MaxTxs,
 		},
 		Evidence: EvidenceParams{
 			MaxAgeNumBlocks: pbParams.Evidence.MaxAgeNumBlocks,
