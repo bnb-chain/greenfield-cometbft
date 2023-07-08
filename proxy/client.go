@@ -22,7 +22,7 @@ type ClientCreator interface {
 // local proxy uses a mutex on an in-proc app
 
 type localClientCreator struct {
-	mtx *cmtsync.RWMutex
+	mtx *cmtsync.Mutex
 	app types.Application
 }
 
@@ -30,7 +30,7 @@ type localClientCreator struct {
 // which will be running locally.
 func NewLocalClientCreator(app types.Application) ClientCreator {
 	return &localClientCreator{
-		mtx: new(cmtsync.RWMutex),
+		mtx: new(cmtsync.Mutex),
 		app: app,
 	}
 }

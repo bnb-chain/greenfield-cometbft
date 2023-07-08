@@ -17,7 +17,7 @@ var _ Client = (*localClient)(nil)
 type localClient struct {
 	service.BaseService
 
-	mtx *cmtsync.RWMutex
+	mtx *cmtsync.Mutex
 	types.Application
 	Callback
 }
@@ -28,9 +28,9 @@ var _ Client = (*localClient)(nil)
 // methods of the given app.
 //
 // Both Async and Sync methods ignore the given context.Context parameter.
-func NewLocalClient(mtx *cmtsync.RWMutex, app types.Application) Client {
+func NewLocalClient(mtx *cmtsync.Mutex, app types.Application) Client {
 	if mtx == nil {
-		mtx = new(cmtsync.RWMutex)
+		mtx = new(cmtsync.Mutex)
 	}
 	cli := &localClient{
 		mtx:         mtx,
@@ -67,6 +67,9 @@ func (app *localClient) EchoAsync(msg string) *ReqRes {
 }
 
 func (app *localClient) InfoAsync(req types.RequestInfo) *ReqRes {
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
+
 	res := app.Application.Info(req)
 	return app.callback(
 		types.ToRequestInfo(req),
@@ -86,9 +89,6 @@ func (app *localClient) DeliverTxAsync(params types.RequestDeliverTx) *ReqRes {
 }
 
 func (app *localClient) CheckTxAsync(req types.RequestCheckTx) *ReqRes {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
-
 	res := app.Application.CheckTx(req)
 	return app.callback(
 		types.ToRequestCheckTx(req),
@@ -238,9 +238,6 @@ func (app *localClient) DeliverTxSync(req types.RequestDeliverTx) (*types.Respon
 }
 
 func (app *localClient) CheckTxSync(req types.RequestCheckTx) (*types.ResponseCheckTx, error) {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
-
 	res := app.Application.CheckTx(req)
 	return &res, nil
 }
