@@ -225,6 +225,9 @@ func (app *localClient) EchoSync(msg string) (*types.ResponseEcho, error) {
 }
 
 func (app *localClient) InfoSync(req types.RequestInfo) (*types.ResponseInfo, error) {
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
+
 	res := app.Application.Info(req)
 	return &res, nil
 }
