@@ -75,5 +75,7 @@ func NopMetrics() *Metrics {
 		RejectedTxs:  discard.NewCounter(),
 		EvictedTxs:   discard.NewCounter(),
 		RecheckTimes: discard.NewCounter(),
+		TxCommittedTime: discard.NewGauge(),
+		ReceiveTxs: discard.NewGauge(),
 	}
 }

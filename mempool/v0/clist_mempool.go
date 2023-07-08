@@ -334,8 +334,8 @@ func (mem *CListMempool) removeTx(tx types.Tx, elem *clist.CElement, removeFromC
 	mem.txsMap.Delete(tx.Key())
 	if insertedTime, exist := mem.txsInsertedTimeMap.Load(tx.Key()); exist {
 		mem.logger.Info("removeTx", "tx", hex.EncodeToString(tx.Hash()), "insertedTime", insertedTime.(time.Time), "duration", time.Since(insertedTime.(time.Time)))
-		mem.txsInsertedTimeMap.Delete(tx.Key())
 		mem.metrics.TxCommittedTime.Set(float64(time.Since(insertedTime.(time.Time)).Milliseconds()))
+		mem.txsInsertedTimeMap.Delete(tx.Key())
 	}
 	atomic.AddInt64(&mem.txsBytes, int64(-len(tx)))
 
