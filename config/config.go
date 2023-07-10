@@ -1176,6 +1176,10 @@ type TxIndexConfig struct {
 	// The PostgreSQL connection configuration, the connection format:
 	// postgresql://<user>:<password>@<host>:<port>/<db>?<opts>
 	PsqlConn string `mapstructure:"psql-conn"`
+
+	// The option to skip indexing events by indexer
+	// It's only used for "kv" indexer
+	DisableEventsIndexing bool `mapstructure:"disable-events-indexing"`
 }
 
 // DefaultTxIndexConfig returns a default configuration for the transaction indexer.

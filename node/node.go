@@ -300,7 +300,7 @@ func createAndStartIndexerService(
 			return nil, nil, nil, err
 		}
 
-		txIndexer = kv.NewTxIndex(store)
+		txIndexer = kv.NewTxIndex(store, kv.WithDisableIndexEvent(config.TxIndex.DisableEventsIndexing))
 		blockIndexer = blockidxkv.New(dbm.NewPrefixDB(store, []byte("block_events")))
 
 	case "psql":
