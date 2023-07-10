@@ -1177,7 +1177,7 @@ type TxIndexConfig struct {
 	// postgresql://<user>:<password>@<host>:<port>/<db>?<opts>
 	PsqlConn string `mapstructure:"psql-conn"`
 
-	// The option to skip indexing transactions by indexer
+	// The option to skip indexing events by indexer
 	// It's only used for "kv" indexer
 	DisableEventsIndexing bool `mapstructure:"disable-events-indexing"`
 }

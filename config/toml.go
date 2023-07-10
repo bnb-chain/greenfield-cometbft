@@ -518,7 +518,7 @@ indexer = "{{ .TxIndex.Indexer }}"
 #   postgresql://<user>:<password>@<host>:<port>/<db>?<opts>
 psql-conn = "{{ .TxIndex.PsqlConn }}"
 
-# The option to skip indexing transactions by indexer
+# The option to skip indexing events by indexer
 # It's only used for "kv" indexer
 disable-events-indexing = "{{ .TxIndex.DisableEventsIndexing }}"
 
