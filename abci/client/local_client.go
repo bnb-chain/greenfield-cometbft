@@ -89,9 +89,6 @@ func (app *localClient) DeliverTxAsync(params types.RequestDeliverTx) *ReqRes {
 }
 
 func (app *localClient) CheckTxAsync(req types.RequestCheckTx) *ReqRes {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
-
 	res := app.Application.CheckTx(req)
 	return app.callback(
 		types.ToRequestCheckTx(req),
@@ -100,9 +97,6 @@ func (app *localClient) CheckTxAsync(req types.RequestCheckTx) *ReqRes {
 }
 
 func (app *localClient) QueryAsync(req types.RequestQuery) *ReqRes {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
-
 	res := app.Application.Query(req)
 	return app.callback(
 		types.ToRequestQuery(req),
@@ -247,17 +241,11 @@ func (app *localClient) DeliverTxSync(req types.RequestDeliverTx) (*types.Respon
 }
 
 func (app *localClient) CheckTxSync(req types.RequestCheckTx) (*types.ResponseCheckTx, error) {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
-
 	res := app.Application.CheckTx(req)
 	return &res, nil
 }
 
 func (app *localClient) QuerySync(req types.RequestQuery) (*types.ResponseQuery, error) {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
-
 	res := app.Application.Query(req)
 	return &res, nil
 }
@@ -364,9 +352,6 @@ func newLocalReqRes(req *types.Request, res *types.Response) *ReqRes {
 // -------------------------------------------------------
 
 func (app *localClient) EthQueryAsync(req types.RequestEthQuery) *ReqRes {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
-
 	res := app.Application.EthQuery(req)
 	return app.callback(
 		types.ToRequestEthQuery(req),
@@ -375,9 +360,6 @@ func (app *localClient) EthQueryAsync(req types.RequestEthQuery) *ReqRes {
 }
 
 func (app *localClient) EthQuerySync(req types.RequestEthQuery) (*types.ResponseEthQuery, error) {
-	app.mtx.Lock()
-	defer app.mtx.Unlock()
-
 	res := app.Application.EthQuery(req)
 	return &res, nil
 }
