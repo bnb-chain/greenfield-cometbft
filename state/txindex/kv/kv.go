@@ -26,18 +26,36 @@ const (
 
 var _ txindex.TxIndexer = (*TxIndex)(nil)
 
+// NewTxIndexerOption is a function that sets an optional parameter on the TxIndexer.
+type NewTxIndexerOption func(*TxIndex)
+
+// WithDisableIndexEvent is an option to disable indexing events.
+func WithDisableIndexEvent(disableIndexEvent bool) NewTxIndexerOption {
+	return func(txi *TxIndex) {
+		txi.disableIndexEvent = disableIndexEvent
+	}
+}
+
 // TxIndex is the simplest possible indexer, backed by key-value storage (levelDB).
 type TxIndex struct {
 	store dbm.DB
 	// Number the events in the event list
 	eventSeq int64
+
+	// whether to disable indexing events
+	disableIndexEvent bool
 }
 
 // NewTxIndex creates new KV indexer.
-func NewTxIndex(store dbm.DB) *TxIndex {
-	return &TxIndex{
+func NewTxIndex(store dbm.DB, opts ...NewTxIndexerOption) *TxIndex {
+	txi := &TxIndex{
 		store: store,
 	}
+
+	for _, opt := range opts {
+		opt(txi)
+	}
+	return txi
 }
 
 // Get gets transaction from the TxIndex storage and returns it or nil if the
@@ -76,13 +94,15 @@ func (txi *TxIndex) AddBatch(b *txindex.Batch) error {
 		hash := types.Tx(result.Tx).Hash()
 
 		// index tx by events
-		err := txi.indexEvents(result, hash, storeBatch)
-		if err != nil {
-			return err
+		if !txi.disableIndexEvent {
+			err := txi.indexEvents(result, hash, storeBatch)
+			if err != nil {
+				return err
+			}
 		}
 
 		// index by height (always)
-		err = storeBatch.Set(keyForHeight(result), hash)
+		err := storeBatch.Set(keyForHeight(result), hash)
 		if err != nil {
 			return err
 		}
@@ -130,13 +150,15 @@ func (txi *TxIndex) Index(result *abci.TxResult) error {
 	}
 
 	// index tx by events
-	err := txi.indexEvents(result, hash, b)
-	if err != nil {
-		return err
+	if !txi.disableIndexEvent {
+		err := txi.indexEvents(result, hash, b)
+		if err != nil {
+			return err
+		}
 	}
 
 	// index by height (always)
-	err = b.Set(keyForHeight(result), hash)
+	err := b.Set(keyForHeight(result), hash)
 	if err != nil {
 		return err
 	}

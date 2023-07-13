@@ -452,3 +452,17 @@ func (cli *grpcClient) EthQuerySync(req types.RequestEthQuery) (*types.ResponseE
 	reqres := cli.EthQueryAsync(req)
 	return cli.finishSyncCall(reqres).GetEthQuery(), cli.Error()
 }
+
+// ----------------------------------------
+
+func (cli *grpcClient) PreDeliverTxAsync(req types.RequestPreDeliverTx) {
+	panic("should not happen")
+}
+
+func (cli *grpcClient) PreBeginBlockSync(req types.RequestPreBeginBlock) error {
+	panic("should not happen")
+}
+
+func (cli *grpcClient) PreCommitSync(req types.RequestPreCommit) error {
+	panic("should not happen")
+}

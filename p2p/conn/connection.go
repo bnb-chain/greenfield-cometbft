@@ -851,8 +851,9 @@ func (ch *Channel) writePacketMsgTo(w io.Writer) (n int, err error) {
 	return
 }
 
-// Handles incoming PacketMsgs. It returns a message bytes if message is
-// complete. NOTE message bytes may change on next call to recvPacketMsg.
+// Handles incoming PacketMsgs.
+// It returns a message bytes if the message is complete.
+// NOTE message bytes may change on the next call to recvPacketMsg.
 // Not goroutine-safe
 func (ch *Channel) recvPacketMsg(packet tmp2p.PacketMsg) ([]byte, error) {
 	ch.Logger.Debug("Read PacketMsg", "conn", ch.conn, "packet", packet)

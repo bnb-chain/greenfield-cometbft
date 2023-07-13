@@ -26,6 +26,7 @@ import (
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	"github.com/cometbft/cometbft/libs/bits"
 	"github.com/cometbft/cometbft/libs/bytes"
+	"github.com/cometbft/cometbft/libs/json"
 	"github.com/cometbft/cometbft/libs/log"
 	cmtsync "github.com/cometbft/cometbft/libs/sync"
 	mempl "github.com/cometbft/cometbft/mempool"
@@ -202,7 +203,7 @@ func TestReactorWithEvidence(t *testing.T) {
 		evpool2 := sm.EmptyEvidencePool{}
 
 		// Make State
-		blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyAppConnCon, mempool, evpool)
+		blockExec := sm.NewBlockExecutor(stateStore, log.TestingLogger(), proxyAppConnCon, nil, mempool, evpool)
 		cs := NewState(thisConfig.Consensus, state, blockExec, blockStore, mempool, evpool2)
 		cs.SetLogger(log.TestingLogger().With("module", "consensus"))
 		cs.SetPrivValidator(pv)
@@ -275,8 +276,10 @@ func TestReactorReceiveDoesNotPanicIfAddPeerHasntBeenCalledYet(t *testing.T) {
 		reactor.ReceiveEnvelope(p2p.Envelope{
 			ChannelID: StateChannel,
 			Src:       peer,
-			Message: &cmtcons.HasVote{Height: 1,
-				Round: 1, Index: 1, Type: cmtproto.PrevoteType},
+			Message: &cmtcons.HasVote{
+				Height: 1,
+				Round:  1, Index: 1, Type: cmtproto.PrevoteType,
+			},
 		})
 		reactor.AddPeer(peer)
 	})
@@ -301,8 +304,10 @@ func TestReactorReceivePanicsIfInitPeerHasntBeenCalledYet(t *testing.T) {
 		reactor.ReceiveEnvelope(p2p.Envelope{
 			ChannelID: StateChannel,
 			Src:       peer,
-			Message: &cmtcons.HasVote{Height: 1,
-				Round: 1, Index: 1, Type: cmtproto.PrevoteType},
+			Message: &cmtcons.HasVote{
+				Height: 1,
+				Round:  1, Index: 1, Type: cmtproto.PrevoteType,
+			},
 		})
 	})
 }
@@ -1004,4 +1009,33 @@ func TestVoteSetBitsMessageValidateBasic(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMarshalJSONPeerState(t *testing.T) {
+	ps := NewPeerState(nil)
+	data, err := json.Marshal(ps)
+	require.NoError(t, err)
+	require.JSONEq(t, `{
+		"round_state":{
+			"height": "0",
+			"round": -1,
+			"step": 0,
+			"start_time": "0001-01-01T00:00:00Z",
+			"proposal": false,
+			"proposal_block_part_set_header":
+				{"total":0, "hash":""},
+			"proposal_block_parts": null,
+			"proposal_pol_round": -1,
+			"proposal_pol": null,
+			"prevotes": null,
+			"precommits": null,
+			"last_commit_round": -1,
+			"last_commit": null,
+			"catchup_commit_round": -1,
+			"catchup_commit": null
+		},
+		"stats":{
+			"votes":"0",
+			"block_parts":"0"}
+		}`, string(data))
 }

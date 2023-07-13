@@ -116,7 +116,7 @@ func loadEventSinks(cfg *cmtcfg.Config) (indexer.BlockIndexer, txindex.TxIndexer
 			return nil, nil, err
 		}
 
-		txIndexer := kv.NewTxIndex(store)
+		txIndexer := kv.NewTxIndex(store, kv.WithDisableIndexEvent(config.TxIndex.DisableEventsIndexing))
 		blockIndexer := blockidxkv.New(dbm.NewPrefixDB(store, []byte("block_events")))
 		return blockIndexer, txIndexer, nil
 	default:

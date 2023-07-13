@@ -105,7 +105,7 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool) (int64, []byte, error) 
 		LastResultsHash: latestBlock.Header.LastResultsHash,
 		AppHash:         latestBlock.Header.AppHash,
 
-		LastRandaoMix: latestBlock.Header.RandaoMix,
+		LastRandaoMix: rollbackBlock.Header.RandaoMix,
 	}
 
 	// persist the new state. This overrides the invalid one. NOTE: this will also

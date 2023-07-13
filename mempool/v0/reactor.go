@@ -15,6 +15,8 @@ import (
 	"github.com/cometbft/cometbft/types"
 )
 
+var MempoolPacketChannelSize = 1024 * 200 // 200K messages can be queued
+
 // Reactor handles mempool tx broadcasting amongst peers.
 // It maintains a map from peer ID to counter, to prevent gossiping txs to the
 // peers you received it from.
@@ -23,6 +25,8 @@ type Reactor struct {
 	config  *cfg.MempoolConfig
 	mempool *CListMempool
 	ids     *mempoolIDs
+
+	recvCh chan p2p.Envelope
 }
 
 type mempoolIDs struct {
@@ -94,6 +98,7 @@ func NewReactor(config *cfg.MempoolConfig, mempool *CListMempool) *Reactor {
 		config:  config,
 		mempool: mempool,
 		ids:     newMempoolIDs(),
+		recvCh:  make(chan p2p.Envelope, MempoolPacketChannelSize),
 	}
 	memR.BaseReactor = *p2p.NewBaseReactor("Mempool", memR)
 	return memR
@@ -116,7 +121,13 @@ func (memR *Reactor) OnStart() error {
 	if !memR.config.Broadcast {
 		memR.Logger.Info("Tx broadcasting is disabled")
 	}
+	go memR.receiveRoutine()
 	return nil
+}
+
+// OnStop implements p2p.BaseReactor.
+func (memR *Reactor) OnStop() {
+	close(memR.recvCh)
 }
 
 // GetChannels implements Reactor by returning the list of channels for this
@@ -132,7 +143,7 @@ func (memR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 	return []*p2p.ChannelDescriptor{
 		{
 			ID:                  mempool.MempoolChannel,
-			Priority:            5,
+			Priority:            1,
 			RecvMessageCapacity: batchMsg.Size(),
 			MessageType:         &protomem.Message{},
 		},
@@ -157,35 +168,41 @@ func (memR *Reactor) RemovePeer(peer p2p.Peer, reason interface{}) {
 // It adds any received transactions to the mempool.
 func (memR *Reactor) ReceiveEnvelope(e p2p.Envelope) {
 	memR.Logger.Debug("Receive", "src", e.Src, "chId", e.ChannelID, "msg", e.Message)
-	switch msg := e.Message.(type) {
-	case *protomem.Txs:
-		protoTxs := msg.GetTxs()
-		if len(protoTxs) == 0 {
-			memR.Logger.Error("received empty txs from peer", "src", e.Src)
-			return
-		}
-		txInfo := mempool.TxInfo{SenderID: memR.ids.GetForPeer(e.Src)}
-		if e.Src != nil {
-			txInfo.SenderP2PID = e.Src.ID()
-		}
-
-		var err error
-		for _, tx := range protoTxs {
-			ntx := types.Tx(tx)
-			err = memR.mempool.CheckTx(ntx, nil, txInfo)
-			if errors.Is(err, mempool.ErrTxInCache) {
-				memR.Logger.Debug("Tx already exists in cache", "tx", ntx.String())
-			} else if err != nil {
-				memR.Logger.Info("Could not check tx", "tx", ntx.String(), "err", err)
-			}
-		}
-	default:
-		memR.Logger.Error("unknown message type", "src", e.Src, "chId", e.ChannelID, "msg", e.Message)
-		memR.Switch.StopPeerForError(e.Src, fmt.Errorf("mempool cannot handle message of type: %T", e.Message))
-		return
-	}
+	memR.recvCh <- e
 
 	// broadcasting happens from go routines per peer
+}
+
+func (memR *Reactor) receiveRoutine() {
+	for e := range memR.recvCh {
+		switch msg := e.Message.(type) {
+		case *protomem.Txs:
+			protoTxs := msg.GetTxs()
+			if len(protoTxs) == 0 {
+				memR.Logger.Error("received empty txs from peer", "src", e.Src)
+				continue
+			}
+			txInfo := mempool.TxInfo{SenderID: memR.ids.GetForPeer(e.Src)}
+			if e.Src != nil {
+				txInfo.SenderP2PID = e.Src.ID()
+			}
+
+			var err error
+			for _, tx := range protoTxs {
+				ntx := types.Tx(tx)
+				err = memR.mempool.CheckTx(ntx, nil, txInfo)
+				if errors.Is(err, mempool.ErrTxInCache) {
+					memR.Logger.Debug("Tx already exists in cache", "tx", ntx.String())
+				} else if err != nil {
+					memR.Logger.Info("Could not check tx", "tx", ntx.String(), "err", err)
+				}
+			}
+		default:
+			memR.Logger.Error("unknown message type", "src", e.Src, "chId", e.ChannelID, "msg", e.Message)
+			memR.Switch.StopPeerForError(e.Src, fmt.Errorf("mempool cannot handle message of type: %T", e.Message))
+			continue
+		}
+	}
 }
 
 // PeerState describes the state of a peer.

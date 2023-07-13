@@ -22,22 +22,22 @@ func TestConsensusParamsValidation(t *testing.T) {
 		valid  bool
 	}{
 		// test block params
-		0: {makeParams(1, 0, 2, 0, valEd25519), true},
-		1: {makeParams(0, 0, 2, 0, valEd25519), false},
-		2: {makeParams(47*1024*1024, 0, 2, 0, valEd25519), true},
-		3: {makeParams(10, 0, 2, 0, valEd25519), true},
-		4: {makeParams(100*1024*1024, 0, 2, 0, valEd25519), true},
-		5: {makeParams(101*1024*1024, 0, 2, 0, valEd25519), false},
-		6: {makeParams(1024*1024*1024, 0, 2, 0, valEd25519), false},
+		0: {makeParams(2400, 1, 0, 2, 0, valEd25519), true},
+		1: {makeParams(2400, 0, 0, 2, 0, valEd25519), false},
+		2: {makeParams(2400, 47*1024*1024, 0, 2, 0, valEd25519), true},
+		3: {makeParams(2400, 10, 0, 2, 0, valEd25519), true},
+		4: {makeParams(2400, 100*1024*1024, 0, 2, 0, valEd25519), true},
+		5: {makeParams(2400, 101*1024*1024, 0, 2, 0, valEd25519), false},
+		6: {makeParams(2400, 1024*1024*1024, 0, 2, 0, valEd25519), false},
 		// test evidence params
-		7:  {makeParams(1, 0, 0, 0, valEd25519), false},
-		8:  {makeParams(1, 0, 2, 2, valEd25519), false},
-		9:  {makeParams(1000, 0, 2, 1, valEd25519), true},
-		10: {makeParams(1, 0, -1, 0, valEd25519), false},
+		7:  {makeParams(2400, 1, 0, 0, 0, valEd25519), false},
+		8:  {makeParams(2400, 1, 0, 2, 2, valEd25519), false},
+		9:  {makeParams(2400, 1000, 0, 2, 1, valEd25519), true},
+		10: {makeParams(2400, 1, 0, -1, 0, valEd25519), false},
 		// test no pubkey type provided
-		11: {makeParams(1, 0, 2, 0, []string{}), false},
+		11: {makeParams(2400, 1, 0, 2, 0, []string{}), false},
 		// test invalid pubkey type provided
-		12: {makeParams(1, 0, 2, 0, []string{"potatoes make good pubkeys"}), false},
+		12: {makeParams(2400, 1, 0, 2, 0, []string{"potatoes make good pubkeys"}), false},
 	}
 	for i, tc := range testCases {
 		if tc.valid {
@@ -49,7 +49,7 @@ func TestConsensusParamsValidation(t *testing.T) {
 }
 
 func makeParams(
-	blockBytes, blockGas int64,
+	blockTxs, blockBytes, blockGas int64,
 	evidenceAge int64,
 	maxEvidenceBytes int64,
 	pubkeyTypes []string,
@@ -58,6 +58,7 @@ func makeParams(
 		Block: BlockParams{
 			MaxBytes: blockBytes,
 			MaxGas:   blockGas,
+			MaxTxs:   blockTxs,
 		},
 		Evidence: EvidenceParams{
 			MaxAgeNumBlocks: evidenceAge,
@@ -72,14 +73,14 @@ func makeParams(
 
 func TestConsensusParamsHash(t *testing.T) {
 	params := []ConsensusParams{
-		makeParams(4, 2, 3, 1, valEd25519),
-		makeParams(1, 4, 3, 1, valEd25519),
-		makeParams(1, 2, 4, 1, valEd25519),
-		makeParams(2, 5, 7, 1, valEd25519),
-		makeParams(1, 7, 6, 1, valEd25519),
-		makeParams(9, 5, 4, 1, valEd25519),
-		makeParams(7, 8, 9, 1, valEd25519),
-		makeParams(4, 6, 5, 1, valEd25519),
+		makeParams(2400, 4, 2, 3, 1, valEd25519),
+		makeParams(2400, 1, 4, 3, 1, valEd25519),
+		makeParams(2400, 1, 2, 4, 1, valEd25519),
+		makeParams(2400, 2, 5, 7, 1, valEd25519),
+		makeParams(2400, 1, 7, 6, 1, valEd25519),
+		makeParams(2400, 9, 5, 4, 1, valEd25519),
+		makeParams(2400, 7, 8, 9, 1, valEd25519),
+		makeParams(2400, 4, 6, 5, 1, valEd25519),
 	}
 
 	hashes := make([][]byte, len(params))
@@ -105,13 +106,13 @@ func TestConsensusParamsUpdate(t *testing.T) {
 	}{
 		// empty updates
 		{
-			makeParams(1, 2, 3, 0, valEd25519),
+			makeParams(2400, 1, 2, 3, 0, valEd25519),
 			&cmtproto.ConsensusParams{},
-			makeParams(1, 2, 3, 0, valEd25519),
+			makeParams(2400, 1, 2, 3, 0, valEd25519),
 		},
 		// fine updates
 		{
-			makeParams(1, 2, 3, 0, valEd25519),
+			makeParams(2400, 1, 2, 3, 0, valEd25519),
 			&cmtproto.ConsensusParams{
 				Block: &cmtproto.BlockParams{
 					MaxBytes: 100,
@@ -126,7 +127,7 @@ func TestConsensusParamsUpdate(t *testing.T) {
 					PubKeyTypes: valSecp256k1,
 				},
 			},
-			makeParams(100, 200, 300, 50, valSecp256k1),
+			makeParams(2400, 100, 200, 300, 50, valSecp256k1),
 		},
 	}
 
@@ -136,7 +137,7 @@ func TestConsensusParamsUpdate(t *testing.T) {
 }
 
 func TestConsensusParamsUpdate_AppVersion(t *testing.T) {
-	params := makeParams(1, 2, 3, 0, valEd25519)
+	params := makeParams(2400, 1, 2, 3, 0, valEd25519)
 
 	assert.EqualValues(t, 0, params.Version.App)
 
@@ -148,14 +149,14 @@ func TestConsensusParamsUpdate_AppVersion(t *testing.T) {
 
 func TestProto(t *testing.T) {
 	params := []ConsensusParams{
-		makeParams(4, 2, 3, 1, valEd25519),
-		makeParams(1, 4, 3, 1, valEd25519),
-		makeParams(1, 2, 4, 1, valEd25519),
-		makeParams(2, 5, 7, 1, valEd25519),
-		makeParams(1, 7, 6, 1, valEd25519),
-		makeParams(9, 5, 4, 1, valEd25519),
-		makeParams(7, 8, 9, 1, valEd25519),
-		makeParams(4, 6, 5, 1, valEd25519),
+		makeParams(2400, 4, 2, 3, 1, valEd25519),
+		makeParams(2400, 1, 4, 3, 1, valEd25519),
+		makeParams(2400, 1, 2, 4, 1, valEd25519),
+		makeParams(2400, 2, 5, 7, 1, valEd25519),
+		makeParams(2400, 1, 7, 6, 1, valEd25519),
+		makeParams(2400, 9, 5, 4, 1, valEd25519),
+		makeParams(2400, 7, 8, 9, 1, valEd25519),
+		makeParams(2400, 4, 6, 5, 1, valEd25519),
 	}
 
 	for i := range params {

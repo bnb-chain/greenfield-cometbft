@@ -1134,7 +1134,7 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 
 	// Decide on block
 	if cs.ValidBlock != nil {
-		// If there is valid block, choose that.
+		// If there is a valid block, choose that.
 		block, blockParts = cs.ValidBlock, cs.ValidBlockParts
 	} else {
 		// Create a new proposal block from state/txs from the mempool.
@@ -1201,7 +1201,7 @@ func (cs *State) isProposalComplete() bool {
 // We really only need to return the parts, but the block is returned for
 // convenience so we can log the proposal block.
 //
-// NOTE: keep it side-effect free for clarity.
+// NOTE: keep it side effect free for clarity.
 // CONTRACT: cs.privValidator is not nil.
 func (cs *State) createProposalBlock() (*types.Block, error) {
 	if cs.privValidator == nil {
@@ -1841,7 +1841,7 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 	if height > 1 {
 		lastBlockMeta := cs.blockStore.LoadBlockMeta(height - 1)
 		if lastBlockMeta != nil {
-			cs.metrics.BlockIntervalSeconds.Observe(
+			cs.metrics.BlockIntervalSeconds.Set(
 				block.Time.Sub(lastBlockMeta.Header.Time).Seconds(),
 			)
 		}

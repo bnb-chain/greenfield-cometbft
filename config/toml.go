@@ -91,7 +91,7 @@ moniker = "{{ .BaseConfig.Moniker }}"
 # allows them to catchup quickly by downloading blocks in parallel
 # and verifying their commits
 #
-# Deprecated: this key will be removed and BlockSync will be enabled 
+# Deprecated: this key will be removed and BlockSync will be enabled
 # unconditionally in the next major release.
 block_sync = {{ .BaseConfig.BlockSyncMode }}
 
@@ -437,7 +437,7 @@ chunk_fetchers = "{{ .StateSync.ChunkFetchers }}"
 [blocksync]
 
 # Block Sync version to use:
-# 
+#
 # In v0.37, v1 and v2 of the block sync protocols were deprecated.
 # Please use v0 instead.
 #
@@ -518,6 +518,10 @@ indexer = "{{ .TxIndex.Indexer }}"
 #   postgresql://<user>:<password>@<host>:<port>/<db>?<opts>
 psql-conn = "{{ .TxIndex.PsqlConn }}"
 
+# The option to skip indexing events by indexer
+# It's only used for "kv" indexer
+disable-events-indexing = "{{ .TxIndex.DisableEventsIndexing }}"
+
 #######################################################
 ###       Instrumentation Configuration Options     ###
 #######################################################
@@ -592,9 +596,9 @@ var testGenesisFmt = `{
   "initial_height": "1",
 	"consensus_params": {
 		"block": {
-			"max_bytes": "22020096",
+			"max_bytes": "3145728",
 			"max_gas": "-1",
-			"time_iota_ms": "10"
+			"max_txs": "2400"
 		},
 		"evidence": {
 			"max_age_num_blocks": "100000",

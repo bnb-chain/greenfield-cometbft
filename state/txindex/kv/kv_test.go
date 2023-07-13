@@ -421,11 +421,11 @@ func TestTxSearchOneTxWithMultipleSameTagsButDifferentValues(t *testing.T) {
 	for _, tc := range testCases {
 		results, err := indexer.Search(ctx, query.MustParse(tc.q))
 		assert.NoError(t, err)
-		len := 0
+		length := 0
 		if tc.found {
-			len = 1
+			length = 1
 		}
-		assert.Len(t, results, len)
+		assert.Len(t, results, length)
 		assert.True(t, !tc.found || proto.Equal(txResult, results[0]))
 
 	}
