@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/cometbft/cometbft/libs/bytes"
 	cmtjson "github.com/cometbft/cometbft/libs/json"
 	cmtpubsub "github.com/cometbft/cometbft/libs/pubsub"
@@ -14,9 +18,6 @@ import (
 	jsonrpcclient "github.com/cometbft/cometbft/rpc/jsonrpc/client"
 	rpctypes "github.com/cometbft/cometbft/rpc/jsonrpc/types"
 	"github.com/cometbft/cometbft/types"
-	"strings"
-	"sync"
-	"time"
 )
 
 var errNotRunning = errors.New("client is not running. Use .Start() method to start")
@@ -28,10 +29,8 @@ type WSEvents struct {
 	endpoint string
 	ws       *jsonrpcclient.WSClient
 
-	mtx           cmtsync.RWMutex
-	subscriptions map[string]chan ctypes.ResultEvent // query -> chan
-
-	reconnect          chan *jsonrpcclient.WSClient
+	mtx                cmtsync.RWMutex
+	subscriptions      map[string]chan ctypes.ResultEvent // query -> chan
 	rpcResponseChanMap sync.Map
 }
 
@@ -245,20 +244,14 @@ func (w *WSEvents) eventListener() {
 	}
 }
 
-func (w *WSEvents) setWsClient(wsClient *jsonrpcclient.WSClient) {
-	w.mtx.Lock()
-	defer w.mtx.Unlock()
-	w.ws = wsClient
-}
-
 // SimpleCall uses the wsclient
-func (w *WSEvents) SimpleCall(doRpc func(id rpctypes.JSONRPCIntID) error, ws *jsonrpcclient.WSClient, proto interface{}) error {
+func (w *WSEvents) SimpleCall(doRPC func(id rpctypes.JSONRPCIntID) error, ws *jsonrpcclient.WSClient, proto interface{}) error {
 	id := w.GetClient().NextRequestID()
 	outChan := make(chan rpctypes.RPCResponse, 1)
 	w.rpcResponseChanMap.Store(id, outChan)
 	defer close(outChan)
 	defer w.rpcResponseChanMap.Delete(id)
-	if err := doRpc(id); err != nil {
+	if err := doRPC(id); err != nil {
 		return err
 	}
 	return w.WaitForResponse(context.Background(), outChan, proto, ws)
@@ -279,7 +272,6 @@ func (w *WSEvents) WaitForResponse(ctx context.Context, outChan chan rpctypes.RP
 		}
 		return nil
 	case <-ctx.Done():
-		w.reconnect <- ws
 		return ctx.Err()
 	}
 }

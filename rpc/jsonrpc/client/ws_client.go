@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/cometbft/cometbft/libs/bytes"
-	"github.com/cometbft/cometbft/rpc/client"
 	"net"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/cometbft/cometbft/libs/bytes"
+	"github.com/cometbft/cometbft/rpc/client"
 
 	"github.com/gorilla/websocket"
 	metrics "github.com/rcrowley/go-metrics"
