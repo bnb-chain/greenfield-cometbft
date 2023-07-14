@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cometbft/cometbft/votepool"
+
 	"github.com/cometbft/cometbft/libs/bytes"
 	cmtjson "github.com/cometbft/cometbft/libs/json"
 	cmtpubsub "github.com/cometbft/cometbft/libs/pubsub"
@@ -656,6 +658,36 @@ func (w *WSEvents) BroadcastEvidence(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastEvidence(ctx, ev, id)
+	}, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (w *WSEvents) BroadcastVote(
+	ctx context.Context,
+	vote votepool.Vote,
+) (*ctypes.ResultBroadcastVote, error) {
+	result := new(ctypes.ResultBroadcastVote)
+	wsClient := w.GetClient()
+	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+		return wsClient.BroadcastVote(ctx, vote, id)
+	}, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+func (w *WSEvents) QueryVote(
+	ctx context.Context,
+	eventType int,
+	eventHash []byte,
+) (*ctypes.ResultQueryVote, error) {
+	result := new(ctypes.ResultQueryVote)
+	wsClient := w.GetClient()
+	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+		return wsClient.QueryVote(ctx, eventType, eventHash, id)
 	}, result)
 	if err != nil {
 		return nil, err

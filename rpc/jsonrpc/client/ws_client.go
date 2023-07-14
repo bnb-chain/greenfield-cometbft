@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cometbft/cometbft/votepool"
+
 	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cometbft/cometbft/rpc/client"
 
@@ -777,4 +779,21 @@ func (c *WSClient) BroadcastEvidence(
 	id types.JSONRPCIntID,
 ) error {
 	return c.CallWithID(ctx, id, "broadcast_evidence", map[string]interface{}{"evidence": ev})
+}
+
+func (c *WSClient) BroadcastVote(
+	ctx context.Context,
+	vote votepool.Vote,
+	id types.JSONRPCIntID,
+) error {
+	return c.CallWithID(ctx, id, "broadcast_vote", map[string]interface{}{"vote": vote})
+}
+
+func (c *WSClient) QueryVote(
+	ctx context.Context,
+	eventType int,
+	eventHash []byte,
+	id types.JSONRPCIntID,
+) error {
+	return c.CallWithID(ctx, id, "query_vote", map[string]interface{}{"event_type": eventType, "event_hash": eventHash})
 }

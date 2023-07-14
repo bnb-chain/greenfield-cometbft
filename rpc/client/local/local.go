@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/cometbft/cometbft/votepool"
+
 	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cometbft/cometbft/libs/log"
 	cmtpubsub "github.com/cometbft/cometbft/libs/pubsub"
@@ -211,6 +213,14 @@ func (c *Local) BlockSearch(
 
 func (c *Local) BroadcastEvidence(ctx context.Context, ev types.Evidence) (*ctypes.ResultBroadcastEvidence, error) {
 	return core.BroadcastEvidence(c.ctx, ev)
+}
+
+func (c *Local) BroadcastVote(ctx context.Context, vote votepool.Vote) (*ctypes.ResultBroadcastVote, error) {
+	return core.BroadcastVote(c.ctx, vote)
+}
+
+func (c *Local) QueryVote(ctx context.Context, eventType int, eventHash []byte) (*ctypes.ResultQueryVote, error) {
+	return core.QueryVote(c.ctx, eventType, eventHash)
 }
 
 func (c *Local) Subscribe(
