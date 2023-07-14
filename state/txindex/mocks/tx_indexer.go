@@ -5,8 +5,9 @@ package mocks
 import (
 	context "context"
 
-	query "github.com/cometbft/cometbft/libs/pubsub/query"
 	mock "github.com/stretchr/testify/mock"
+
+	query "github.com/cometbft/cometbft/libs/pubsub/query"
 
 	txindex "github.com/cometbft/cometbft/state/txindex"
 
