@@ -3,7 +3,6 @@ package v2
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -180,6 +179,7 @@ func (w *WSEvents) eventListener() {
 			if !ok {
 				return
 			}
+
 			if resp.Error != nil {
 				w.Logger.Error("WS error", "err", resp.Error.Error())
 				// Error can be ErrAlreadySubscribed or max client (subscriptions per
@@ -200,9 +200,6 @@ func (w *WSEvents) eventListener() {
 				w.Logger.Error("unexpected request id type")
 				continue
 			}
-
-			fmt.Printf("eventListener got event id is %d\n", id)
-
 			// if received event id not found in rpcResponseChanMap, means it is a subscription event
 			if out, ok := w.rpcResponseChanMap.Load(id); ok {
 				outChan, ok := out.(chan rpctypes.RPCResponse)
@@ -244,8 +241,7 @@ func (w *WSEvents) eventListener() {
 	}
 }
 
-// SimpleCall uses the wsclient
-func (w *WSEvents) SimpleCall(doRPC func(id rpctypes.JSONRPCIntID) error, ws *jsonrpcclient.WSClient, proto interface{}) error {
+func (w *WSEvents) SimpleCall(doRPC func(id rpctypes.JSONRPCIntID) error, proto interface{}) error {
 	id := w.GetClient().NextRequestID()
 	outChan := make(chan rpctypes.RPCResponse, 1)
 	w.rpcResponseChanMap.Store(id, outChan)
@@ -254,10 +250,13 @@ func (w *WSEvents) SimpleCall(doRPC func(id rpctypes.JSONRPCIntID) error, ws *js
 	if err := doRPC(id); err != nil {
 		return err
 	}
-	return w.WaitForResponse(context.Background(), outChan, proto, ws)
+	// how long is the timeout
+	waitCtx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	return w.WaitForResponse(waitCtx, outChan, proto)
 }
 
-func (w *WSEvents) WaitForResponse(ctx context.Context, outChan chan rpctypes.RPCResponse, result interface{}, ws *jsonrpcclient.WSClient) error {
+func (w *WSEvents) WaitForResponse(ctx context.Context, outChan chan rpctypes.RPCResponse, result interface{}) error {
 	select {
 	case resp, ok := <-outChan:
 		if !ok {
@@ -281,7 +280,7 @@ func (w *WSEvents) Status(ctx context.Context) (*ctypes.ResultStatus, error) {
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.Status(ctx, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -293,7 +292,7 @@ func (w *WSEvents) ABCIInfo(ctx context.Context) (*ctypes.ResultABCIInfo, error)
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.ABCIInfo(ctx, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -308,7 +307,7 @@ func (w *WSEvents) ABCIQuery(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.ABCIQueryWithOptions(ctx, id, path, data, rpcclient.DefaultABCIQueryOptions)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -324,7 +323,7 @@ func (w *WSEvents) ABCIQueryWithOptions(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.ABCIQueryWithOptions(ctx, id, path, data, opts)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -336,7 +335,7 @@ func (w *WSEvents) BroadcastTxCommit(ctx context.Context, tx types.Tx) (*ctypes.
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastTxCommit(ctx, id, tx)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -348,7 +347,7 @@ func (w *WSEvents) BroadcastTxAsync(ctx context.Context, tx types.Tx) (*ctypes.R
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastTxAsync(ctx, id, tx)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -360,7 +359,7 @@ func (w *WSEvents) BroadcastTxSync(ctx context.Context, tx types.Tx) (*ctypes.Re
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastTxSync(ctx, id, tx)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -375,7 +374,7 @@ func (w *WSEvents) UnconfirmedTxs(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.UnconfirmedTxs(ctx, id, limit)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -386,7 +385,7 @@ func (w *WSEvents) NumUnconfirmedTxs(ctx context.Context) (*ctypes.ResultUnconfi
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.NumUnconfirmedTxs(ctx, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -398,7 +397,7 @@ func (w *WSEvents) CheckTx(ctx context.Context, tx types.Tx) (*ctypes.ResultChec
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.CheckTx(ctx, id, tx)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -410,7 +409,7 @@ func (w *WSEvents) NetInfo(ctx context.Context) (*ctypes.ResultNetInfo, error) {
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.NetInfo(ctx, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -422,7 +421,7 @@ func (w *WSEvents) DumpConsensusState(ctx context.Context) (*ctypes.ResultDumpCo
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.DumpConsensusState(ctx, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -434,7 +433,7 @@ func (w *WSEvents) ConsensusState(ctx context.Context) (*ctypes.ResultConsensusS
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.ConsensusState(ctx, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -449,7 +448,7 @@ func (w *WSEvents) ConsensusParams(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.ConsensusParams(ctx, id, height)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -461,7 +460,7 @@ func (w *WSEvents) Health(ctx context.Context) (*ctypes.ResultHealth, error) {
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.Health(ctx, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -477,7 +476,7 @@ func (w *WSEvents) BlockchainInfo(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.BlockchainInfo(ctx, id, minHeight, maxHeight)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -489,7 +488,7 @@ func (w *WSEvents) Genesis(ctx context.Context) (*ctypes.ResultGenesis, error) {
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.NetInfo(ctx, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -501,7 +500,7 @@ func (w *WSEvents) GenesisChunked(ctx context.Context, id uint) (*ctypes.ResultG
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.GenesisChunked(ctx, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -513,7 +512,7 @@ func (w *WSEvents) Block(ctx context.Context, height *int64) (*ctypes.ResultBloc
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.Block(ctx, id, height)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -525,7 +524,7 @@ func (w *WSEvents) BlockByHash(ctx context.Context, hash []byte) (*ctypes.Result
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.BlockByHash(ctx, hash, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -540,7 +539,7 @@ func (w *WSEvents) BlockResults(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.BlockResults(ctx, height, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -552,7 +551,7 @@ func (w *WSEvents) Header(ctx context.Context, height *int64) (*ctypes.ResultHea
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.Header(ctx, height, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -564,7 +563,7 @@ func (w *WSEvents) HeaderByHash(ctx context.Context, hash bytes.HexBytes) (*ctyp
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.HeaderByHash(ctx, hash, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -576,7 +575,7 @@ func (w *WSEvents) Commit(ctx context.Context, height *int64) (*ctypes.ResultCom
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.Commit(ctx, height, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -588,7 +587,7 @@ func (w *WSEvents) Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.Res
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.Tx(ctx, hash, prove, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -608,7 +607,7 @@ func (w *WSEvents) TxSearch(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.TxSearch(ctx, query, prove, page, perPage, orderBy, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -625,7 +624,7 @@ func (w *WSEvents) BlockSearch(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.BlockSearch(ctx, query, page, perPage, orderBy, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -642,7 +641,7 @@ func (w *WSEvents) Validators(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.Validators(ctx, height, page, perPage, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -657,7 +656,7 @@ func (w *WSEvents) BroadcastEvidence(
 	wsClient := w.GetClient()
 	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastEvidence(ctx, ev, id)
-	}, wsClient, result)
+	}, result)
 	if err != nil {
 		return nil, err
 	}
