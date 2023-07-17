@@ -21,6 +21,8 @@ import (
 	"github.com/cometbft/cometbft/types"
 )
 
+const waitTimeOut = 5 * time.Second
+
 var errNotRunning = errors.New("client is not running. Use .Start() method to start")
 
 // WSEvents is a wrapper around WSClient, which implements EventsClient.
@@ -252,7 +254,10 @@ func (w *WSEvents) SimpleCall(ctx context.Context, proto interface{}, doRPC func
 	if err := doRPC(ctx, id); err != nil {
 		return err
 	}
-	return w.WaitForResponse(ctx, outChan, proto)
+	// in case when user passing empty context, and there is no repose from server, the request will be blocked
+	waitCtx, cancel := context.WithTimeout(ctx, waitTimeOut)
+	defer cancel()
+	return w.WaitForResponse(waitCtx, outChan, proto)
 }
 
 func (w *WSEvents) WaitForResponse(ctx context.Context, outChan chan rpctypes.RPCResponse, result interface{}) error {
