@@ -172,6 +172,8 @@ func (memR *Reactor) ReceiveEnvelope(e p2p.Envelope) {
 }
 
 func (memR *Reactor) receiveRoutine() {
+	errChan := make(chan error, 1)
+	defer close(errChan)
 	for e := range memR.recvCh {
 		switch msg := e.Message.(type) {
 		case *protomem.Txs:
@@ -184,7 +186,7 @@ func (memR *Reactor) receiveRoutine() {
 			if e.Src != nil {
 				txInfo.SenderP2PID = e.Src.ID()
 			}
-			errChan := make(chan error)
+
 			for _, tx := range protoTxs {
 				ntx := types.Tx(tx)
 
@@ -196,7 +198,7 @@ func (memR *Reactor) receiveRoutine() {
 					memR.Logger.Info("Could not check tx", "tx", ntx.String(), "err", err)
 				}
 			}
-			close(errChan)
+
 		default:
 			memR.Logger.Error("unknown message type", "src", e.Src, "chId", e.ChannelID, "msg", e.Message)
 			memR.Switch.StopPeerForError(e.Src, fmt.Errorf("mempool cannot handle message of type: %T", e.Message))
