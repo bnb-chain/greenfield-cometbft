@@ -804,13 +804,14 @@ func applyBlock(t *testing.T, stateStore sm.Store, st sm.State, blk *types.Block
 	bps, err := blk.MakePartSet(testPartSize)
 	require.NoError(t, err)
 	blkID := types.BlockID{Hash: blk.Hash(), PartSetHeader: bps.Header()}
-	newState, _, err := blockExec.ApplyBlock(st, blkID, blk)
+	newState, _, _, err := blockExec.ApplyBlock(st, blkID, blk)
 	require.NoError(t, err)
 	return newState
 }
 
 func buildAppStateFromChain(t *testing.T, proxyApp proxy.AppConns, stateStore sm.Store,
-	state sm.State, chain []*types.Block, nBlocks int, mode uint) {
+	state sm.State, chain []*types.Block, nBlocks int, mode uint,
+) {
 	// start a new app without handshake, play nBlocks blocks
 	if err := proxyApp.Start(); err != nil {
 		panic(err)
@@ -856,7 +857,8 @@ func buildTMStateFromChain(
 	state sm.State,
 	chain []*types.Block,
 	nBlocks int,
-	mode uint) sm.State {
+	mode uint,
+) sm.State {
 	// run the whole chain against this client to build up the CometBFT state
 	clientCreator := proxy.NewLocalClientCreator(
 		kvstore.NewPersistentKVStoreApplication(
@@ -1194,6 +1196,14 @@ func (bs *mockBlockStore) Base() int64                         { return bs.base 
 func (bs *mockBlockStore) Size() int64                         { return bs.Height() - bs.Base() + 1 }
 func (bs *mockBlockStore) LoadBaseMeta() *types.BlockMeta      { return bs.LoadBlockMeta(bs.base) }
 func (bs *mockBlockStore) LoadBlock(height int64) *types.Block { return bs.chain[height-1] }
+func (bs *mockBlockStore) LoadABCIResponses(height int64) *cmtstate.ABCIResponses {
+	return &cmtstate.ABCIResponses{}
+}
+
+func (bs *mockBlockStore) LoadABCIResponsesByHash(hash []byte) *cmtstate.ABCIResponses {
+	return &cmtstate.ABCIResponses{}
+}
+
 func (bs *mockBlockStore) LoadBlockByHash(hash []byte) *types.Block {
 	return bs.chain[int64(len(bs.chain))-1]
 }
@@ -1208,7 +1218,7 @@ func (bs *mockBlockStore) LoadBlockMeta(height int64) *types.BlockMeta {
 	}
 }
 func (bs *mockBlockStore) LoadBlockPart(height int64, index int) *types.Part { return nil }
-func (bs *mockBlockStore) SaveBlock(block *types.Block, blockParts *types.PartSet, seenCommit *types.Commit) {
+func (bs *mockBlockStore) SaveBlock(block *types.Block, blockParts *types.PartSet, seenCommit *types.Commit, abciRes *cmtstate.ABCIResponses) {
 }
 
 func (bs *mockBlockStore) LoadBlockCommit(height int64) *types.Commit {

@@ -9,6 +9,7 @@ import (
 	dbm "github.com/cometbft/cometbft-db"
 
 	cmtsync "github.com/cometbft/cometbft/libs/sync"
+	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	cmtstore "github.com/cometbft/cometbft/proto/tendermint/store"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cometbft/cometbft/types"
@@ -262,6 +263,42 @@ func (bs *BlockStore) LoadSeenCommit(height int64) *types.Commit {
 	return commit
 }
 
+func (bs *BlockStore) LoadABCIResponses(height int64) *cmtstate.ABCIResponses {
+	abciRes := new(cmtstate.ABCIResponses)
+
+	bz, err := bs.db.Get(calcABCIResponseKey(height))
+	if err != nil {
+		panic(err)
+	}
+	if len(bz) == 0 {
+		return nil
+	}
+
+	err = proto.Unmarshal(bz, abciRes)
+	if err != nil {
+		panic(fmt.Errorf("unmarshal to cmtstate.ABCIResponses failed: %w", err))
+	}
+
+	return abciRes
+}
+
+func (bs *BlockStore) LoadABCIResponsesByHash(hash []byte) *cmtstate.ABCIResponses {
+	bz, err := bs.db.Get(calcBlockHashKey(hash))
+	if err != nil {
+		panic(err)
+	}
+	if len(bz) == 0 {
+		return nil
+	}
+
+	s := string(bz)
+	height, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		panic(fmt.Sprintf("failed to extract height from %s: %v", s, err))
+	}
+	return bs.LoadABCIResponses(height)
+}
+
 // PruneBlocks removes block up to (but not including) a height. It returns number of blocks pruned.
 func (bs *BlockStore) PruneBlocks(height int64) (uint64, error) {
 	if height <= 0 {
@@ -347,7 +384,7 @@ func (bs *BlockStore) PruneBlocks(height int64) (uint64, error) {
 //	If all the nodes restart after committing a block,
 //	we need this to reload the precommits to catch-up nodes to the
 //	most recent height.  Otherwise they'd stall at H-1.
-func (bs *BlockStore) SaveBlock(block *types.Block, blockParts *types.PartSet, seenCommit *types.Commit) {
+func (bs *BlockStore) SaveBlock(block *types.Block, blockParts *types.PartSet, seenCommit *types.Commit, abciRes *cmtstate.ABCIResponses) {
 	if block == nil {
 		panic("BlockStore can only save a non-nil block")
 	}
@@ -398,6 +435,14 @@ func (bs *BlockStore) SaveBlock(block *types.Block, blockParts *types.PartSet, s
 	seenCommitBytes := mustEncode(pbsc)
 	if err := bs.db.Set(calcSeenCommitKey(height), seenCommitBytes); err != nil {
 		panic(err)
+	}
+
+	// save abci response
+	if abciRes != nil {
+		abciResBytes := mustEncode(abciRes)
+		if err := bs.db.Set(calcABCIResponseKey(height), abciResBytes); err != nil {
+			panic(err)
+		}
 	}
 
 	// Done!
@@ -467,6 +512,10 @@ func calcSeenCommitKey(height int64) []byte {
 
 func calcBlockHashKey(hash []byte) []byte {
 	return []byte(fmt.Sprintf("BH:%x", hash))
+}
+
+func calcABCIResponseKey(height int64) []byte {
+	return []byte(fmt.Sprintf("ABCIR:%v", height))
 }
 
 //-----------------------------------------------------------------------------

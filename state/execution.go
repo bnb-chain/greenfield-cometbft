@@ -195,9 +195,9 @@ func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block) e
 // It takes a blockID to avoid recomputing the parts hash.
 func (blockExec *BlockExecutor) ApplyBlock(
 	state State, blockID types.BlockID, block *types.Block,
-) (State, int64, error) {
+) (State, int64, *cmtstate.ABCIResponses, error) {
 	if err := validateBlock(state, block); err != nil {
-		return state, 0, ErrInvalidBlock(err)
+		return state, 0, nil, ErrInvalidBlock(err)
 	}
 
 	interruptCh := make(chan struct{})
@@ -215,7 +215,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	elapseTime := time.Since(startTime).Milliseconds()
 	blockExec.metrics.BlockProcessingTime.Set(float64(elapseTime))
 	if err != nil {
-		return state, 0, ErrProxyAppConn(err)
+		return state, 0, nil, ErrProxyAppConn(err)
 	}
 
 	fail.Fail() // XXX
@@ -223,7 +223,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	// Save the results before we commit.
 	startTime = time.Now()
 	if err := blockExec.store.SaveABCIResponses(block.Height, abciResponses); err != nil {
-		return state, 0, err
+		return state, 0, nil, err
 	}
 	elapseTime = time.Since(startTime).Milliseconds()
 	blockExec.metrics.SaveABCIResponse.Set(float64(elapseTime))
@@ -235,12 +235,12 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	abciValUpdates := abciResponses.EndBlock.ValidatorUpdates
 	err = validateValidatorUpdates(abciValUpdates, state.ConsensusParams.Validator)
 	if err != nil {
-		return state, 0, fmt.Errorf("error in validator updates: %v", err)
+		return state, 0, nil, fmt.Errorf("error in validator updates: %v", err)
 	}
 
 	validatorUpdates, err := types.PB2TM.ValidatorUpdates(abciValUpdates)
 	if err != nil {
-		return state, 0, err
+		return state, 0, nil, err
 	}
 	if len(validatorUpdates) > 0 {
 		blockExec.logger.Debug("updates to validators", "updates", types.ValidatorListString(validatorUpdates))
@@ -253,7 +253,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	// Update the state with the block and responses.
 	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates)
 	if err != nil {
-		return state, 0, fmt.Errorf("commit failed for application: %v", err)
+		return state, 0, nil, fmt.Errorf("commit failed for application: %v", err)
 	}
 	elapseTime = time.Since(startTime).Milliseconds()
 	blockExec.metrics.UpdateState.Set(float64(elapseTime))
@@ -262,7 +262,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	startTime = time.Now()
 	appHash, retainHeight, err := blockExec.Commit(state, block, abciResponses.DeliverTxs)
 	if err != nil {
-		return state, 0, fmt.Errorf("commit failed for application: %v", err)
+		return state, 0, nil, fmt.Errorf("commit failed for application: %v", err)
 	}
 	elapseTime = time.Since(startTime).Milliseconds()
 	blockExec.metrics.CommitState.Set(float64(elapseTime))
@@ -278,7 +278,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	startTime = time.Now()
 	state.AppHash = appHash
 	if err := blockExec.store.Save(state); err != nil {
-		return state, 0, err
+		return state, 0, nil, err
 	}
 	elapseTime = time.Since(startTime).Milliseconds()
 	blockExec.metrics.SaveState.Set(float64(elapseTime))
@@ -288,7 +288,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	// NOTE: if we crash between Commit and Save, events won't be fired during replay
 	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, validatorUpdates)
 
-	return state, retainHeight, nil
+	return state, retainHeight, abciResponses, nil
 }
 
 // Commit locks the mempool, runs the ABCI Commit message, and updates the

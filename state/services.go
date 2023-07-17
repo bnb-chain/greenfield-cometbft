@@ -1,6 +1,7 @@
 package state
 
 import (
+	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	"github.com/cometbft/cometbft/types"
 )
 
@@ -23,14 +24,16 @@ type BlockStore interface {
 	LoadBaseMeta() *types.BlockMeta
 	LoadBlockMeta(height int64) *types.BlockMeta
 	LoadBlock(height int64) *types.Block
+	LoadABCIResponses(height int64) *cmtstate.ABCIResponses
 
-	SaveBlock(block *types.Block, blockParts *types.PartSet, seenCommit *types.Commit)
+	SaveBlock(block *types.Block, blockParts *types.PartSet, seenCommit *types.Commit, abciRes *cmtstate.ABCIResponses)
 
 	PruneBlocks(height int64) (uint64, error)
 
 	LoadBlockByHash(hash []byte) *types.Block
 	LoadBlockMetaByHash(hash []byte) *types.BlockMeta
 	LoadBlockPart(height int64, index int) *types.Part
+	LoadABCIResponsesByHash(hash []byte) *cmtstate.ABCIResponses
 
 	LoadBlockCommit(height int64) *types.Commit
 	LoadSeenCommit(height int64) *types.Commit

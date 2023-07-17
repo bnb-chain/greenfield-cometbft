@@ -24,6 +24,7 @@ import (
 	"github.com/cometbft/cometbft/libs/service"
 	cmtsync "github.com/cometbft/cometbft/libs/sync"
 	"github.com/cometbft/cometbft/p2p"
+	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sm "github.com/cometbft/cometbft/state"
 	"github.com/cometbft/cometbft/types"
@@ -1655,20 +1656,6 @@ func (cs *State) finalizeCommit(height int64) {
 
 	fail.Fail() // XXX
 
-	// Save to blockStore.
-	if cs.blockStore.Height() < block.Height {
-		// NOTE: the seenCommit is local justification to commit this block,
-		// but may differ from the LastCommit included in the next block
-		precommits := cs.Votes.Precommits(cs.CommitRound)
-		seenCommit := precommits.MakeCommit()
-		cs.blockStore.SaveBlock(block, blockParts, seenCommit)
-	} else {
-		// Happens during replay if we already saved the block but didn't commit
-		logger.Debug("calling finalizeCommit on already stored block", "height", block.Height)
-	}
-
-	fail.Fail() // XXX
-
 	// Write EndHeightMessage{} for this height, implying that the blockstore
 	// has saved the block.
 	//
@@ -1700,9 +1687,10 @@ func (cs *State) finalizeCommit(height int64) {
 	var (
 		err          error
 		retainHeight int64
+		abciRes      *cmtstate.ABCIResponses
 	)
 
-	stateCopy, retainHeight, err = cs.blockExec.ApplyBlock(
+	stateCopy, retainHeight, abciRes, err = cs.blockExec.ApplyBlock(
 		stateCopy,
 		types.BlockID{
 			Hash:          block.Hash(),
@@ -1712,6 +1700,20 @@ func (cs *State) finalizeCommit(height int64) {
 	)
 	if err != nil {
 		panic(fmt.Sprintf("failed to apply block; error %v", err))
+	}
+
+	fail.Fail() // XXX
+
+	// Save to blockStore.
+	if cs.blockStore.Height() < block.Height {
+		// NOTE: the seenCommit is local justification to commit this block,
+		// but may differ from the LastCommit included in the next block
+		precommits := cs.Votes.Precommits(cs.CommitRound)
+		seenCommit := precommits.MakeCommit()
+		cs.blockStore.SaveBlock(block, blockParts, seenCommit, abciRes)
+	} else {
+		// Happens during replay if we already saved the block but didn't commit
+		logger.Debug("calling finalizeCommit on already stored block", "height", block.Height)
 	}
 
 	fail.Fail() // XXX

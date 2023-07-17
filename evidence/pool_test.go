@@ -423,7 +423,7 @@ func initializeBlockStore(db dbm.DB, state sm.State, valAddr []byte) (*store.Blo
 		}
 
 		seenCommit := makeCommit(i, valAddr)
-		blockStore.SaveBlock(block, partSet, seenCommit)
+		blockStore.SaveBlock(block, partSet, seenCommit, nil)
 	}
 
 	return blockStore, nil

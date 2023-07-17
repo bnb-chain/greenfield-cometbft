@@ -5,6 +5,8 @@ package mocks
 import (
 	mock "github.com/stretchr/testify/mock"
 
+	tendermintstate "github.com/cometbft/cometbft/proto/tendermint/state"
+
 	types "github.com/cometbft/cometbft/types"
 )
 
@@ -50,6 +52,38 @@ func (_m *BlockStore) Height() int64 {
 		r0 = rf()
 	} else {
 		r0 = ret.Get(0).(int64)
+	}
+
+	return r0
+}
+
+// LoadABCIResponses provides a mock function with given fields: height
+func (_m *BlockStore) LoadABCIResponses(height int64) *tendermintstate.ABCIResponses {
+	ret := _m.Called(height)
+
+	var r0 *tendermintstate.ABCIResponses
+	if rf, ok := ret.Get(0).(func(int64) *tendermintstate.ABCIResponses); ok {
+		r0 = rf(height)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*tendermintstate.ABCIResponses)
+		}
+	}
+
+	return r0
+}
+
+// LoadABCIResponsesByHash provides a mock function with given fields: hash
+func (_m *BlockStore) LoadABCIResponsesByHash(hash []byte) *tendermintstate.ABCIResponses {
+	ret := _m.Called(hash)
+
+	var r0 *tendermintstate.ABCIResponses
+	if rf, ok := ret.Get(0).(func([]byte) *tendermintstate.ABCIResponses); ok {
+		r0 = rf(hash)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*tendermintstate.ABCIResponses)
+		}
 	}
 
 	return r0
@@ -204,9 +238,9 @@ func (_m *BlockStore) PruneBlocks(height int64) (uint64, error) {
 	return r0, r1
 }
 
-// SaveBlock provides a mock function with given fields: block, blockParts, seenCommit
-func (_m *BlockStore) SaveBlock(block *types.Block, blockParts *types.PartSet, seenCommit *types.Commit) {
-	_m.Called(block, blockParts, seenCommit)
+// SaveBlock provides a mock function with given fields: block, blockParts, seenCommit, abciRes
+func (_m *BlockStore) SaveBlock(block *types.Block, blockParts *types.PartSet, seenCommit *types.Commit, abciRes *tendermintstate.ABCIResponses) {
+	_m.Called(block, blockParts, seenCommit, abciRes)
 }
 
 // Size provides a mock function with given fields:

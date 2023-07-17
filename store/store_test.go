@@ -177,7 +177,7 @@ func TestBlockStoreSaveLoadBlock(t *testing.T) {
 	validPartSet, err := block.MakePartSet(2)
 	require.NoError(t, err)
 	seenCommit := makeTestCommit(10, cmttime.Now())
-	bs.SaveBlock(block, partSet, seenCommit)
+	bs.SaveBlock(block, partSet, seenCommit, nil)
 	require.EqualValues(t, 1, bs.Base(), "expecting the new height to be changed")
 	require.EqualValues(t, block.Header.Height, bs.Height(), "expecting the new height to be changed")
 
@@ -299,7 +299,7 @@ func TestBlockStoreSaveLoadBlock(t *testing.T) {
 		bs, db := freshBlockStore()
 		// SaveBlock
 		res, err, panicErr := doFn(func() (interface{}, error) {
-			bs.SaveBlock(tuple.block, tuple.parts, tuple.seenCommit)
+			bs.SaveBlock(tuple.block, tuple.parts, tuple.seenCommit, nil)
 			if tuple.block == nil {
 				return nil, nil
 			}
@@ -386,7 +386,7 @@ func TestLoadBaseMeta(t *testing.T) {
 		partSet, err := block.MakePartSet(2)
 		require.NoError(t, err)
 		seenCommit := makeTestCommit(h, cmttime.Now())
-		bs.SaveBlock(block, partSet, seenCommit)
+		bs.SaveBlock(block, partSet, seenCommit, nil)
 	}
 
 	_, err = bs.PruneBlocks(4)
@@ -460,7 +460,7 @@ func TestPruneBlocks(t *testing.T) {
 		partSet, err := block.MakePartSet(2)
 		require.NoError(t, err)
 		seenCommit := makeTestCommit(h, cmttime.Now())
-		bs.SaveBlock(block, partSet, seenCommit)
+		bs.SaveBlock(block, partSet, seenCommit, nil)
 	}
 
 	assert.EqualValues(t, 1, bs.Base())
@@ -579,7 +579,7 @@ func TestLoadBlockMetaByHash(t *testing.T) {
 	partSet, err := b1.MakePartSet(2)
 	require.NoError(t, err)
 	seenCommit := makeTestCommit(1, cmttime.Now())
-	bs.SaveBlock(b1, partSet, seenCommit)
+	bs.SaveBlock(b1, partSet, seenCommit, nil)
 
 	baseBlock := bs.LoadBlockMetaByHash(b1.Hash())
 	assert.EqualValues(t, b1.Header.Height, baseBlock.Header.Height)
@@ -596,7 +596,7 @@ func TestBlockFetchAtHeight(t *testing.T) {
 	partSet, err := block.MakePartSet(2)
 	require.NoError(t, err)
 	seenCommit := makeTestCommit(10, cmttime.Now())
-	bs.SaveBlock(block, partSet, seenCommit)
+	bs.SaveBlock(block, partSet, seenCommit, nil)
 	require.Equal(t, bs.Height(), block.Header.Height, "expecting the new height to be changed")
 
 	blockAtHeight := bs.LoadBlock(bs.Height())

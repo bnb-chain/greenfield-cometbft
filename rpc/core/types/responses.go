@@ -8,6 +8,7 @@ import (
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cometbft/cometbft/p2p"
+	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cometbft/cometbft/types"
 	"github.com/cometbft/cometbft/votepool"
@@ -36,8 +37,9 @@ type ResultGenesisChunk struct {
 
 // Single block (with meta)
 type ResultBlock struct {
-	BlockID types.BlockID `json:"block_id"`
-	Block   *types.Block  `json:"block"`
+	BlockID       types.BlockID           `json:"block_id"`
+	Block         *types.Block            `json:"block"`
+	ABCIResponses *cmtstate.ABCIResponses `json:"abci_responses"`
 }
 
 // ResultHeader represents the response for a Header RPC Client query
@@ -64,8 +66,8 @@ type ResultBlockResults struct {
 // NewResultCommit is a helper to initialize the ResultCommit with
 // the embedded struct
 func NewResultCommit(header *types.Header, commit *types.Commit,
-	canonical bool) *ResultCommit {
-
+	canonical bool,
+) *ResultCommit {
 	return &ResultCommit{
 		SignedHeader: types.SignedHeader{
 			Header: header,
