@@ -100,9 +100,9 @@ type Mempool interface {
 	SizeBytes() int64
 }
 
-// MempoolTxChecker defines a TxCheck function that will be called by the rpc and p2p
+// TxChecker defines a TxCheck function that will be called by the rpc and p2p
 // to make sure the sequence is written to mempool sequentially.
-type MempoolTxChecker func(req CheckTxRequest)
+type TxChecker func(req CheckTxRequest)
 
 // PreCheckFunc is an optional filter executed before CheckTx and rejects
 // transaction if false is returned. An example would be to ensure that a

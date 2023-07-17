@@ -97,7 +97,7 @@ type Environment struct {
 	ConsensusReactor *consensus.Reactor
 	EventBus         *types.EventBus // thread safe
 	Mempool          mempl.Mempool
-	MempoolTxChecker mempl.MempoolTxChecker
+	MempoolTxChecker mempl.TxChecker
 	VotePool         votepool.VotePool
 
 	Logger log.Logger

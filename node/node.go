@@ -229,7 +229,7 @@ type Node struct {
 	bcReactor         p2p.Reactor       // for block-syncing
 	mempoolReactor    p2p.Reactor       // for gossipping transactions
 	mempool           mempl.Mempool
-	mempoolTxChecker  mempl.MempoolTxChecker
+	mempoolTxChecker  mempl.TxChecker
 	votePoolReactor   p2p.Reactor // for gossipping votes signed in bls schema
 	votePool          votepool.VotePool
 	stateSync         bool                    // whether the node should state sync on startup
@@ -389,7 +389,7 @@ func createMempoolAndMempoolReactor(
 	state sm.State,
 	memplMetrics *mempl.Metrics,
 	logger log.Logger,
-) (mempl.Mempool, mempl.MempoolTxChecker, p2p.Reactor) {
+) (mempl.Mempool, mempl.TxChecker, p2p.Reactor) {
 	switch config.Mempool.Version {
 	case cfg.MempoolV1:
 		mp := mempoolv1.NewTxMempool(
