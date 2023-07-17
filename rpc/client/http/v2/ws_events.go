@@ -243,19 +243,16 @@ func (w *WSEvents) eventListener() {
 	}
 }
 
-func (w *WSEvents) SimpleCall(doRPC func(id rpctypes.JSONRPCIntID) error, proto interface{}) error {
+func (w *WSEvents) SimpleCall(ctx context.Context, proto interface{}, doRPC func(ctx context.Context, id rpctypes.JSONRPCIntID) error) error {
 	id := w.GetClient().NextRequestID()
 	outChan := make(chan rpctypes.RPCResponse, 1)
 	w.rpcResponseChanMap.Store(id, outChan)
 	defer close(outChan)
 	defer w.rpcResponseChanMap.Delete(id)
-	if err := doRPC(id); err != nil {
+	if err := doRPC(ctx, id); err != nil {
 		return err
 	}
-	// how long is the timeout
-	waitCtx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-	return w.WaitForResponse(waitCtx, outChan, proto)
+	return w.WaitForResponse(ctx, outChan, proto)
 }
 
 func (w *WSEvents) WaitForResponse(ctx context.Context, outChan chan rpctypes.RPCResponse, result interface{}) error {
@@ -280,9 +277,9 @@ func (w *WSEvents) WaitForResponse(ctx context.Context, outChan chan rpctypes.RP
 func (w *WSEvents) Status(ctx context.Context) (*ctypes.ResultStatus, error) {
 	result := new(ctypes.ResultStatus)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.Status(ctx, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -292,9 +289,9 @@ func (w *WSEvents) Status(ctx context.Context) (*ctypes.ResultStatus, error) {
 func (w *WSEvents) ABCIInfo(ctx context.Context) (*ctypes.ResultABCIInfo, error) {
 	result := new(ctypes.ResultABCIInfo)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.ABCIInfo(ctx, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -307,9 +304,9 @@ func (w *WSEvents) ABCIQuery(
 	data bytes.HexBytes) (*ctypes.ResultABCIQuery, error) {
 	result := new(ctypes.ResultABCIQuery)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.ABCIQueryWithOptions(ctx, id, path, data, rpcclient.DefaultABCIQueryOptions)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -323,9 +320,9 @@ func (w *WSEvents) ABCIQueryWithOptions(
 	opts rpcclient.ABCIQueryOptions) (*ctypes.ResultABCIQuery, error) {
 	result := new(ctypes.ResultABCIQuery)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.ABCIQueryWithOptions(ctx, id, path, data, opts)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -335,9 +332,9 @@ func (w *WSEvents) ABCIQueryWithOptions(
 func (w *WSEvents) BroadcastTxCommit(ctx context.Context, tx types.Tx) (*ctypes.ResultBroadcastTxCommit, error) {
 	result := new(ctypes.ResultBroadcastTxCommit)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastTxCommit(ctx, id, tx)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -347,9 +344,9 @@ func (w *WSEvents) BroadcastTxCommit(ctx context.Context, tx types.Tx) (*ctypes.
 func (w *WSEvents) BroadcastTxAsync(ctx context.Context, tx types.Tx) (*ctypes.ResultBroadcastTx, error) {
 	result := new(ctypes.ResultBroadcastTx)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastTxAsync(ctx, id, tx)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -359,9 +356,9 @@ func (w *WSEvents) BroadcastTxAsync(ctx context.Context, tx types.Tx) (*ctypes.R
 func (w *WSEvents) BroadcastTxSync(ctx context.Context, tx types.Tx) (*ctypes.ResultBroadcastTx, error) {
 	result := new(ctypes.ResultBroadcastTx)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastTxSync(ctx, id, tx)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -374,9 +371,9 @@ func (w *WSEvents) UnconfirmedTxs(
 ) (*ctypes.ResultUnconfirmedTxs, error) {
 	result := new(ctypes.ResultUnconfirmedTxs)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.UnconfirmedTxs(ctx, id, limit)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -385,9 +382,9 @@ func (w *WSEvents) UnconfirmedTxs(
 func (w *WSEvents) NumUnconfirmedTxs(ctx context.Context) (*ctypes.ResultUnconfirmedTxs, error) {
 	result := new(ctypes.ResultUnconfirmedTxs)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.NumUnconfirmedTxs(ctx, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -397,9 +394,9 @@ func (w *WSEvents) NumUnconfirmedTxs(ctx context.Context) (*ctypes.ResultUnconfi
 func (w *WSEvents) CheckTx(ctx context.Context, tx types.Tx) (*ctypes.ResultCheckTx, error) {
 	result := new(ctypes.ResultCheckTx)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.CheckTx(ctx, id, tx)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -409,9 +406,9 @@ func (w *WSEvents) CheckTx(ctx context.Context, tx types.Tx) (*ctypes.ResultChec
 func (w *WSEvents) NetInfo(ctx context.Context) (*ctypes.ResultNetInfo, error) {
 	result := new(ctypes.ResultNetInfo)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.NetInfo(ctx, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -421,9 +418,9 @@ func (w *WSEvents) NetInfo(ctx context.Context) (*ctypes.ResultNetInfo, error) {
 func (w *WSEvents) DumpConsensusState(ctx context.Context) (*ctypes.ResultDumpConsensusState, error) {
 	result := new(ctypes.ResultDumpConsensusState)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.DumpConsensusState(ctx, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -433,9 +430,9 @@ func (w *WSEvents) DumpConsensusState(ctx context.Context) (*ctypes.ResultDumpCo
 func (w *WSEvents) ConsensusState(ctx context.Context) (*ctypes.ResultConsensusState, error) {
 	result := new(ctypes.ResultConsensusState)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.ConsensusState(ctx, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -448,9 +445,9 @@ func (w *WSEvents) ConsensusParams(
 ) (*ctypes.ResultConsensusParams, error) {
 	result := new(ctypes.ResultConsensusParams)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.ConsensusParams(ctx, id, height)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -460,9 +457,9 @@ func (w *WSEvents) ConsensusParams(
 func (w *WSEvents) Health(ctx context.Context) (*ctypes.ResultHealth, error) {
 	result := new(ctypes.ResultHealth)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.Health(ctx, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -476,9 +473,9 @@ func (w *WSEvents) BlockchainInfo(
 ) (*ctypes.ResultBlockchainInfo, error) {
 	result := new(ctypes.ResultBlockchainInfo)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.BlockchainInfo(ctx, id, minHeight, maxHeight)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -488,9 +485,9 @@ func (w *WSEvents) BlockchainInfo(
 func (w *WSEvents) Genesis(ctx context.Context) (*ctypes.ResultGenesis, error) {
 	result := new(ctypes.ResultGenesis)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.NetInfo(ctx, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -500,9 +497,9 @@ func (w *WSEvents) Genesis(ctx context.Context) (*ctypes.ResultGenesis, error) {
 func (w *WSEvents) GenesisChunked(ctx context.Context, id uint) (*ctypes.ResultGenesisChunk, error) {
 	result := new(ctypes.ResultGenesisChunk)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.GenesisChunked(ctx, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -512,9 +509,9 @@ func (w *WSEvents) GenesisChunked(ctx context.Context, id uint) (*ctypes.ResultG
 func (w *WSEvents) Block(ctx context.Context, height *int64) (*ctypes.ResultBlock, error) {
 	result := new(ctypes.ResultBlock)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.Block(ctx, id, height)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -524,9 +521,9 @@ func (w *WSEvents) Block(ctx context.Context, height *int64) (*ctypes.ResultBloc
 func (w *WSEvents) BlockByHash(ctx context.Context, hash []byte) (*ctypes.ResultBlock, error) {
 	result := new(ctypes.ResultBlock)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.BlockByHash(ctx, hash, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -539,9 +536,9 @@ func (w *WSEvents) BlockResults(
 ) (*ctypes.ResultBlockResults, error) {
 	result := new(ctypes.ResultBlockResults)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.BlockResults(ctx, height, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -551,9 +548,9 @@ func (w *WSEvents) BlockResults(
 func (w *WSEvents) Header(ctx context.Context, height *int64) (*ctypes.ResultHeader, error) {
 	result := new(ctypes.ResultHeader)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.Header(ctx, height, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -563,9 +560,9 @@ func (w *WSEvents) Header(ctx context.Context, height *int64) (*ctypes.ResultHea
 func (w *WSEvents) HeaderByHash(ctx context.Context, hash bytes.HexBytes) (*ctypes.ResultHeader, error) {
 	result := new(ctypes.ResultHeader)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.HeaderByHash(ctx, hash, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -575,9 +572,9 @@ func (w *WSEvents) HeaderByHash(ctx context.Context, hash bytes.HexBytes) (*ctyp
 func (w *WSEvents) Commit(ctx context.Context, height *int64) (*ctypes.ResultCommit, error) {
 	result := new(ctypes.ResultCommit)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.Commit(ctx, height, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -587,9 +584,9 @@ func (w *WSEvents) Commit(ctx context.Context, height *int64) (*ctypes.ResultCom
 func (w *WSEvents) Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error) {
 	result := new(ctypes.ResultTx)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.Tx(ctx, hash, prove, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -607,9 +604,9 @@ func (w *WSEvents) TxSearch(
 
 	result := new(ctypes.ResultTxSearch)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.TxSearch(ctx, query, prove, page, perPage, orderBy, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -624,9 +621,9 @@ func (w *WSEvents) BlockSearch(
 ) (*ctypes.ResultBlockSearch, error) {
 	result := new(ctypes.ResultBlockSearch)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.BlockSearch(ctx, query, page, perPage, orderBy, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -641,9 +638,9 @@ func (w *WSEvents) Validators(
 ) (*ctypes.ResultValidators, error) {
 	result := new(ctypes.ResultValidators)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.Validators(ctx, height, page, perPage, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -656,9 +653,9 @@ func (w *WSEvents) BroadcastEvidence(
 ) (*ctypes.ResultBroadcastEvidence, error) {
 	result := new(ctypes.ResultBroadcastEvidence)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastEvidence(ctx, ev, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -671,9 +668,9 @@ func (w *WSEvents) BroadcastVote(
 ) (*ctypes.ResultBroadcastVote, error) {
 	result := new(ctypes.ResultBroadcastVote)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.BroadcastVote(ctx, vote, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -686,9 +683,9 @@ func (w *WSEvents) QueryVote(
 ) (*ctypes.ResultQueryVote, error) {
 	result := new(ctypes.ResultQueryVote)
 	wsClient := w.GetClient()
-	err := w.SimpleCall(func(id rpctypes.JSONRPCIntID) error {
+	err := w.SimpleCall(ctx, result, func(ctx context.Context, id rpctypes.JSONRPCIntID) error {
 		return wsClient.QueryVote(ctx, eventType, eventHash, id)
-	}, result)
+	})
 	if err != nil {
 		return nil, err
 	}
