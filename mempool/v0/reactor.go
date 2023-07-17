@@ -128,12 +128,6 @@ func (memR *Reactor) OnStart() error {
 	return nil
 }
 
-// OnStop implements p2p.BaseReactor.
-func (memR *Reactor) OnStop() {
-	close(memR.recvCh)
-	close(memR.checkTxCh)
-}
-
 // GetChannels implements Reactor by returning the list of channels for this
 // reactor.
 func (memR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
