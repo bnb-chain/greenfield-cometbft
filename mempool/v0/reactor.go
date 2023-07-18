@@ -26,7 +26,8 @@ type Reactor struct {
 	mempool *CListMempool
 	ids     *mempoolIDs
 
-	recvCh chan p2p.Envelope
+	recvCh    chan p2p.Envelope
+	checkTxCh chan mempool.CheckTxRequest
 }
 
 type mempoolIDs struct {
@@ -93,12 +94,13 @@ func newMempoolIDs() *mempoolIDs {
 }
 
 // NewReactor returns a new Reactor with the given config and mempool.
-func NewReactor(config *cfg.MempoolConfig, mempool *CListMempool) *Reactor {
+func NewReactor(config *cfg.MempoolConfig, cMempool *CListMempool) *Reactor {
 	memR := &Reactor{
-		config:  config,
-		mempool: mempool,
-		ids:     newMempoolIDs(),
-		recvCh:  make(chan p2p.Envelope, MempoolPacketChannelSize),
+		config:    config,
+		mempool:   cMempool,
+		ids:       newMempoolIDs(),
+		recvCh:    make(chan p2p.Envelope, MempoolPacketChannelSize),
+		checkTxCh: make(chan mempool.CheckTxRequest, MempoolPacketChannelSize),
 	}
 	memR.BaseReactor = *p2p.NewBaseReactor("Mempool", memR)
 	return memR
@@ -122,12 +124,8 @@ func (memR *Reactor) OnStart() error {
 		memR.Logger.Info("Tx broadcasting is disabled")
 	}
 	go memR.receiveRoutine()
+	go memR.checkTxRoutine()
 	return nil
-}
-
-// OnStop implements p2p.BaseReactor.
-func (memR *Reactor) OnStop() {
-	close(memR.recvCh)
 }
 
 // GetChannels implements Reactor by returning the list of channels for this
@@ -174,6 +172,8 @@ func (memR *Reactor) ReceiveEnvelope(e p2p.Envelope) {
 }
 
 func (memR *Reactor) receiveRoutine() {
+	errChan := make(chan error, 1)
+	defer close(errChan)
 	for e := range memR.recvCh {
 		switch msg := e.Message.(type) {
 		case *protomem.Txs:
@@ -187,22 +187,39 @@ func (memR *Reactor) receiveRoutine() {
 				txInfo.SenderP2PID = e.Src.ID()
 			}
 
-			var err error
 			for _, tx := range protoTxs {
 				ntx := types.Tx(tx)
-				err = memR.mempool.CheckTx(ntx, nil, txInfo)
+
+				memR.checkTxCh <- mempool.CheckTxRequest{Tx: ntx, TxInfo: txInfo, Err: errChan}
+				err := <-errChan
 				if errors.Is(err, mempool.ErrTxInCache) {
 					memR.Logger.Debug("Tx already exists in cache", "tx", ntx.String())
 				} else if err != nil {
 					memR.Logger.Info("Could not check tx", "tx", ntx.String(), "err", err)
 				}
 			}
+
 		default:
 			memR.Logger.Error("unknown message type", "src", e.Src, "chId", e.ChannelID, "msg", e.Message)
 			memR.Switch.StopPeerForError(e.Src, fmt.Errorf("mempool cannot handle message of type: %T", e.Message))
 			continue
 		}
 	}
+}
+
+// checkTxRoutine checks the validity of a tx and sends the result to the given callback.
+func (memR *Reactor) checkTxRoutine() {
+	for checkTxReq := range memR.checkTxCh {
+		err := memR.mempool.CheckTx(checkTxReq.Tx, checkTxReq.CB, checkTxReq.TxInfo)
+		if checkTxReq.Err != nil {
+			checkTxReq.Err <- err
+		}
+	}
+}
+
+// CheckTx implements mempool.MempoolTxChecker by sending the tx to the checkTxRoutine.
+func (memR *Reactor) CheckTx(req mempool.CheckTxRequest) {
+	memR.checkTxCh <- req
 }
 
 // PeerState describes the state of a peer.

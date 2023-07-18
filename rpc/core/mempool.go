@@ -20,9 +20,23 @@ import (
 // CheckTx nor DeliverTx results.
 // More: https://docs.cometbft.com/v0.37/rpc/#/Tx/broadcast_tx_async
 func BroadcastTxAsync(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadcastTx, error) {
-	err := env.Mempool.CheckTx(tx, nil, mempl.TxInfo{})
-	if err != nil {
-		return nil, err
+	txInfo := mempl.TxInfo{}
+	if env.MempoolTxChecker != nil {
+		errChan := make(chan error, 1)
+		env.MempoolTxChecker(mempl.CheckTxRequest{
+			Tx:     tx,
+			TxInfo: txInfo,
+			Err:    errChan,
+		})
+		if err := <-errChan; err != nil {
+			return nil, err
+		}
+		close(errChan)
+	} else {
+		err := env.Mempool.CheckTx(tx, nil, txInfo)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return &ctypes.ResultBroadcastTx{Hash: tx.Hash()}, nil
 }
@@ -32,14 +46,30 @@ func BroadcastTxAsync(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadca
 // More: https://docs.cometbft.com/v0.37/rpc/#/Tx/broadcast_tx_sync
 func BroadcastTxSync(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadcastTx, error) {
 	resCh := make(chan *abci.Response, 1)
-	err := env.Mempool.CheckTx(tx, func(res *abci.Response) {
+	cb := func(res *abci.Response) {
 		select {
 		case <-ctx.Context().Done():
 		case resCh <- res:
 		}
-	}, mempl.TxInfo{})
-	if err != nil {
-		return nil, err
+	}
+	txInfo := mempl.TxInfo{}
+	if env.MempoolTxChecker != nil {
+		errChan := make(chan error, 1)
+		env.MempoolTxChecker(mempl.CheckTxRequest{
+			Tx:     tx,
+			CB:     cb,
+			TxInfo: txInfo,
+			Err:    errChan,
+		})
+		if err := <-errChan; err != nil {
+			return nil, err
+		}
+		close(errChan)
+	} else {
+		err := env.Mempool.CheckTx(tx, cb, txInfo)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	select {
@@ -86,16 +116,35 @@ func BroadcastTxCommit(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadc
 
 	// Broadcast tx and wait for CheckTx result
 	checkTxResCh := make(chan *abci.Response, 1)
-	err = env.Mempool.CheckTx(tx, func(res *abci.Response) {
+	cb := func(res *abci.Response) {
 		select {
 		case <-ctx.Context().Done():
 		case checkTxResCh <- res:
 		}
-	}, mempl.TxInfo{})
-	if err != nil {
-		env.Logger.Error("Error on broadcastTxCommit", "err", err)
-		return nil, fmt.Errorf("error on broadcastTxCommit: %v", err)
 	}
+	txInfo := mempl.TxInfo{}
+
+	if env.MempoolTxChecker != nil {
+		errChan := make(chan error, 1)
+		env.MempoolTxChecker(mempl.CheckTxRequest{
+			Tx:     tx,
+			CB:     cb,
+			TxInfo: txInfo,
+			Err:    errChan,
+		})
+		if err := <-errChan; err != nil {
+			env.Logger.Error("Error on broadcastTxCommit", "err", err)
+			return nil, fmt.Errorf("error on broadcastTxCommit: %v", err)
+		}
+		close(errChan)
+	} else {
+		err := env.Mempool.CheckTx(tx, cb, txInfo)
+		if err != nil {
+			env.Logger.Error("Error on broadcastTxCommit", "err", err)
+			return nil, fmt.Errorf("error on broadcastTxCommit: %v", err)
+		}
+	}
+
 	select {
 	case <-ctx.Context().Done():
 		return nil, fmt.Errorf("broadcast confirmation not received: %w", ctx.Context().Err())

@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	dbm "github.com/cometbft/cometbft-db"
 
@@ -72,6 +73,8 @@ type Application struct {
 	// If true, the app will generate block events in BeginBlock. Used to test the event indexer
 	// Should be false by default to avoid generating too much data.
 	genBlockEvents bool
+
+	mtx sync.RWMutex
 }
 
 func NewApplication() *Application {
@@ -95,6 +98,9 @@ func (app *Application) Info(req types.RequestInfo) (resInfo types.ResponseInfo)
 
 // tx is either "key=value" or just arbitrary bytes
 func (app *Application) DeliverTx(req types.RequestDeliverTx) types.ResponseDeliverTx {
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
+
 	if isReplacedTx(req.Tx) {
 		app.txToRemove[string(req.Tx)] = struct{}{}
 	}
@@ -151,6 +157,9 @@ func (app *Application) CheckTx(req types.RequestCheckTx) types.ResponseCheckTx 
 }
 
 func (app *Application) Commit() types.ResponseCommit {
+	app.mtx.Lock()
+	defer app.mtx.Unlock()
+
 	// Using a memdb - just return the big endian size of the db
 	appHash := make([]byte, 8)
 	binary.PutVarint(appHash, app.state.Size)
@@ -169,6 +178,9 @@ func (app *Application) Commit() types.ResponseCommit {
 
 // Returns an associated value or nil if missing.
 func (app *Application) Query(reqQuery types.RequestQuery) (resQuery types.ResponseQuery) {
+	app.mtx.RLock()
+	defer app.mtx.RUnlock()
+
 	if reqQuery.Prove {
 		value, err := app.state.db.Get(prefixKey(reqQuery.Data))
 		if err != nil {
