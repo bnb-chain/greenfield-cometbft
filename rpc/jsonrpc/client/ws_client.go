@@ -9,6 +9,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cometbft/cometbft/votepool"
+
+	"github.com/cometbft/cometbft/libs/bytes"
+	"github.com/cometbft/cometbft/rpc/client"
+
 	"github.com/gorilla/websocket"
 	metrics "github.com/rcrowley/go-metrics"
 
@@ -17,6 +22,7 @@ import (
 	"github.com/cometbft/cometbft/libs/service"
 	cmtsync "github.com/cometbft/cometbft/libs/sync"
 	types "github.com/cometbft/cometbft/rpc/jsonrpc/types"
+	bfttypes "github.com/cometbft/cometbft/types"
 )
 
 const (
@@ -235,6 +241,15 @@ func (c *WSClient) Send(ctx context.Context, request types.RPCRequest) error {
 // Call enqueues a call request onto the Send queue. Requests are JSON encoded.
 func (c *WSClient) Call(ctx context.Context, method string, params map[string]interface{}) error {
 	request, err := types.MapToRequest(c.nextRequestID(), method, params)
+	if err != nil {
+		return err
+	}
+	return c.Send(ctx, request)
+}
+
+// CallWithID enqueues a call request onto the Send queue. Requests are JSON encoded.
+func (c *WSClient) CallWithID(ctx context.Context, requestID types.JSONRPCIntID, method string, params map[string]interface{}) error {
+	request, err := types.MapToRequest(requestID, method, params)
 	if err != nil {
 		return err
 	}
@@ -544,4 +559,241 @@ func (c *WSClient) Unsubscribe(ctx context.Context, query string) error {
 func (c *WSClient) UnsubscribeAll(ctx context.Context) error {
 	params := map[string]interface{}{}
 	return c.Call(ctx, "unsubscribe_all", params)
+}
+
+func (c *WSClient) NextRequestID() types.JSONRPCIntID {
+	return c.nextRequestID()
+}
+
+func (c *WSClient) Status(ctx context.Context, id types.JSONRPCIntID) error {
+	return c.CallWithID(ctx, id, "status", map[string]interface{}{})
+}
+
+func (c *WSClient) ABCIInfo(ctx context.Context, id types.JSONRPCIntID) error {
+	return c.CallWithID(ctx, id, "abci_info", map[string]interface{}{})
+}
+
+func (c *WSClient) ABCIQueryWithOptions(ctx context.Context, id types.JSONRPCIntID, path string, data bytes.HexBytes, opts client.ABCIQueryOptions) error {
+	return c.CallWithID(ctx, id, "abci_query", map[string]interface{}{"path": path, "data": data, "height": opts.Height, "prove": opts.Prove})
+}
+
+func (c *WSClient) BroadcastTxSync(ctx context.Context, id types.JSONRPCIntID, tx bfttypes.Tx) error {
+	params := map[string]interface{}{"tx": tx}
+	return c.CallWithID(ctx, id, "broadcast_tx_sync", params)
+}
+
+func (c *WSClient) BroadcastTxAsync(ctx context.Context, id types.JSONRPCIntID, tx bfttypes.Tx) error {
+	params := map[string]interface{}{"tx": tx}
+	return c.CallWithID(ctx, id, "broadcast_tx_async", params)
+}
+
+func (c *WSClient) BroadcastTxCommit(ctx context.Context, id types.JSONRPCIntID, tx bfttypes.Tx) error {
+	params := map[string]interface{}{"tx": tx}
+	return c.CallWithID(ctx, id, "broadcast_tx_commit", params)
+}
+
+func (c *WSClient) UnconfirmedTxs(ctx context.Context, id types.JSONRPCIntID, limit *int) error {
+	params := make(map[string]interface{})
+	if limit != nil {
+		params["limit"] = limit
+	}
+	return c.CallWithID(ctx, id, "unconfirmed_txs", params)
+}
+
+func (c *WSClient) NumUnconfirmedTxs(ctx context.Context, id types.JSONRPCIntID) error {
+	return c.CallWithID(ctx, id, "num_unconfirmed_txs", map[string]interface{}{})
+}
+
+func (c *WSClient) CheckTx(ctx context.Context, id types.JSONRPCIntID, tx bfttypes.Tx) error {
+	return c.CallWithID(ctx, id, "check_tx", map[string]interface{}{"tx": tx})
+}
+
+func (c *WSClient) NetInfo(ctx context.Context, id types.JSONRPCIntID) error {
+	return c.CallWithID(ctx, id, "net_info", map[string]interface{}{})
+}
+
+func (c *WSClient) DumpConsensusState(ctx context.Context, id types.JSONRPCIntID) error {
+	return c.CallWithID(ctx, id, "dump_consensus_state", map[string]interface{}{})
+}
+
+func (c *WSClient) ConsensusState(ctx context.Context, id types.JSONRPCIntID) error {
+	return c.CallWithID(ctx, id, "consensus_state", map[string]interface{}{})
+}
+
+func (c *WSClient) ConsensusParams(
+	ctx context.Context,
+	id types.JSONRPCIntID,
+	height *int64,
+) error {
+	params := make(map[string]interface{})
+	if height != nil {
+		params["height"] = height
+	}
+	return c.CallWithID(ctx, id, "consensus_params", params)
+}
+
+func (c *WSClient) Health(ctx context.Context, id types.JSONRPCIntID) error {
+	return c.CallWithID(ctx, id, "health", map[string]interface{}{})
+}
+
+func (c *WSClient) BlockchainInfo(
+	ctx context.Context,
+	id types.JSONRPCIntID,
+	minHeight,
+	maxHeight int64,
+) error {
+	return c.CallWithID(ctx, id, "blockchain", map[string]interface{}{"minHeight": minHeight, "maxHeight": maxHeight})
+}
+
+func (c *WSClient) Genesis(ctx context.Context, id types.JSONRPCIntID) error {
+	return c.CallWithID(ctx, id, "genesis", map[string]interface{}{})
+
+}
+
+func (c *WSClient) GenesisChunked(ctx context.Context, id types.JSONRPCIntID) error {
+	return c.CallWithID(ctx, id, "genesis_chunked", map[string]interface{}{})
+}
+
+func (c *WSClient) Block(ctx context.Context, id types.JSONRPCIntID, height *int64) error {
+	params := make(map[string]interface{})
+	if height != nil {
+		params["height"] = height
+	}
+	return c.CallWithID(ctx, id, "block", params)
+}
+
+func (c *WSClient) BlockByHash(ctx context.Context, hash []byte, id types.JSONRPCIntID) error {
+	params := map[string]interface{}{
+		"hash": hash,
+	}
+	return c.CallWithID(ctx, id, "block_by_hash", params)
+}
+
+func (c *WSClient) BlockResults(
+	ctx context.Context, height *int64, id types.JSONRPCIntID) error {
+	params := make(map[string]interface{})
+	if height != nil {
+		params["height"] = height
+	}
+	return c.CallWithID(ctx, id, "block_results", params)
+}
+
+func (c *WSClient) Header(ctx context.Context, height *int64, id types.JSONRPCIntID) error {
+	params := make(map[string]interface{})
+	if height != nil {
+		params["height"] = height
+	}
+	return c.CallWithID(ctx, id, "header", params)
+}
+
+func (c *WSClient) HeaderByHash(ctx context.Context, hash bytes.HexBytes, id types.JSONRPCIntID) error {
+	params := map[string]interface{}{
+		"hash": hash,
+	}
+	return c.CallWithID(ctx, id, "header_by_hash", params)
+}
+
+func (c *WSClient) Commit(ctx context.Context, height *int64, id types.JSONRPCIntID) error {
+	params := make(map[string]interface{})
+	if height != nil {
+		params["height"] = height
+	}
+	return c.CallWithID(ctx, id, "commit", params)
+}
+
+func (c *WSClient) Tx(ctx context.Context, hash []byte, prove bool, id types.JSONRPCIntID) error {
+	params := map[string]interface{}{
+		"hash":  hash,
+		"prove": prove,
+	}
+	return c.CallWithID(ctx, id, "tx", params)
+}
+
+func (c *WSClient) TxSearch(ctx context.Context,
+	query string,
+	prove bool,
+	page,
+	perPage *int,
+	orderBy string,
+	id types.JSONRPCIntID) error {
+
+	params := map[string]interface{}{
+		"query":    query,
+		"prove":    prove,
+		"order_by": orderBy,
+	}
+	if page != nil {
+		params["page"] = page
+	}
+	if perPage != nil {
+		params["per_page"] = perPage
+	}
+	return c.CallWithID(ctx, id, "tx_search", params)
+}
+
+func (c *WSClient) BlockSearch(
+	ctx context.Context,
+	query string,
+	page, perPage *int,
+	orderBy string,
+	id types.JSONRPCIntID) error {
+
+	params := map[string]interface{}{
+		"query":    query,
+		"order_by": orderBy,
+	}
+
+	if page != nil {
+		params["page"] = page
+	}
+	if perPage != nil {
+		params["per_page"] = perPage
+	}
+
+	return c.CallWithID(ctx, id, "block_search", params)
+}
+
+func (c *WSClient) Validators(
+	ctx context.Context,
+	height *int64,
+	page,
+	perPage *int,
+	id types.JSONRPCIntID) error {
+
+	params := make(map[string]interface{})
+	if page != nil {
+		params["page"] = page
+	}
+	if perPage != nil {
+		params["per_page"] = perPage
+	}
+	if height != nil {
+		params["height"] = height
+	}
+	return c.CallWithID(ctx, id, "validators", params)
+}
+
+func (c *WSClient) BroadcastEvidence(
+	ctx context.Context,
+	ev bfttypes.Evidence,
+	id types.JSONRPCIntID,
+) error {
+	return c.CallWithID(ctx, id, "broadcast_evidence", map[string]interface{}{"evidence": ev})
+}
+
+func (c *WSClient) BroadcastVote(
+	ctx context.Context,
+	vote votepool.Vote,
+	id types.JSONRPCIntID,
+) error {
+	return c.CallWithID(ctx, id, "broadcast_vote", map[string]interface{}{"vote": vote})
+}
+
+func (c *WSClient) QueryVote(
+	ctx context.Context,
+	eventType int,
+	eventHash []byte,
+	id types.JSONRPCIntID,
+) error {
+	return c.CallWithID(ctx, id, "query_vote", map[string]interface{}{"event_type": eventType, "event_hash": eventHash})
 }

@@ -40,6 +40,7 @@ type Client struct {
 	client.EventsClient
 	client.EvidenceClient
 	client.MempoolClient
+	client.VotepoolClient
 	service.Service
 }
 

@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cometbft/cometbft/votepool"
+
 	"github.com/cometbft/cometbft/libs/bytes"
 	cmtjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/cometbft/cometbft/libs/log"
@@ -586,6 +588,31 @@ func (c *baseRPCClient) BroadcastEvidence(
 ) (*ctypes.ResultBroadcastEvidence, error) {
 	result := new(ctypes.ResultBroadcastEvidence)
 	_, err := c.caller.Call(ctx, "broadcast_evidence", map[string]interface{}{"evidence": ev}, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (c *baseRPCClient) BroadcastVote(
+	ctx context.Context,
+	vote votepool.Vote,
+) (*ctypes.ResultBroadcastVote, error) {
+	result := new(ctypes.ResultBroadcastVote)
+	_, err := c.caller.Call(ctx, "broadcast_vote", map[string]interface{}{"vote": vote}, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (c *baseRPCClient) QueryVote(
+	ctx context.Context,
+	eventType int,
+	eventHash []byte,
+) (*ctypes.ResultQueryVote, error) {
+	result := new(ctypes.ResultQueryVote)
+	_, err := c.caller.Call(ctx, "query_vote", map[string]interface{}{"event_type": eventType, "event_hash": eventHash}, result)
 	if err != nil {
 		return nil, err
 	}
