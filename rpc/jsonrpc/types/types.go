@@ -12,9 +12,10 @@ import (
 	"strconv"
 	"strings"
 
-	cmtjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+
+	cmtjson "github.com/cometbft/cometbft/libs/json"
 )
 
 // Supported EVM json-rpc requests

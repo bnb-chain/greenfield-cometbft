@@ -229,6 +229,7 @@ type Node struct {
 	bcReactor         p2p.Reactor       // for block-syncing
 	mempoolReactor    p2p.Reactor       // for gossipping transactions
 	mempool           mempl.Mempool
+	mempoolTxChecker  mempl.TxChecker
 	votePoolReactor   p2p.Reactor // for gossipping votes signed in bls schema
 	votePool          votepool.VotePool
 	stateSync         bool                    // whether the node should state sync on startup
@@ -388,7 +389,7 @@ func createMempoolAndMempoolReactor(
 	state sm.State,
 	memplMetrics *mempl.Metrics,
 	logger log.Logger,
-) (mempl.Mempool, p2p.Reactor) {
+) (mempl.Mempool, mempl.TxChecker, p2p.Reactor) {
 	switch config.Mempool.Version {
 	case cfg.MempoolV1:
 		mp := mempoolv1.NewTxMempool(
@@ -409,7 +410,7 @@ func createMempoolAndMempoolReactor(
 			mp.EnableTxsAvailable()
 		}
 
-		return mp, reactor
+		return mp, nil, reactor
 
 	case cfg.MempoolV0:
 		mp := mempoolv0.NewCListMempool(
@@ -431,10 +432,10 @@ func createMempoolAndMempoolReactor(
 			mp.EnableTxsAvailable()
 		}
 
-		return mp, reactor
+		return mp, reactor.CheckTx, reactor
 
 	default:
-		return nil, nil
+		return nil, nil, nil
 	}
 }
 
@@ -838,7 +839,7 @@ func NewNode(config *cfg.Config,
 	logNodeStartupInfo(state, pubKey, logger, consensusLogger)
 
 	// Make MempoolReactor
-	mempool, mempoolReactor := createMempoolAndMempoolReactor(config, proxyApp, state, memplMetrics, logger)
+	mempool, mempoolTxChecker, mempoolReactor := createMempoolAndMempoolReactor(config, proxyApp, state, memplMetrics, logger)
 
 	// Make Evidence Reactor
 	evidenceReactor, evidencePool, err := createEvidenceReactor(config, dbProvider, stateDB, blockStore, logger)
@@ -964,6 +965,7 @@ func NewNode(config *cfg.Config,
 		bcReactor:        bcReactor,
 		mempoolReactor:   mempoolReactor,
 		mempool:          mempool,
+		mempoolTxChecker: mempoolTxChecker,
 		votePoolReactor:  votePoolReactor,
 		votePool:         votePool,
 		consensusState:   consensusState,
@@ -1137,6 +1139,7 @@ func (n *Node) ConfigureRPC() error {
 		ConsensusReactor: n.consensusReactor,
 		EventBus:         n.eventBus,
 		Mempool:          n.mempool,
+		MempoolTxChecker: n.mempoolTxChecker,
 		VotePool:         n.votePool,
 
 		Logger: n.Logger.With("module", "rpc"),

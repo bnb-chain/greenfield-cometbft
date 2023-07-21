@@ -23,6 +23,8 @@ implementation.
 import (
 	"context"
 
+	"github.com/cometbft/cometbft/votepool"
+
 	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cometbft/cometbft/libs/service"
 	ctypes "github.com/cometbft/cometbft/rpc/core/types"
@@ -41,6 +43,7 @@ type Client interface {
 	StatusClient
 	EvidenceClient
 	MempoolClient
+	VotepoolClient
 }
 
 // ABCIClient groups together the functionality that principally affects the
@@ -151,4 +154,9 @@ type RemoteClient interface {
 
 	// Remote returns the remote network address in a string form.
 	Remote() string
+}
+
+type VotepoolClient interface {
+	BroadcastVote(ctx context.Context, vote votepool.Vote) (*ctypes.ResultBroadcastVote, error)
+	QueryVote(ctx context.Context, eventType int, eventHash []byte) (*ctypes.ResultQueryVote, error)
 }
