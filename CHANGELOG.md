@@ -17,9 +17,6 @@ Improvements:
 * [#8](https://github.com/bnb-chain/greenfield-cometbft/pull/8) perf: remove some local client's mutex
 
 
-### IMPROVEMENT
-
-
 ## v0.0.1
 
 This release mainly includes following feature:
