@@ -67,7 +67,6 @@ func NewTxMempool(
 	height int64,
 	options ...TxMempoolOption,
 ) *TxMempool {
-
 	txmp := &TxMempool{
 		logger:       logger,
 		config:       cfg,
@@ -176,7 +175,6 @@ func (txmp *TxMempool) TxsAvailable() <-chan struct{} { return txmp.txsAvailable
 // the size of tx, and adds tx instead. If no such transactions exist, tx is
 // discarded.
 func (txmp *TxMempool) CheckTx(tx types.Tx, cb func(*abci.Response), txInfo mempool.TxInfo) error {
-
 	// During the initial phase of CheckTx, we do not need to modify any state.
 	// A transaction will not actually be added to the mempool until it survives
 	// a call to the ABCI CheckTx method and size constraint checks.
@@ -313,8 +311,29 @@ func (txmp *TxMempool) allEntriesSorted() []*WrappedTx {
 }
 
 func (txmp *TxMempool) ReapMaxTxsMaxBytesMaxGas(maxTxs int, maxBytes, maxGas int64) types.Txs {
-	// TODO implement me
-	panic("implement me")
+	var totalTxs, totalGas, totalBytes int64
+
+	if maxTxs <= 0 {
+		maxTxs = txmp.txs.Len()
+	}
+
+	var keep []types.Tx //nolint:prealloc
+	for _, w := range txmp.allEntriesSorted() {
+		totalTxs++
+		if totalTxs > int64(maxTxs) {
+			break
+		}
+
+		// N.B. When computing byte size, we need to include the overhead for
+		// encoding as protobuf to send to the application.
+		totalGas += w.gasWanted
+		totalBytes += types.ComputeProtoSizeForTxs([]types.Tx{w.tx})
+		if (maxGas >= 0 && totalGas > maxGas) || (maxBytes >= 0 && totalBytes > maxBytes) {
+			break
+		}
+		keep = append(keep, w.tx)
+	}
+	return keep
 }
 
 // ReapMaxBytesMaxGas returns a slice of valid transactions that fit within the
@@ -500,9 +519,8 @@ func (txmp *TxMempool) addNewTransaction(wtx *WrappedTx, checkTxRes *abci.Respon
 				"tx", fmt.Sprintf("%X", w.tx.Hash()),
 				"sender", sender,
 			)
-			checkTxRes.MempoolError =
-				fmt.Sprintf("rejected valid incoming transaction; tx already exists for sender %q (%X)",
-					sender, w.tx.Hash())
+			checkTxRes.MempoolError = fmt.Sprintf("rejected valid incoming transaction; tx already exists for sender %q (%X)",
+				sender, w.tx.Hash())
 			txmp.metrics.RejectedTxs.Add(1)
 			return
 		}
@@ -535,9 +553,8 @@ func (txmp *TxMempool) addNewTransaction(wtx *WrappedTx, checkTxRes *abci.Respon
 				"tx", fmt.Sprintf("%X", wtx.tx.Hash()),
 				"err", err.Error(),
 			)
-			checkTxRes.MempoolError =
-				fmt.Sprintf("rejected valid incoming transaction; mempool is full (%X)",
-					wtx.tx.Hash())
+			checkTxRes.MempoolError = fmt.Sprintf("rejected valid incoming transaction; mempool is full (%X)",
+				wtx.tx.Hash())
 			txmp.metrics.RejectedTxs.Add(1)
 			return
 		}
