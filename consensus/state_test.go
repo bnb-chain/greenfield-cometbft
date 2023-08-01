@@ -2051,6 +2051,7 @@ func findBlockSizeLimit(t *testing.T, height, maxBytes int64, cs *State, partSiz
 			[]types.Tx{[]byte("a=" + strings.Repeat("o", i-2))},
 			&types.Commit{},
 			nil,
+			nil,
 			cs.privValidatorPubKey.Address(),
 		)
 

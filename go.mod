@@ -311,4 +311,6 @@ replace (
 	github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/btcsuite/btcd/btcutil => github.com/btcsuite/btcd/btcutil v1.1.2
 	github.com/cometbft/cometbft-db => github.com/bnb-chain/greenfield-cometbft-db v0.8.1-alpha.1
+	// to be compatible with rocksdb v6.22.1
+	github.com/linxGnu/grocksdb => github.com/linxGnu/grocksdb v1.6.22
 )

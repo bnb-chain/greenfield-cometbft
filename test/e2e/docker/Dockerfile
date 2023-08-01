@@ -4,7 +4,7 @@
 FROM golang:1.20-bullseye
 
 RUN apt-get -qq update -y && apt-get -qq upgrade -y >/dev/null
-RUN apt-get -qq install -y libleveldb-dev librocksdb-dev >/dev/null
+RUN apt-get -qq install -y libleveldb-dev librocksdb-dev zlib1g-dev libsnappy-dev liblz4-dev libzstd-dev >/dev/null
 
 # Set up build directory /src/cometbft
 ENV COMETBFT_BUILD_OPTIONS badgerdb,boltdb,cleveldb,rocksdb
