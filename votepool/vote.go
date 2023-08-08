@@ -48,6 +48,8 @@ func (v *Vote) ValidateBasic() error {
 	}
 	if v.EventType != ToBscCrossChainEvent &&
 		v.EventType != FromBscCrossChainEvent &&
+		v.EventType != FromOpCrossChainEvent &&
+		v.EventType != ToOpCrossChainEvent &&
 		v.EventType != DataAvailabilityChallengeEvent {
 		return errors.New("invalid event type")
 	}
