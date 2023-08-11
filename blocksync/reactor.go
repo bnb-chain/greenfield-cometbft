@@ -51,10 +51,11 @@ type Reactor struct {
 	// immutable
 	initialState sm.State
 
-	blockExec *sm.BlockExecutor
-	store     *store.BlockStore
-	pool      *BlockPool
-	blockSync bool
+	blockExec         *sm.BlockExecutor
+	store             *store.BlockStore
+	pool              *BlockPool
+	blockSync         bool
+	skipAppHashVerify bool
 
 	requestsCh <-chan BlockRequest
 	errorsCh   <-chan peerError
@@ -62,7 +63,7 @@ type Reactor struct {
 
 // NewReactor returns new reactor instance.
 func NewReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore,
-	blockSync bool) *Reactor {
+	blockSync bool, skipAppHashVerify bool) *Reactor {
 
 	if state.LastBlockHeight != store.Height() {
 		panic(fmt.Sprintf("state (%v) and store (%v) height mismatch", state.LastBlockHeight,
@@ -81,13 +82,14 @@ func NewReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockS
 	pool := NewBlockPool(startHeight, requestsCh, errorsCh)
 
 	bcR := &Reactor{
-		initialState: state,
-		blockExec:    blockExec,
-		store:        store,
-		pool:         pool,
-		blockSync:    blockSync,
-		requestsCh:   requestsCh,
-		errorsCh:     errorsCh,
+		initialState:      state,
+		blockExec:         blockExec,
+		store:             store,
+		pool:              pool,
+		blockSync:         blockSync,
+		skipAppHashVerify: skipAppHashVerify,
+		requestsCh:        requestsCh,
+		errorsCh:          errorsCh,
 	}
 	bcR.BaseReactor = *p2p.NewBaseReactor("Reactor", bcR)
 	return bcR
@@ -293,6 +295,9 @@ FOR_LOOP:
 	for {
 		select {
 		case <-switchToConsensusTicker.C:
+			if bcR.skipAppHashVerify { // do not switch
+				continue
+			}
 			height, numPending, lenRequesters := bcR.pool.GetStatus()
 			outbound, inbound, _ := bcR.Switch.NumPeers()
 			bcR.Logger.Debug("Consensus ticker", "numPending", numPending, "total", lenRequesters,
@@ -357,7 +362,7 @@ FOR_LOOP:
 
 			if err == nil {
 				// validate the block before we persist it
-				err = bcR.blockExec.ValidateBlock(state, first)
+				err = bcR.blockExec.ValidateBlock(state, first, bcR.skipAppHashVerify)
 			}
 
 			if err != nil {
@@ -386,7 +391,7 @@ FOR_LOOP:
 
 			// TODO: same thing for app - but we would need a way to
 			// get the hash without persisting the state
-			state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
+			state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first, bcR.skipAppHashVerify)
 			if err != nil {
 				// TODO This is bad, are we zombie?
 				panic(fmt.Sprintf("Failed to process committed block (%d:%X): %v", first.Height, first.Hash(), err))

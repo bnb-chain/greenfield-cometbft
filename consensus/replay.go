@@ -206,19 +206,22 @@ type Handshaker struct {
 	logger       log.Logger
 
 	nBlocks int // number of blocks applied to the state
+
+	skipAppHashVerify bool // skip app hash verification
 }
 
 func NewHandshaker(stateStore sm.Store, state sm.State,
-	store sm.BlockStore, genDoc *types.GenesisDoc) *Handshaker {
+	store sm.BlockStore, genDoc *types.GenesisDoc, skipAppHashVerify bool) *Handshaker {
 
 	return &Handshaker{
-		stateStore:   stateStore,
-		initialState: state,
-		store:        store,
-		eventBus:     types.NopEventBus{},
-		genDoc:       genDoc,
-		logger:       log.NewNopLogger(),
-		nBlocks:      0,
+		stateStore:        stateStore,
+		initialState:      state,
+		store:             store,
+		eventBus:          types.NopEventBus{},
+		genDoc:            genDoc,
+		logger:            log.NewNopLogger(),
+		nBlocks:           0,
+		skipAppHashVerify: skipAppHashVerify,
 	}
 }
 
@@ -500,7 +503,7 @@ func (h *Handshaker) replayBlock(state sm.State, height int64, proxyApp proxy.Ap
 	blockExec.SetEventBus(h.eventBus)
 
 	var err error
-	state, _, err = blockExec.ApplyBlock(state, meta.BlockID, block)
+	state, _, err = blockExec.ApplyBlock(state, meta.BlockID, block, h.skipAppHashVerify)
 	if err != nil {
 		return sm.State{}, err
 	}

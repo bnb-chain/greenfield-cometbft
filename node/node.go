@@ -337,9 +337,10 @@ func doHandshake(
 	genDoc *types.GenesisDoc,
 	eventBus types.BlockEventPublisher,
 	proxyApp proxy.AppConns,
+	skipAppHashVerify bool,
 	consensusLogger log.Logger,
 ) error {
-	handshaker := cs.NewHandshaker(stateStore, state, blockStore, genDoc)
+	handshaker := cs.NewHandshaker(stateStore, state, blockStore, genDoc, skipAppHashVerify)
 	handshaker.SetLogger(consensusLogger)
 	handshaker.SetEventBus(eventBus)
 	if err := handshaker.Handshake(proxyApp); err != nil {
@@ -467,7 +468,7 @@ func createBlockchainReactor(config *cfg.Config,
 ) (bcReactor p2p.Reactor, err error) {
 	switch config.BlockSync.Version {
 	case "v0":
-		bcReactor = bc.NewReactor(state.Copy(), blockExec, blockStore, blockSync)
+		bcReactor = bc.NewReactor(state.Copy(), blockExec, blockStore, blockSync, config.BlockSync.SkipAppHash)
 	case "v1", "v2":
 		return nil, fmt.Errorf("block sync version %s has been deprecated. Please use v0", config.BlockSync.Version)
 	default:
@@ -819,7 +820,8 @@ func NewNode(config *cfg.Config,
 	// and replays any blocks as necessary to sync CometBFT with the app.
 	consensusLogger := logger.With("module", "consensus")
 	if !stateSync {
-		if err := doHandshake(stateStore, state, blockStore, genDoc, eventBus, proxyApp, consensusLogger); err != nil {
+		skipAppHashVerify := config.BlockSyncMode && config.BlockSync.SkipAppHash
+		if err := doHandshake(stateStore, state, blockStore, genDoc, eventBus, proxyApp, skipAppHashVerify, consensusLogger); err != nil {
 			return nil, err
 		}
 

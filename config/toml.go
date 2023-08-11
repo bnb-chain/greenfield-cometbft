@@ -444,6 +444,9 @@ chunk_fetchers = "{{ .StateSync.ChunkFetchers }}"
 #   1) "v0" - the default block sync implementation
 version = "{{ .BlockSync.Version }}"
 
+# When setting this flag to true, block sync will skip the app hash verification.
+skip_app_hash = "{{ .BlockSync.SkipAppHash }}"
+
 #######################################################
 ###         Consensus Configuration Options         ###
 #######################################################

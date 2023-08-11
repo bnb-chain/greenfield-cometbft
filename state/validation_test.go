@@ -97,7 +97,7 @@ func TestValidateBlockHeader(t *testing.T) {
 		for _, tc := range testCases {
 			block := makeBlock(state, height, lastCommit)
 			tc.malleateBlock(block)
-			err := blockExec.ValidateBlock(state, block)
+			err := blockExec.ValidateBlock(state, block, false)
 			require.Error(t, err, tc.name)
 		}
 
@@ -170,7 +170,7 @@ func TestValidateBlockCommit(t *testing.T) {
 				[]types.CommitSig{wrongHeightVote.CommitSig()},
 			)
 			block := makeBlock(state, height, wrongHeightCommit)
-			err = blockExec.ValidateBlock(state, block)
+			err = blockExec.ValidateBlock(state, block, false)
 			_, isErrInvalidCommitHeight := err.(types.ErrInvalidCommitHeight)
 			require.True(t, isErrInvalidCommitHeight, "expected ErrInvalidCommitHeight at height %d but got: %v", height, err)
 
@@ -178,7 +178,7 @@ func TestValidateBlockCommit(t *testing.T) {
 				#2589: test len(block.LastCommit.Signatures) == state.LastValidators.Size()
 			*/
 			block = makeBlock(state, height, wrongSigsCommit)
-			err = blockExec.ValidateBlock(state, block)
+			err = blockExec.ValidateBlock(state, block, false)
 			_, isErrInvalidCommitSignatures := err.(types.ErrInvalidCommitSignatures)
 			require.True(t, isErrInvalidCommitSignatures,
 				"expected ErrInvalidCommitSignatures at height %d, but got: %v",
@@ -301,7 +301,7 @@ func TestValidateBlockEvidence(t *testing.T) {
 			}
 			reveal := makeReveal(state, proposerAddr, privVals, height)
 			block := state.MakeBlock(height, test.MakeNTxs(height, 10), lastCommit, evidence, reveal, proposerAddr)
-			err := blockExec.ValidateBlock(state, block)
+			err := blockExec.ValidateBlock(state, block, false)
 			if assert.Error(t, err) {
 				_, ok := err.(*types.ErrEvidenceOverflow)
 				require.True(t, ok, "expected error to be of type ErrEvidenceOverflow at height %d but got %v", height, err)
