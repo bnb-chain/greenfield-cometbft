@@ -104,8 +104,8 @@ func (conR *Reactor) OnStop() {
 
 // SwitchToConsensus switches from block_sync mode to consensus mode.
 // It resets the state, turns off block_sync, and starts the consensus state-machine
-func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
-	conR.Logger.Info("SwitchToConsensus")
+func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool, skipAppHashVerify bool) {
+	conR.Logger.Info("SwitchToConsensus", "skipWAL", skipWAL, "skipAppHashVerify", skipAppHashVerify)
 
 	func() {
 		// We need to lock, as we are not entering consensus state from State's `handleMsg` or `handleTimeout`
@@ -119,6 +119,7 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 		// NOTE: The line below causes broadcastNewRoundStepRoutine() to broadcast a
 		// NewRoundStepMessage.
 		conR.conS.updateToState(state)
+		conR.conS.skipAppHashVerify = true
 	}()
 
 	conR.mtx.Lock()

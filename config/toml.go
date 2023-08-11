@@ -445,6 +445,7 @@ chunk_fetchers = "{{ .StateSync.ChunkFetchers }}"
 version = "{{ .BlockSync.Version }}"
 
 # When setting this flag to true, block sync will skip the app hash verification.
+# Please do not enable it if you are running a validator or your node connects to public peers.
 skip_app_hash = "{{ .BlockSync.SkipAppHash }}"
 
 #######################################################

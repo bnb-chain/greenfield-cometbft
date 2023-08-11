@@ -32,7 +32,7 @@ const (
 type consensusReactor interface {
 	// for when we switch from blockchain reactor and block sync to
 	// the consensus machine
-	SwitchToConsensus(state sm.State, skipWAL bool)
+	SwitchToConsensus(state sm.State, skipWAL bool, skipAppHashVerify bool)
 }
 
 type peerError struct {
@@ -295,9 +295,6 @@ FOR_LOOP:
 	for {
 		select {
 		case <-switchToConsensusTicker.C:
-			if bcR.skipAppHashVerify { // do not switch
-				continue
-			}
 			height, numPending, lenRequesters := bcR.pool.GetStatus()
 			outbound, inbound, _ := bcR.Switch.NumPeers()
 			bcR.Logger.Debug("Consensus ticker", "numPending", numPending, "total", lenRequesters,
@@ -309,7 +306,7 @@ FOR_LOOP:
 				}
 				conR, ok := bcR.Switch.Reactor("CONSENSUS").(consensusReactor)
 				if ok {
-					conR.SwitchToConsensus(state, blocksSynced > 0 || stateSynced)
+					conR.SwitchToConsensus(state, blocksSynced > 0 || stateSynced, bcR.skipAppHashVerify)
 				}
 				// else {
 				// should only happen during testing

@@ -740,7 +740,7 @@ func startStateSync(ssR *statesync.Reactor, bcR blockSyncReactor, conR *cs.React
 				return
 			}
 		} else {
-			conR.SwitchToConsensus(state, true)
+			conR.SwitchToConsensus(state, true, false)
 		}
 	}()
 	return nil
