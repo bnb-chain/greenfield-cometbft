@@ -119,7 +119,7 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool, skipAppHash
 		// NOTE: The line below causes broadcastNewRoundStepRoutine() to broadcast a
 		// NewRoundStepMessage.
 		conR.conS.updateToState(state)
-		conR.conS.skipAppHashVerify = true
+		conR.conS.skipAppHashVerify = skipAppHashVerify
 	}()
 
 	conR.mtx.Lock()
