@@ -16,6 +16,8 @@ func TestABCIResults(t *testing.T) {
 	d := &abci.ResponseDeliverTx{Code: 14, Data: nil}
 	e := &abci.ResponseDeliverTx{Code: 14, Data: []byte("foo")}
 	f := &abci.ResponseDeliverTx{Code: 14, Data: []byte("bar")}
+	beginBlock := &abci.ResponseBeginBlock{ExtraData: []byte("begin")}
+	endBlock := &abci.ResponseEndBlock{ExtraData: []byte("end")}
 
 	// Nil and []byte{} should produce the same bytes
 	bzA, err := a.Marshal()
@@ -26,12 +28,16 @@ func TestABCIResults(t *testing.T) {
 	require.Equal(t, bzA, bzB)
 
 	// a and b should be the same, don't go in results.
-	results := ABCIResults{a, c, d, e, f}
+	results := ABCIResults{
+		ResponseBeginBlock: beginBlock,
+		ResponseDeliverTxs: []*abci.ResponseDeliverTx{a, c, d, e, f},
+		ResponseEndBlock:   endBlock,
+	}
 
 	// Make sure each result serializes differently
 	last := []byte{}
 	assert.Equal(t, last, bzA) // first one is empty
-	for i, res := range results[1:] {
+	for i, res := range results.ResponseDeliverTxs[1:] {
 		bz, err := res.Marshal()
 		require.NoError(t, err)
 
@@ -43,12 +49,24 @@ func TestABCIResults(t *testing.T) {
 	root := results.Hash()
 	assert.NotEmpty(t, root)
 
-	for i, res := range results {
-		bz, err := res.Marshal()
+	bz, err := results.ResponseBeginBlock.Marshal()
+	require.NoError(t, err)
+	proof := results.ProveResult(0)
+	valid := proof.Verify(root, bz)
+	assert.NoError(t, valid, "begin block")
+
+	for i, res := range results.ResponseDeliverTxs {
+		bz, err = res.Marshal()
 		require.NoError(t, err)
 
-		proof := results.ProveResult(i)
-		valid := proof.Verify(root, bz)
+		proof = results.ProveResult(i + 1)
+		valid = proof.Verify(root, bz)
 		assert.NoError(t, valid, "%d", i)
 	}
+
+	bz, err = results.ResponseEndBlock.Marshal()
+	require.NoError(t, err)
+	proof = results.ProveResult(len(results.ResponseDeliverTxs) + 1)
+	valid = proof.Verify(root, bz)
+	assert.NoError(t, valid, "end block")
 }

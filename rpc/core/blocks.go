@@ -187,7 +187,9 @@ func BlockResults(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultBlockR
 		Height:                height,
 		TxsResults:            results.DeliverTxs,
 		BeginBlockEvents:      results.BeginBlock.Events,
+		BeginBlockExtraData:   results.BeginBlock.ExtraData,
 		EndBlockEvents:        results.EndBlock.Events,
+		EndBlockExtraData:     results.EndBlock.ExtraData,
 		ValidatorUpdates:      results.EndBlock.ValidatorUpdates,
 		ConsensusParamUpdates: results.EndBlock.ConsensusParamUpdates,
 	}, nil
