@@ -47,18 +47,21 @@ type Reactor struct {
 	rs       *cstypes.RoundState
 
 	Metrics *Metrics
+
+	skipAppHashVerify bool
 }
 
 type ReactorOption func(*Reactor)
 
 // NewReactor returns a new Reactor with the given
 // consensusState.
-func NewReactor(consensusState *State, waitSync bool, options ...ReactorOption) *Reactor {
+func NewReactor(consensusState *State, waitSync bool, skipAppHashVerify bool, options ...ReactorOption) *Reactor {
 	conR := &Reactor{
-		conS:     consensusState,
-		waitSync: waitSync,
-		rs:       consensusState.GetRoundState(),
-		Metrics:  NopMetrics(),
+		conS:              consensusState,
+		waitSync:          waitSync,
+		rs:                consensusState.GetRoundState(),
+		Metrics:           NopMetrics(),
+		skipAppHashVerify: skipAppHashVerify,
 	}
 	conR.BaseReactor = *p2p.NewBaseReactor("Consensus", conR)
 
@@ -104,8 +107,8 @@ func (conR *Reactor) OnStop() {
 
 // SwitchToConsensus switches from block_sync mode to consensus mode.
 // It resets the state, turns off block_sync, and starts the consensus state-machine
-func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool, skipAppHashVerify bool) {
-	conR.Logger.Info("SwitchToConsensus", "skipWAL", skipWAL, "skipAppHashVerify", skipAppHashVerify)
+func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
+	conR.Logger.Info("SwitchToConsensus", "skipWAL", skipWAL)
 
 	func() {
 		// We need to lock, as we are not entering consensus state from State's `handleMsg` or `handleTimeout`
@@ -119,7 +122,7 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool, skipAppHash
 		// NOTE: The line below causes broadcastNewRoundStepRoutine() to broadcast a
 		// NewRoundStepMessage.
 		conR.conS.updateToState(state)
-		conR.conS.skipAppHashVerify = skipAppHashVerify
+		conR.conS.skipAppHashVerify = conR.skipAppHashVerify
 	}()
 
 	conR.mtx.Lock()

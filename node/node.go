@@ -468,7 +468,7 @@ func createBlockchainReactor(config *cfg.Config,
 ) (bcReactor p2p.Reactor, err error) {
 	switch config.BlockSync.Version {
 	case "v0":
-		bcReactor = bc.NewReactor(state.Copy(), blockExec, blockStore, blockSync, config.BlockSync.SkipAppHash)
+		bcReactor = bc.NewReactor(state.Copy(), blockExec, blockStore, blockSync, config.BaseConfig.SkipAppHash)
 	case "v1", "v2":
 		return nil, fmt.Errorf("block sync version %s has been deprecated. Please use v0", config.BlockSync.Version)
 	default:
@@ -504,7 +504,7 @@ func createConsensusReactor(config *cfg.Config,
 	if privValidator != nil {
 		consensusState.SetPrivValidator(privValidator)
 	}
-	consensusReactor := cs.NewReactor(consensusState, waitSync, cs.ReactorMetrics(csMetrics))
+	consensusReactor := cs.NewReactor(consensusState, waitSync, config.BaseConfig.SkipAppHash, cs.ReactorMetrics(csMetrics))
 	consensusReactor.SetLogger(consensusLogger)
 	// services which will be publishing and/or subscribing for messages (events)
 	// consensusReactor will set it on consensusState and blockExecutor
@@ -740,7 +740,7 @@ func startStateSync(ssR *statesync.Reactor, bcR blockSyncReactor, conR *cs.React
 				return
 			}
 		} else {
-			conR.SwitchToConsensus(state, true, false)
+			conR.SwitchToConsensus(state, true)
 		}
 	}()
 	return nil
@@ -820,7 +820,7 @@ func NewNode(config *cfg.Config,
 	// and replays any blocks as necessary to sync CometBFT with the app.
 	consensusLogger := logger.With("module", "consensus")
 	if !stateSync {
-		skipAppHashVerify := config.BlockSyncMode && config.BlockSync.SkipAppHash
+		skipAppHashVerify := config.BaseConfig.SkipAppHash
 		if err := doHandshake(stateStore, state, blockStore, genDoc, eventBus, proxyApp, skipAppHashVerify, consensusLogger); err != nil {
 			return nil, err
 		}

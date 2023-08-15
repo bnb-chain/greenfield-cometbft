@@ -150,6 +150,9 @@ abci = "{{ .BaseConfig.ABCI }}"
 # so the app can decide if we should keep the connection or not
 filter_peers = {{ .BaseConfig.FilterPeers }}
 
+# When setting this flag to true, block sync will skip the app hash verification.
+# Please do not enable it if you are running a validator or need very high level security.
+skip_app_hash = "{{ .BlockSync.SkipAppHash }}"
 
 #######################################################################
 ###                 Advanced Configuration Options                  ###
@@ -443,10 +446,6 @@ chunk_fetchers = "{{ .StateSync.ChunkFetchers }}"
 #
 #   1) "v0" - the default block sync implementation
 version = "{{ .BlockSync.Version }}"
-
-# When setting this flag to true, block sync will skip the app hash verification.
-# Please do not enable it if you are running a validator or need very high level security.
-skip_app_hash = "{{ .BlockSync.SkipAppHash }}"
 
 #######################################################
 ###         Consensus Configuration Options         ###

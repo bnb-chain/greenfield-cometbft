@@ -32,7 +32,7 @@ const (
 type consensusReactor interface {
 	// for when we switch from blockchain reactor and block sync to
 	// the consensus machine
-	SwitchToConsensus(state sm.State, skipWAL bool, skipAppHashVerify bool)
+	SwitchToConsensus(state sm.State, skipWAL bool)
 }
 
 type peerError struct {
@@ -306,7 +306,7 @@ FOR_LOOP:
 				}
 				conR, ok := bcR.Switch.Reactor("CONSENSUS").(consensusReactor)
 				if ok {
-					conR.SwitchToConsensus(state, blocksSynced > 0 || stateSynced, bcR.skipAppHashVerify)
+					conR.SwitchToConsensus(state, blocksSynced > 0 || stateSynced)
 				}
 				// else {
 				// should only happen during testing

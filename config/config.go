@@ -258,6 +258,9 @@ type BaseConfig struct { //nolint: maligned
 	// If true, query the ABCI app on connecting to a new peer
 	// so the app can decide if we should keep the connection or not
 	FilterPeers bool `mapstructure:"filter_peers"` // false
+
+	// If true, app hash will not be checked
+	SkipAppHash bool `mapstructure:"skip_app_hash"`
 }
 
 // DefaultBaseConfig returns a default base configuration for a CometBFT node
@@ -276,6 +279,7 @@ func DefaultBaseConfig() BaseConfig {
 		FilterPeers:        false,
 		DBBackend:          "goleveldb",
 		DBPath:             "data",
+		SkipAppHash:        false,
 	}
 }
 
@@ -931,15 +935,13 @@ func (cfg *StateSyncConfig) ValidateBasic() error {
 
 // BlockSyncConfig (formerly known as FastSync) defines the configuration for the CometBFT block sync service
 type BlockSyncConfig struct {
-	Version     string `mapstructure:"version"`
-	SkipAppHash bool   `mapstructure:"skip_app_hash"`
+	Version string `mapstructure:"version"`
 }
 
 // DefaultBlockSyncConfig returns a default configuration for the block sync service
 func DefaultBlockSyncConfig() *BlockSyncConfig {
 	return &BlockSyncConfig{
-		Version:     "v0",
-		SkipAppHash: false,
+		Version: "v0",
 	}
 }
 
