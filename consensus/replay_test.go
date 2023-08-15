@@ -751,7 +751,7 @@ func testHandshakeReplay(t *testing.T, config *cfg.Config, nBlocks int, mode uin
 
 	// now start the app using the handshake - it should sync
 	genDoc, _ := sm.MakeGenesisDocFromFile(config.GenesisFile())
-	handshaker := NewHandshaker(stateStore, state, store, genDoc, false)
+	handshaker := NewHandshaker(stateStore, state, store, genDoc)
 	proxyApp := proxy.NewAppConns(clientCreator2, proxy.NopMetrics())
 	if err := proxyApp.Start(); err != nil {
 		t.Fatalf("Error starting proxy app connections: %v", err)
@@ -941,7 +941,7 @@ func TestHandshakePanicsIfAppReturnsWrongAppHash(t *testing.T) {
 		})
 
 		assert.Panics(t, func() {
-			h := NewHandshaker(stateStore, state, store, genDoc, false)
+			h := NewHandshaker(stateStore, state, store, genDoc)
 			if err = h.Handshake(proxyApp); err != nil {
 				t.Log(err)
 			}
@@ -965,7 +965,7 @@ func TestHandshakePanicsIfAppReturnsWrongAppHash(t *testing.T) {
 		})
 
 		assert.Panics(t, func() {
-			h := NewHandshaker(stateStore, state, store, genDoc, false)
+			h := NewHandshaker(stateStore, state, store, genDoc)
 			if err = h.Handshake(proxyApp); err != nil {
 				t.Log(err)
 			}
@@ -1255,7 +1255,7 @@ func TestHandshakeUpdatesValidators(t *testing.T) {
 
 	// now start the app using the handshake - it should sync
 	genDoc, _ := sm.MakeGenesisDocFromFile(config.GenesisFile())
-	handshaker := NewHandshaker(stateStore, state, store, genDoc, false)
+	handshaker := NewHandshaker(stateStore, state, store, genDoc)
 	proxyApp := proxy.NewAppConns(clientCreator, proxy.NopMetrics())
 	if err := proxyApp.Start(); err != nil {
 		t.Fatalf("Error starting proxy app connections: %v", err)

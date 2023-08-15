@@ -44,6 +44,8 @@ func (e peerError) Error() string {
 	return fmt.Sprintf("error with peer %v: %s", e.peerID, e.err.Error())
 }
 
+type ReactorOption func(*Reactor)
+
 // Reactor handles long-term catchup syncing.
 type Reactor struct {
 	p2p.BaseReactor
@@ -63,7 +65,7 @@ type Reactor struct {
 
 // NewReactor returns new reactor instance.
 func NewReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore,
-	blockSync bool, skipAppHashVerify bool) *Reactor {
+	blockSync bool, options ...ReactorOption) *Reactor {
 
 	if state.LastBlockHeight != store.Height() {
 		panic(fmt.Sprintf("state (%v) and store (%v) height mismatch", state.LastBlockHeight,
@@ -82,16 +84,20 @@ func NewReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockS
 	pool := NewBlockPool(startHeight, requestsCh, errorsCh)
 
 	bcR := &Reactor{
-		initialState:      state,
-		blockExec:         blockExec,
-		store:             store,
-		pool:              pool,
-		blockSync:         blockSync,
-		skipAppHashVerify: skipAppHashVerify,
-		requestsCh:        requestsCh,
-		errorsCh:          errorsCh,
+		initialState: state,
+		blockExec:    blockExec,
+		store:        store,
+		pool:         pool,
+		blockSync:    blockSync,
+		requestsCh:   requestsCh,
+		errorsCh:     errorsCh,
 	}
 	bcR.BaseReactor = *p2p.NewBaseReactor("Reactor", bcR)
+
+	for _, option := range options {
+		option(bcR)
+	}
+
 	return bcR
 }
 
@@ -416,4 +422,9 @@ func (bcR *Reactor) BroadcastStatusRequest() {
 		ChannelID: BlocksyncChannel,
 		Message:   &bcproto.StatusRequest{},
 	})
+}
+
+// ReactorSkipAppHashVerify sets the skip app hash verification flag
+func ReactorSkipAppHashVerify(skipAppHashVerify bool) ReactorOption {
+	return func(bcR *Reactor) { bcR.skipAppHashVerify = skipAppHashVerify }
 }

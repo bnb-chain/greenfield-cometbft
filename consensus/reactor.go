@@ -55,19 +55,20 @@ type ReactorOption func(*Reactor)
 
 // NewReactor returns a new Reactor with the given
 // consensusState.
-func NewReactor(consensusState *State, waitSync bool, skipAppHashVerify bool, options ...ReactorOption) *Reactor {
+func NewReactor(consensusState *State, waitSync bool, options ...ReactorOption) *Reactor {
 	conR := &Reactor{
-		conS:              consensusState,
-		waitSync:          waitSync,
-		rs:                consensusState.GetRoundState(),
-		Metrics:           NopMetrics(),
-		skipAppHashVerify: skipAppHashVerify,
+		conS:     consensusState,
+		waitSync: waitSync,
+		rs:       consensusState.GetRoundState(),
+		Metrics:  NopMetrics(),
 	}
 	conR.BaseReactor = *p2p.NewBaseReactor("Consensus", conR)
 
 	for _, option := range options {
 		option(conR)
 	}
+
+	consensusState.skipAppHashVerify = conR.skipAppHashVerify
 
 	return conR
 }
@@ -122,7 +123,6 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 		// NOTE: The line below causes broadcastNewRoundStepRoutine() to broadcast a
 		// NewRoundStepMessage.
 		conR.conS.updateToState(state)
-		conR.conS.skipAppHashVerify = conR.skipAppHashVerify
 	}()
 
 	conR.mtx.Lock()
@@ -998,6 +998,11 @@ func (conR *Reactor) StringIndented(indent string) string {
 // ReactorMetrics sets the metrics
 func ReactorMetrics(metrics *Metrics) ReactorOption {
 	return func(conR *Reactor) { conR.Metrics = metrics }
+}
+
+// ReactorSkipAppHashVerify sets the skip app hash verification flag
+func ReactorSkipAppHashVerify(skipAppHashVerify bool) ReactorOption {
+	return func(conR *Reactor) { conR.skipAppHashVerify = skipAppHashVerify }
 }
 
 //-----------------------------------------------------------------------------

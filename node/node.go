@@ -340,7 +340,8 @@ func doHandshake(
 	skipAppHashVerify bool,
 	consensusLogger log.Logger,
 ) error {
-	handshaker := cs.NewHandshaker(stateStore, state, blockStore, genDoc, skipAppHashVerify)
+	handshaker := cs.NewHandshaker(stateStore, state, blockStore, genDoc,
+		cs.HandshakerSkipAppHashVerify(skipAppHashVerify))
 	handshaker.SetLogger(consensusLogger)
 	handshaker.SetEventBus(eventBus)
 	if err := handshaker.Handshake(proxyApp); err != nil {
@@ -468,7 +469,8 @@ func createBlockchainReactor(config *cfg.Config,
 ) (bcReactor p2p.Reactor, err error) {
 	switch config.BlockSync.Version {
 	case "v0":
-		bcReactor = bc.NewReactor(state.Copy(), blockExec, blockStore, blockSync, config.BaseConfig.SkipAppHash)
+		bcReactor = bc.NewReactor(state.Copy(), blockExec, blockStore, blockSync,
+			bc.ReactorSkipAppHashVerify(config.BaseConfig.SkipAppHash))
 	case "v1", "v2":
 		return nil, fmt.Errorf("block sync version %s has been deprecated. Please use v0", config.BlockSync.Version)
 	default:
@@ -504,7 +506,8 @@ func createConsensusReactor(config *cfg.Config,
 	if privValidator != nil {
 		consensusState.SetPrivValidator(privValidator)
 	}
-	consensusReactor := cs.NewReactor(consensusState, waitSync, config.BaseConfig.SkipAppHash, cs.ReactorMetrics(csMetrics))
+	consensusReactor := cs.NewReactor(consensusState, waitSync,
+		cs.ReactorMetrics(csMetrics), cs.ReactorSkipAppHashVerify(config.BaseConfig.SkipAppHash))
 	consensusReactor.SetLogger(consensusLogger)
 	// services which will be publishing and/or subscribing for messages (events)
 	// consensusReactor will set it on consensusState and blockExecutor

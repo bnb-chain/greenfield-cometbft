@@ -321,7 +321,8 @@ func newConsensusStateForReplay(config cfg.BaseConfig, csConfig *cfg.ConsensusCo
 		cmtos.Exit(fmt.Sprintf("Failed to start event bus: %v", err))
 	}
 
-	handshaker := NewHandshaker(stateStore, state, blockStore, gdoc, config.SkipAppHash)
+	handshaker := NewHandshaker(stateStore, state, blockStore, gdoc,
+		HandshakerSkipAppHashVerify(config.SkipAppHash))
 	handshaker.SetEventBus(eventBus)
 	err = handshaker.Handshake(proxyApp)
 	if err != nil {
