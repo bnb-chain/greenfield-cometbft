@@ -820,8 +820,7 @@ func NewNode(config *cfg.Config,
 	// and replays any blocks as necessary to sync CometBFT with the app.
 	consensusLogger := logger.With("module", "consensus")
 	if !stateSync {
-		skipAppHashVerify := config.BaseConfig.SkipAppHash
-		if err := doHandshake(stateStore, state, blockStore, genDoc, eventBus, proxyApp, skipAppHashVerify, consensusLogger); err != nil {
+		if err := doHandshake(stateStore, state, blockStore, genDoc, eventBus, proxyApp, config.SkipAppHash, consensusLogger); err != nil {
 			return nil, err
 		}
 
