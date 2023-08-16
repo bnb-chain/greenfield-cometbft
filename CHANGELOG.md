@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v0.0.3-alpha.1
+This release adapts the repository to the upstream v0.37.2 version.
+
+Features:
+* [#21](https://github.com/bnb-chain/greenfield-cometbft/pull/21) feat: add event types for op cross chain events
+* [#22](https://github.com/bnb-chain/greenfield-cometbft/pull/22) feat: add flag to skip app hash verification
+
+Bugfixes:
+* [#20](https://github.com/bnb-chain/greenfield-cometbft/pull/20) fix: merge upstream v0.37.2
+
+
 ## v0.0.2
 This release mainly includes following feature, bugfix and improvement:
 
