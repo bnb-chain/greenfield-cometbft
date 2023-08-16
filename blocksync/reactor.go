@@ -44,6 +44,8 @@ func (e peerError) Error() string {
 	return fmt.Sprintf("error with peer %v: %s", e.peerID, e.err.Error())
 }
 
+type ReactorOption func(*Reactor)
+
 // Reactor handles long-term catchup syncing.
 type Reactor struct {
 	p2p.BaseReactor
@@ -51,10 +53,11 @@ type Reactor struct {
 	// immutable
 	initialState sm.State
 
-	blockExec *sm.BlockExecutor
-	store     *store.BlockStore
-	pool      *BlockPool
-	blockSync bool
+	blockExec         *sm.BlockExecutor
+	store             *store.BlockStore
+	pool              *BlockPool
+	blockSync         bool
+	skipAppHashVerify bool
 
 	requestsCh <-chan BlockRequest
 	errorsCh   <-chan peerError
@@ -62,7 +65,7 @@ type Reactor struct {
 
 // NewReactor returns new reactor instance.
 func NewReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore,
-	blockSync bool) *Reactor {
+	blockSync bool, options ...ReactorOption) *Reactor {
 
 	if state.LastBlockHeight != store.Height() {
 		panic(fmt.Sprintf("state (%v) and store (%v) height mismatch", state.LastBlockHeight,
@@ -90,6 +93,11 @@ func NewReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockS
 		errorsCh:     errorsCh,
 	}
 	bcR.BaseReactor = *p2p.NewBaseReactor("Reactor", bcR)
+
+	for _, option := range options {
+		option(bcR)
+	}
+
 	return bcR
 }
 
@@ -357,7 +365,7 @@ FOR_LOOP:
 
 			if err == nil {
 				// validate the block before we persist it
-				err = bcR.blockExec.ValidateBlock(state, first)
+				err = bcR.blockExec.ValidateBlock(state, first, bcR.skipAppHashVerify)
 			}
 
 			if err != nil {
@@ -386,7 +394,7 @@ FOR_LOOP:
 
 			// TODO: same thing for app - but we would need a way to
 			// get the hash without persisting the state
-			state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
+			state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first, bcR.skipAppHashVerify)
 			if err != nil {
 				// TODO This is bad, are we zombie?
 				panic(fmt.Sprintf("Failed to process committed block (%d:%X): %v", first.Height, first.Hash(), err))
@@ -414,4 +422,9 @@ func (bcR *Reactor) BroadcastStatusRequest() {
 		ChannelID: BlocksyncChannel,
 		Message:   &bcproto.StatusRequest{},
 	})
+}
+
+// ReactorSkipAppHashVerify sets the skip app hash verification flag
+func ReactorSkipAppHashVerify(skipAppHashVerify bool) ReactorOption {
+	return func(bcR *Reactor) { bcR.skipAppHashVerify = skipAppHashVerify }
 }

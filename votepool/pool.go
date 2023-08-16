@@ -139,7 +139,7 @@ type Pool struct {
 
 // NewVotePool creates a Pool. The initial validators should be supplied.
 func NewVotePool(logger log.Logger, validators []*types.Validator, eventBus *types.EventBus) *Pool {
-	eventTypes := []EventType{ToBscCrossChainEvent, FromBscCrossChainEvent, DataAvailabilityChallengeEvent}
+	eventTypes := []EventType{ToBscCrossChainEvent, FromBscCrossChainEvent, DataAvailabilityChallengeEvent, FromOpCrossChainEvent, ToOpCrossChainEvent}
 
 	ticker := time.NewTicker(pruneVoteInterval)
 	stores := make(map[EventType]*voteStore, len(eventTypes))

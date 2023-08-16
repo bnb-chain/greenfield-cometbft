@@ -12,4 +12,10 @@ const (
 
 	// DataAvailabilityChallengeEvent defines the type of events for data availability challenges.
 	DataAvailabilityChallengeEvent EventType = 3
+
+	// ToOpCrossChainEvent defines the type of cross chain events from the current chain to op chain.
+	ToOpCrossChainEvent EventType = 4
+
+	// FromOpCrossChainEvent defines the type of cross chain events from op chain to the current chain.
+	FromOpCrossChainEvent EventType = 5
 )

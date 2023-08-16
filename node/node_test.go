@@ -334,7 +334,7 @@ func TestCreateProposalBlock(t *testing.T) {
 	}
 	assert.EqualValues(t, partSetFromHeader.ByteSize(), partSet.ByteSize())
 
-	err = blockExec.ValidateBlock(state, block)
+	err = blockExec.ValidateBlock(state, block, false)
 	assert.NoError(t, err)
 }
 

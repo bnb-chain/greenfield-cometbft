@@ -63,12 +63,12 @@ func makeAndApplyGoodBlock(state sm.State, height int64, lastCommit *types.Commi
 	if err != nil {
 		return state, types.BlockID{}, err
 	}
-	if err := blockExec.ValidateBlock(state, block); err != nil {
+	if err := blockExec.ValidateBlock(state, block, false); err != nil {
 		return state, types.BlockID{}, err
 	}
 	blockID := types.BlockID{Hash: block.Hash(),
 		PartSetHeader: partSet.Header()}
-	state, _, err = blockExec.ApplyBlock(state, blockID, block)
+	state, _, err = blockExec.ApplyBlock(state, blockID, block, false)
 	if err != nil {
 		return state, types.BlockID{}, err
 	}

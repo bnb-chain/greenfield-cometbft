@@ -56,7 +56,9 @@ type ResultBlockResults struct {
 	Height                int64                     `json:"height"`
 	TxsResults            []*abci.ResponseDeliverTx `json:"txs_results"`
 	BeginBlockEvents      []abci.Event              `json:"begin_block_events"`
+	BeginBlockExtraData   []byte                    `json:"begin_block_extra_data"` // add new field, then downstream don't have to change
 	EndBlockEvents        []abci.Event              `json:"end_block_events"`
+	EndBlockExtraData     []byte                    `json:"end_block_extra_data"` // add new field, then downstream don't have to change
 	ValidatorUpdates      []abci.ValidatorUpdate    `json:"validator_updates"`
 	ConsensusParamUpdates *cmtproto.ConsensusParams `json:"consensus_param_updates"`
 }

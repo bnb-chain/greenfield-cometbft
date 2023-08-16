@@ -47,6 +47,8 @@ type Reactor struct {
 	rs       *cstypes.RoundState
 
 	Metrics *Metrics
+
+	skipAppHashVerify bool
 }
 
 type ReactorOption func(*Reactor)
@@ -65,6 +67,8 @@ func NewReactor(consensusState *State, waitSync bool, options ...ReactorOption) 
 	for _, option := range options {
 		option(conR)
 	}
+
+	consensusState.skipAppHashVerify = conR.skipAppHashVerify
 
 	return conR
 }
@@ -105,7 +109,7 @@ func (conR *Reactor) OnStop() {
 // SwitchToConsensus switches from block_sync mode to consensus mode.
 // It resets the state, turns off block_sync, and starts the consensus state-machine
 func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
-	conR.Logger.Info("SwitchToConsensus")
+	conR.Logger.Info("SwitchToConsensus", "skipWAL", skipWAL)
 
 	func() {
 		// We need to lock, as we are not entering consensus state from State's `handleMsg` or `handleTimeout`
@@ -994,6 +998,11 @@ func (conR *Reactor) StringIndented(indent string) string {
 // ReactorMetrics sets the metrics
 func ReactorMetrics(metrics *Metrics) ReactorOption {
 	return func(conR *Reactor) { conR.Metrics = metrics }
+}
+
+// ReactorSkipAppHashVerify sets the skip app hash verification flag
+func ReactorSkipAppHashVerify(skipAppHashVerify bool) ReactorOption {
+	return func(conR *Reactor) { conR.skipAppHashVerify = skipAppHashVerify }
 }
 
 //-----------------------------------------------------------------------------

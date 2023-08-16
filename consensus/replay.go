@@ -206,12 +206,16 @@ type Handshaker struct {
 	logger       log.Logger
 
 	nBlocks int // number of blocks applied to the state
+
+	skipAppHashVerify bool // skip app hash verification
 }
 
-func NewHandshaker(stateStore sm.Store, state sm.State,
-	store sm.BlockStore, genDoc *types.GenesisDoc) *Handshaker {
+type HandshakerOption func(*Handshaker)
 
-	return &Handshaker{
+func NewHandshaker(stateStore sm.Store, state sm.State,
+	store sm.BlockStore, genDoc *types.GenesisDoc, options ...HandshakerOption) *Handshaker {
+
+	handshaker := &Handshaker{
 		stateStore:   stateStore,
 		initialState: state,
 		store:        store,
@@ -220,6 +224,12 @@ func NewHandshaker(stateStore sm.Store, state sm.State,
 		logger:       log.NewNopLogger(),
 		nBlocks:      0,
 	}
+
+	for _, option := range options {
+		option(handshaker)
+	}
+
+	return handshaker
 }
 
 func (h *Handshaker) SetLogger(l log.Logger) {
@@ -500,7 +510,7 @@ func (h *Handshaker) replayBlock(state sm.State, height int64, proxyApp proxy.Ap
 	blockExec.SetEventBus(h.eventBus)
 
 	var err error
-	state, _, err = blockExec.ApplyBlock(state, meta.BlockID, block)
+	state, _, err = blockExec.ApplyBlock(state, meta.BlockID, block, h.skipAppHashVerify)
 	if err != nil {
 		return sm.State{}, err
 	}
@@ -508,6 +518,11 @@ func (h *Handshaker) replayBlock(state sm.State, height int64, proxyApp proxy.Ap
 	h.nBlocks++
 
 	return state, nil
+}
+
+// HandshakerSkipAppHashVerify sets the skip app hash verification flag
+func HandshakerSkipAppHashVerify(skipAppHashVerify bool) HandshakerOption {
+	return func(handshaker *Handshaker) { handshaker.skipAppHashVerify = skipAppHashVerify }
 }
 
 func assertAppHashEqualsOneFromBlock(appHash []byte, block *types.Block) {

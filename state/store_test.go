@@ -218,12 +218,12 @@ func TestABCIResponsesResultsHash(t *testing.T) {
 	root := sm.ABCIResponsesResultsHash(responses)
 
 	// root should be Merkle tree root of DeliverTxs responses
-	results := types.NewResults(responses.DeliverTxs)
+	results := types.NewResults(responses.BeginBlock, responses.DeliverTxs, responses.EndBlock)
 	assert.Equal(t, root, results.Hash())
 
 	// test we can prove first DeliverTx
-	proof := results.ProveResult(0)
-	bz, err := results[0].Marshal()
+	proof := results.ProveResult(1)
+	bz, err := results.ResponseDeliverTxs[0].Marshal()
 	require.NoError(t, err)
 	assert.NoError(t, proof.Verify(root, bz))
 }

@@ -10,8 +10,6 @@ import (
 
 	"github.com/cometbft/cometbft/votepool"
 
-	"github.com/cosmos/gogoproto/proto"
-
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/crypto/merkle"
 	cmtbytes "github.com/cometbft/cometbft/libs/bytes"
@@ -412,27 +410,13 @@ func (c *Client) BlockResults(ctx context.Context, height *int64) (*ctypes.Resul
 		return nil, err
 	}
 
-	// proto-encode BeginBlock events
-	bbeBytes, err := proto.Marshal(&abci.ResponseBeginBlock{
-		Events: res.BeginBlockEvents,
-	})
-	if err != nil {
-		return nil, err
-	}
-
 	// Build a Merkle tree of proto-encoded DeliverTx results and get a hash.
-	results := types.NewResults(res.TxsResults)
-
-	// proto-encode EndBlock events.
-	ebeBytes, err := proto.Marshal(&abci.ResponseEndBlock{
-		Events: res.EndBlockEvents,
-	})
-	if err != nil {
-		return nil, err
-	}
+	results := types.NewResults(&abci.ResponseBeginBlock{ExtraData: res.BeginBlockExtraData},
+		res.TxsResults,
+		&abci.ResponseEndBlock{ExtraData: res.EndBlockExtraData})
 
 	// Build a Merkle tree out of the above 3 binary slices.
-	rH := merkle.HashFromByteSlices([][]byte{bbeBytes, results.Hash(), ebeBytes})
+	rH := results.Hash()
 
 	// Verify block results.
 	if !bytes.Equal(rH, trustedBlock.LastResultsHash) {
