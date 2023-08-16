@@ -370,7 +370,7 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 //
 // See merkle.SimpleHashFromByteSlices
 func ABCIResponsesResultsHash(ar *cmtstate.ABCIResponses) []byte {
-	return types.NewResults(ar.DeliverTxs).Hash()
+	return types.NewResults(ar.BeginBlock, ar.DeliverTxs, ar.EndBlock).Hash()
 }
 
 // LoadABCIResponses loads the ABCIResponses for the given height from the

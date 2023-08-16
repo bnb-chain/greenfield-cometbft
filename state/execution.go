@@ -179,8 +179,8 @@ func (blockExec *BlockExecutor) ProcessProposal(
 // If the block is invalid, it returns an error.
 // Validation does not mutate state, but does require historical information from the stateDB,
 // ie. to verify evidence from a validator at an old height.
-func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block) error {
-	err := validateBlock(state, block)
+func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block, skipAppHashVerify bool) error {
+	err := validateBlock(state, block, skipAppHashVerify)
 	if err != nil {
 		return err
 	}
@@ -195,8 +195,9 @@ func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block) e
 // It takes a blockID to avoid recomputing the parts hash.
 func (blockExec *BlockExecutor) ApplyBlock(
 	state State, blockID types.BlockID, block *types.Block,
+	skipAppHashVerify bool,
 ) (State, int64, error) {
-	if err := validateBlock(state, block); err != nil {
+	if err := validateBlock(state, block, skipAppHashVerify); err != nil {
 		return state, 0, ErrInvalidBlock(err)
 	}
 
