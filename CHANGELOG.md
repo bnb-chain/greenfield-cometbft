@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.0.3
+This release includes the features and bugfixes in the v0.0.3 alpha versions and 1 new bugfix.
+
+Bugfixes:
+* [#28](https://github.com/bnb-chain/greenfield-cometbft/pull/28) fix: fix dependency security issues
+
 ## v0.0.3-alpha.1
 This release adapts the repository to the upstream v0.37.2 version.
 
