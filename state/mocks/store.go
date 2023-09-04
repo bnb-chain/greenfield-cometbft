@@ -226,6 +226,20 @@ func (_m *Store) Save(_a0 state.State) error {
 	return r0
 }
 
+// Save provides a mock function with given fields: _a0
+func (_m *Store) SaveWithoutFlush(_a0 state.State) error {
+	ret := _m.Called(_a0)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(state.State) error); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // SaveABCIResponses provides a mock function with given fields: _a0, _a1
 func (_m *Store) SaveABCIResponses(_a0 int64, _a1 *tendermintstate.ABCIResponses) error {
 	ret := _m.Called(_a0, _a1)

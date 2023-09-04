@@ -387,9 +387,9 @@ func (h *Handshaker) ReplayBlocks(
 		// the state should never be ahead of the store (this is under CometBFT's control)
 		panic(fmt.Sprintf("StateBlockHeight (%d) > StoreBlockHeight (%d)", stateBlockHeight, storeBlockHeight))
 
-	case storeBlockHeight > stateBlockHeight+1:
+		// case storeBlockHeight > stateBlockHeight+1:
 		// store should be at most one ahead of the state (this is under CometBFT's control)
-		panic(fmt.Sprintf("StoreBlockHeight (%d) > StateBlockHeight + 1 (%d)", storeBlockHeight, stateBlockHeight+1))
+		// panic(fmt.Sprintf("StoreBlockHeight (%d) > StateBlockHeight + 1 (%d)", storeBlockHeight, stateBlockHeight+1))
 	}
 
 	var err error
@@ -408,7 +408,7 @@ func (h *Handshaker) ReplayBlocks(
 			return appHash, nil
 		}
 
-	} else if storeBlockHeight == stateBlockHeight+1 {
+	} else if storeBlockHeight > stateBlockHeight {
 		// We saved the block in the store but haven't updated the state,
 		// so we'll need to replay a block using the WAL.
 		switch {
@@ -423,8 +423,14 @@ func (h *Handshaker) ReplayBlocks(
 			// NOTE: We could instead use the cs.WAL on cs.Start,
 			// but we'd have to allow the WAL to replay a block that wrote it's #ENDHEIGHT
 			h.logger.Info("Replay last block using real app")
-			state, err = h.replayBlock(state, storeBlockHeight, proxyApp.Consensus())
-			return state.AppHash, err
+			for height := appBlockHeight + 1; height <= storeBlockHeight; height++ {
+				state, err = h.replayBlock(state, height, proxyApp.Consensus())
+				if err != nil {
+					return state.AppHash, err
+				}
+			}
+			h.stateStore.Save(state)
+			return state.AppHash, nil
 
 		case appBlockHeight == storeBlockHeight:
 			// We ran Commit, but didn't save the state, so replayBlock with mock app.

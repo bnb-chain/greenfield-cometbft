@@ -38,19 +38,32 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool) (int64, []byte, error) 
 	// If the state store isn't one below nor equal to the blockstore height than this violates the
 	// invariant
 	if height != invalidState.LastBlockHeight {
-		return -1, nil, fmt.Errorf("statestore height (%d) is not one below or equal to blockstore height (%d)",
-			invalidState.LastBlockHeight, height)
+		if removeBlock {
+			for {
+				if err := bs.DeleteLatestBlock(); err != nil {
+					return -1, nil, fmt.Errorf("failed to delete latest block from blockstore: %w", err)
+				}
+				height = bs.Height()
+				if height <= invalidState.LastBlockHeight {
+					break
+				}
+			}
+
+		} else {
+			return -1, nil, fmt.Errorf("statestore height (%d) is not one below or equal to blockstore height (%d)",
+				invalidState.LastBlockHeight, height)
+		}
 	}
 
 	// state store height is equal to blockstore height. We're good to proceed with rolling back state
-	rollbackHeight := invalidState.LastBlockHeight - 1
+	rollbackHeight := invalidState.LastBlockHeight - 10 // TODO: determine the height to roll-back to, need to read config or detect it
 	rollbackBlock := bs.LoadBlockMeta(rollbackHeight)
 	if rollbackBlock == nil {
 		return -1, nil, fmt.Errorf("block at height %d not found", rollbackHeight)
 	}
 	// We also need to retrieve the latest block because the app hash and last
 	// results hash is only agreed upon in the following block.
-	latestBlock := bs.LoadBlockMeta(invalidState.LastBlockHeight)
+	latestBlock := bs.LoadBlockMeta(rollbackHeight + 1)
 	if latestBlock == nil {
 		return -1, nil, fmt.Errorf("block at height %d not found", invalidState.LastBlockHeight)
 	}

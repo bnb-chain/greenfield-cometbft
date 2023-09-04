@@ -278,9 +278,17 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	// Update the app hash and save the state.
 	startTime = time.Now()
 	state.AppHash = appHash
-	if err := blockExec.store.Save(state); err != nil {
-		return state, 0, err
+
+	if block.Height%10 == 0 { // TODO: need to get the config
+		if err := blockExec.store.Save(state); err != nil {
+			return state, 0, err
+		}
+	} else {
+		if err := blockExec.store.SaveWithoutFlush(state); err != nil {
+			return state, 0, err
+		}
 	}
+
 	elapseTime = time.Since(startTime).Milliseconds()
 	blockExec.metrics.SaveState.Set(float64(elapseTime))
 	fail.Fail() // XXX

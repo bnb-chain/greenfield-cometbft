@@ -67,6 +67,8 @@ type Store interface {
 	LoadConsensusParams(int64) (types.ConsensusParams, error)
 	// Save overwrites the previous state with the updated one
 	Save(State) error
+	// Save overwrites the previous state with the updated one
+	SaveWithoutFlush(State) error
 	// SaveABCIResponses saves ABCIResponses for a given height
 	SaveABCIResponses(int64, *cmtstate.ABCIResponses) error
 	// Bootstrap is used for bootstrapping state when not starting from a initial height.
@@ -170,10 +172,16 @@ func (store dbStore) loadState(key []byte) (state State, err error) {
 // Save persists the State, the ValidatorsInfo, and the ConsensusParamsInfo to the database.
 // This flushes the writes (e.g. calls SetSync).
 func (store dbStore) Save(state State) error {
-	return store.save(state, stateKey)
+	return store.save(state, stateKey, true)
 }
 
-func (store dbStore) save(state State, key []byte) error {
+// Save persists the State, the ValidatorsInfo, and the ConsensusParamsInfo to the database.
+// This flushes the writes (e.g. calls SetSync).
+func (store dbStore) SaveWithoutFlush(state State) error {
+	return store.save(state, stateKey, false)
+}
+
+func (store dbStore) save(state State, key []byte, flush bool) error {
 	nextHeight := state.LastBlockHeight + 1
 	// If first block, save validators for the block.
 	if nextHeight == 1 {
@@ -194,10 +202,14 @@ func (store dbStore) save(state State, key []byte) error {
 		state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
 		return err
 	}
-	err := store.db.SetSync(key, state.Bytes())
-	if err != nil {
-		return err
+
+	if flush {
+		err := store.db.SetSync(key, state.Bytes())
+		if err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
