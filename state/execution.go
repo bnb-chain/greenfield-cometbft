@@ -210,6 +210,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	}
 
 	startTime := time.Now()
+	fmt.Println("DEBUG_DEBUG ApplyBlock execBlockOnProxyApp")
 	abciResponses, err := execBlockOnProxyApp(
 		blockExec.logger, blockExec.proxyApp, block, blockExec.store, state.InitialHeight,
 	)
@@ -382,6 +383,8 @@ func execBlockOnProxyApp(
 
 	commitInfo := buildLastCommitInfo(block, store, initialHeight)
 
+	fmt.Println("DEBUG_DEBUG buildLastCommitInfo", commitInfo.String())
+
 	// Begin block
 	var err error
 	pbh := block.Header.ToProto()
@@ -423,6 +426,9 @@ func buildLastCommitInfo(block *types.Block, store Store, initialHeight int64) a
 	if block.Height == initialHeight {
 		// there is no last commit for the initial height.
 		// return an empty value.
+
+		fmt.Println("DEBUG_DEBUG buildLastCommitInfo block.Height == initialHeight", "initialHeight", initialHeight)
+
 		return abci.CommitInfo{}
 	}
 
@@ -639,6 +645,7 @@ func ExecCommitBlock(
 	store Store,
 	initialHeight int64,
 ) ([]byte, error) {
+	fmt.Println("DEBUG_DEBUG ExecCommitBlock execBlockOnProxyApp")
 	_, err := execBlockOnProxyApp(logger, appConnConsensus, block, store, initialHeight)
 	if err != nil {
 		logger.Error("failed executing block on proxy app", "height", block.Height, "err", err)
