@@ -53,11 +53,12 @@ type Reactor struct {
 	// immutable
 	initialState sm.State
 
-	blockExec         *sm.BlockExecutor
-	store             *store.BlockStore
-	pool              *BlockPool
-	blockSync         bool
-	skipAppHashVerify bool
+	blockExec          *sm.BlockExecutor
+	store              *store.BlockStore
+	pool               *BlockPool
+	blockSync          bool
+	skipAppHashVerify  bool
+	writeStateInterval int
 
 	requestsCh <-chan BlockRequest
 	errorsCh   <-chan peerError
@@ -394,7 +395,7 @@ FOR_LOOP:
 
 			// TODO: same thing for app - but we would need a way to
 			// get the hash without persisting the state
-			state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first, bcR.skipAppHashVerify)
+			state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first, bcR.skipAppHashVerify, bcR.writeStateInterval)
 			if err != nil {
 				// TODO This is bad, are we zombie?
 				panic(fmt.Sprintf("Failed to process committed block (%d:%X): %v", first.Height, first.Hash(), err))
@@ -427,4 +428,9 @@ func (bcR *Reactor) BroadcastStatusRequest() {
 // ReactorSkipAppHashVerify sets the skip app hash verification flag
 func ReactorSkipAppHashVerify(skipAppHashVerify bool) ReactorOption {
 	return func(bcR *Reactor) { bcR.skipAppHashVerify = skipAppHashVerify }
+}
+
+// ReactorWriteStateInterval sets the write state interval flag
+func ReactorWriteStateInterval(writeStateInterval int) ReactorOption {
+	return func(bcR *Reactor) { bcR.writeStateInterval = writeStateInterval }
 }

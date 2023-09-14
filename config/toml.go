@@ -154,6 +154,10 @@ filter_peers = {{ .BaseConfig.FilterPeers }}
 # Please do not enable it if you are running a validator or need very high level security.
 skip_app_hash = {{ .BaseConfig.SkipAppHash }}
 
+# Define the block interval to write state to database. It will influence replay and rollback.
+# Please do not change it if you are running a validator or need very high level security.
+write_state_interval = {{ .BaseConfig.WriteStateInterval }}
+
 #######################################################################
 ###                 Advanced Configuration Options                  ###
 #######################################################################

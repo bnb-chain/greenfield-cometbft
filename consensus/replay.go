@@ -429,8 +429,8 @@ func (h *Handshaker) ReplayBlocks(
 					return state.AppHash, err
 				}
 			}
-			h.stateStore.Save(state)
-			return state.AppHash, nil
+			err = h.stateStore.Save(state)
+			return state.AppHash, err
 
 		case appBlockHeight == storeBlockHeight:
 			// We ran Commit, but didn't save the state, so replayBlock with mock app.
@@ -516,7 +516,7 @@ func (h *Handshaker) replayBlock(state sm.State, height int64, proxyApp proxy.Ap
 	blockExec.SetEventBus(h.eventBus)
 
 	var err error
-	state, _, err = blockExec.ApplyBlock(state, meta.BlockID, block, h.skipAppHashVerify)
+	state, _, err = blockExec.ApplyBlock(state, meta.BlockID, block, h.skipAppHashVerify, 1)
 	if err != nil {
 		return sm.State{}, err
 	}

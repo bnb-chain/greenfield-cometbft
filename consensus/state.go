@@ -143,6 +143,9 @@ type State struct {
 
 	// skip app hash verify when validating block
 	skipAppHashVerify bool
+
+	// write state interval
+	writeStateInterval int
 }
 
 // StateOption sets an optional parameter on the State.
@@ -1713,6 +1716,7 @@ func (cs *State) finalizeCommit(height int64) {
 		},
 		block,
 		cs.skipAppHashVerify,
+		cs.writeStateInterval,
 	)
 	if err != nil {
 		panic(fmt.Sprintf("failed to apply block; error %v", err))

@@ -261,6 +261,8 @@ type BaseConfig struct { //nolint: maligned
 
 	// If true, app hash will not be checked
 	SkipAppHash bool `mapstructure:"skip_app_hash"`
+
+	WriteStateInterval int `mapstructure:"write_state_interval"`
 }
 
 // DefaultBaseConfig returns a default base configuration for a CometBFT node
@@ -280,6 +282,7 @@ func DefaultBaseConfig() BaseConfig {
 		DBBackend:          "goleveldb",
 		DBPath:             "data",
 		SkipAppHash:        false,
+		WriteStateInterval: 1,
 	}
 }
 
@@ -329,6 +332,9 @@ func (cfg BaseConfig) ValidateBasic() error {
 	case LogFormatPlain, LogFormatJSON:
 	default:
 		return errors.New("unknown log_format (must be 'plain' or 'json')")
+	}
+	if cfg.WriteStateInterval < 1 {
+		return errors.New("write state interval should be greater than zero")
 	}
 	return nil
 }

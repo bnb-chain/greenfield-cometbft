@@ -1005,6 +1005,11 @@ func ReactorSkipAppHashVerify(skipAppHashVerify bool) ReactorOption {
 	return func(conR *Reactor) { conR.skipAppHashVerify = skipAppHashVerify }
 }
 
+// ReactorWriteStateInterval sets the write state interval flag
+func ReactorWriteStateInterval(writeStateInterval int) ReactorOption {
+	return func(conR *Reactor) { conR.conS.writeStateInterval = writeStateInterval }
+}
+
 //-----------------------------------------------------------------------------
 
 var (

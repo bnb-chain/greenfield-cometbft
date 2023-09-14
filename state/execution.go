@@ -195,7 +195,7 @@ func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block, s
 // It takes a blockID to avoid recomputing the parts hash.
 func (blockExec *BlockExecutor) ApplyBlock(
 	state State, blockID types.BlockID, block *types.Block,
-	skipAppHashVerify bool,
+	skipAppHashVerify bool, writeStateInterval int,
 ) (State, int64, error) {
 	if err := validateBlock(state, block, skipAppHashVerify); err != nil {
 		return state, 0, ErrInvalidBlock(err)
@@ -279,14 +279,16 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	startTime = time.Now()
 	state.AppHash = appHash
 
-	if block.Height%10 == 0 { // TODO: need to get the config
+	if writeStateInterval <= 1 || block.Height%int64(writeStateInterval) == 0 {
 		if err := blockExec.store.Save(state); err != nil {
 			return state, 0, err
 		}
+		blockExec.logger.Info("state flushed", "last block height", state.LastBlockHeight)
 	} else {
 		if err := blockExec.store.SaveWithoutFlush(state); err != nil {
 			return state, 0, err
 		}
+		blockExec.logger.Info("state without flushed", "last block height", state.LastBlockHeight)
 	}
 
 	elapseTime = time.Since(startTime).Milliseconds()

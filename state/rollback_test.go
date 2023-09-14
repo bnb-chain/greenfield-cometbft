@@ -78,7 +78,7 @@ func TestRollback(t *testing.T) {
 	blockStore.On("Height").Return(nextHeight)
 
 	// rollback the state
-	rollbackHeight, rollbackHash, err := state.Rollback(blockStore, stateStore, false)
+	rollbackHeight, rollbackHash, err := state.Rollback(blockStore, stateStore, 1, false)
 	require.NoError(t, err)
 	require.EqualValues(t, height, rollbackHeight)
 	require.EqualValues(t, initialState.AppHash, rollbackHash)
@@ -167,7 +167,7 @@ func TestRollbackHard(t *testing.T) {
 	require.NoError(t, err)
 	blockStore.SaveBlock(nextBlock, nextPartSet, &types.Commit{Height: nextBlock.Height})
 
-	rollbackHeight, rollbackHash, err := state.Rollback(blockStore, stateStore, true)
+	rollbackHeight, rollbackHash, err := state.Rollback(blockStore, stateStore, 1, true)
 	require.NoError(t, err)
 	require.Equal(t, rollbackHeight, currState.LastBlockHeight)
 	require.Equal(t, rollbackHash, currState.AppHash)
@@ -200,7 +200,7 @@ func TestRollbackHard(t *testing.T) {
 	}
 	require.NoError(t, stateStore.Save(nextState))
 
-	rollbackHeight, rollbackHash, err = state.Rollback(blockStore, stateStore, true)
+	rollbackHeight, rollbackHash, err = state.Rollback(blockStore, stateStore, 1, true)
 	require.NoError(t, err)
 	require.Equal(t, rollbackHeight, currState.LastBlockHeight)
 	require.Equal(t, rollbackHash, currState.AppHash)
@@ -213,7 +213,7 @@ func TestRollbackNoState(t *testing.T) {
 		})
 	blockStore := &mocks.BlockStore{}
 
-	_, _, err := state.Rollback(blockStore, stateStore, false)
+	_, _, err := state.Rollback(blockStore, stateStore, 1, false)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "no state found")
 }
@@ -226,7 +226,7 @@ func TestRollbackNoBlocks(t *testing.T) {
 	blockStore.On("LoadBlockMeta", height).Return(nil)
 	blockStore.On("LoadBlockMeta", height-1).Return(nil)
 
-	_, _, err := state.Rollback(blockStore, stateStore, false)
+	_, _, err := state.Rollback(blockStore, stateStore, 1, false)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "block at height 99 not found")
 }
@@ -237,7 +237,7 @@ func TestRollbackDifferentStateHeight(t *testing.T) {
 	blockStore := &mocks.BlockStore{}
 	blockStore.On("Height").Return(height + 2)
 
-	_, _, err := state.Rollback(blockStore, stateStore, false)
+	_, _, err := state.Rollback(blockStore, stateStore, 1, false)
 	require.Error(t, err)
 	require.Equal(t, err.Error(), "statestore height (100) is not one below or equal to blockstore height (102)")
 }

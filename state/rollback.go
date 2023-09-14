@@ -12,7 +12,7 @@ import (
 // Rollback overwrites the current CometBFT state (height n) with the most
 // recent previous state (height n - 1).
 // Note that this function does not affect application state.
-func Rollback(bs BlockStore, ss Store, removeBlock bool) (int64, []byte, error) {
+func Rollback(bs BlockStore, ss Store, writeStateInterval int, removeBlock bool) (int64, []byte, error) {
 	invalidState, err := ss.Load()
 	if err != nil {
 		return -1, nil, err
@@ -56,7 +56,10 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool) (int64, []byte, error) 
 	}
 
 	// state store height is equal to blockstore height. We're good to proceed with rolling back state
-	rollbackHeight := invalidState.LastBlockHeight - 10 // TODO: determine the height to roll-back to, need to read config or detect it
+	if writeStateInterval < 1 {
+		writeStateInterval = 1
+	}
+	rollbackHeight := invalidState.LastBlockHeight - int64(writeStateInterval) // the last saved state
 	rollbackBlock := bs.LoadBlockMeta(rollbackHeight)
 	if rollbackBlock == nil {
 		return -1, nil, fmt.Errorf("block at height %d not found", rollbackHeight)

@@ -66,7 +66,7 @@ func TestApplyBlock(t *testing.T) {
 	require.NoError(t, err)
 	blockID := types.BlockID{Hash: block.Hash(), PartSetHeader: bps.Header()}
 
-	state, retainHeight, err := blockExec.ApplyBlock(state, blockID, block, false)
+	state, retainHeight, err := blockExec.ApplyBlock(state, blockID, block, false, 1)
 	require.Nil(t, err)
 	assert.EqualValues(t, retainHeight, 1)
 
@@ -242,7 +242,7 @@ func TestBeginBlockByzantineValidators(t *testing.T) {
 
 	blockID = types.BlockID{Hash: block.Hash(), PartSetHeader: bps.Header()}
 
-	state, retainHeight, err := blockExec.ApplyBlock(state, blockID, block, false)
+	state, retainHeight, err := blockExec.ApplyBlock(state, blockID, block, false, 1)
 	require.Nil(t, err)
 	assert.EqualValues(t, retainHeight, 1)
 
@@ -564,7 +564,7 @@ func TestEndBlockValidatorUpdates(t *testing.T) {
 		{PubKey: currentValPk, Power: currentValPower, BlsKey: blsPubKey, RelayerAddress: relayer}, // updating a validator's bls pub key and addresses
 	}
 
-	state, _, err = blockExec.ApplyBlock(state, blockID, block, false)
+	state, _, err = blockExec.ApplyBlock(state, blockID, block, false, 1)
 	require.Nil(t, err)
 	// test new validator was added to NextValidators
 	if assert.Equal(t, state.Validators.Size()+1, state.NextValidators.Size()) {
@@ -637,7 +637,7 @@ func TestEndBlockValidatorUpdatesResultingInEmptySet(t *testing.T) {
 		{PubKey: vp, Power: 0},
 	}
 
-	assert.NotPanics(t, func() { state, _, err = blockExec.ApplyBlock(state, blockID, block, false) })
+	assert.NotPanics(t, func() { state, _, err = blockExec.ApplyBlock(state, blockID, block, false, 1) })
 	assert.NotNil(t, err)
 	assert.NotEmpty(t, state.NextValidators.Validators)
 }

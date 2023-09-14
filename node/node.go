@@ -470,7 +470,8 @@ func createBlockchainReactor(config *cfg.Config,
 	switch config.BlockSync.Version {
 	case "v0":
 		bcReactor = bc.NewReactor(state.Copy(), blockExec, blockStore, blockSync,
-			bc.ReactorSkipAppHashVerify(config.BaseConfig.SkipAppHash))
+			bc.ReactorSkipAppHashVerify(config.BaseConfig.SkipAppHash),
+			bc.ReactorWriteStateInterval(config.BaseConfig.WriteStateInterval))
 	case "v1", "v2":
 		return nil, fmt.Errorf("block sync version %s has been deprecated. Please use v0", config.BlockSync.Version)
 	default:
@@ -507,7 +508,9 @@ func createConsensusReactor(config *cfg.Config,
 		consensusState.SetPrivValidator(privValidator)
 	}
 	consensusReactor := cs.NewReactor(consensusState, waitSync,
-		cs.ReactorMetrics(csMetrics), cs.ReactorSkipAppHashVerify(config.BaseConfig.SkipAppHash))
+		cs.ReactorMetrics(csMetrics),
+		cs.ReactorSkipAppHashVerify(config.BaseConfig.SkipAppHash),
+		cs.ReactorWriteStateInterval(config.BaseConfig.WriteStateInterval))
 	consensusReactor.SetLogger(consensusLogger)
 	// services which will be publishing and/or subscribing for messages (events)
 	// consensusReactor will set it on consensusState and blockExecutor
