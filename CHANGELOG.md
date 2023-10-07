@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v1.0.0
+This release includes 1 bugfix.
+
+Bugfixes:
+* [#36](https://github.com/bnb-chain/greenfield-cometbft/pull/36) fix: trim the prefix 0 for eth_chainId
+
+
 ## v0.0.3
 This release includes the features and bugfixes in the v0.0.3 alpha versions and 1 new bugfix.
 

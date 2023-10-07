@@ -255,9 +255,17 @@ func NewEthRPCSuccessResponse(id jsonrpcid, res interface{}, method string) RPCR
 		}
 
 		switch method {
-		// return hex string for eth_blockNumber, eth_chainId, eth_networkId, eth_getBalance
-		case EthBlockNumber, EthChainID, EthNetworkID, EthGetBalance:
+		// return hex string for eth_blockNumber, eth_networkId, eth_getBalance
+		case EthBlockNumber, EthNetworkID, EthGetBalance:
 			result, err = json.Marshal("0x" + hex.EncodeToString(bz))
+			if err != nil {
+				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
+			}
+		// return hex string for eth_chainId
+		case EthChainID:
+			// metamask do not support the Hex signed 2's complement, need to trim the prefix `0`
+			chainIDStr := strings.TrimLeft(hex.EncodeToString(bz), "0")
+			result, err = json.Marshal("0x" + chainIDStr)
 			if err != nil {
 				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
 			}
