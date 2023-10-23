@@ -20,12 +20,18 @@ import (
 
 // Supported EVM json-rpc requests
 const (
-	EthBlockNumber      = "eth_blockNumber"
-	EthGetBlockByNumber = "eth_getBlockByNumber"
-	EthGetBalance       = "eth_getBalance"
-	EthChainID          = "eth_chainId"
-	NetVersion          = "net_version"
-	EthNetworkID        = "eth_networkId"
+	EthBlockNumber         = "eth_blockNumber"
+	EthGetBlockByNumber    = "eth_getBlockByNumber"
+	EthGetBalance          = "eth_getBalance"
+	EthChainID             = "eth_chainId"
+	NetVersion             = "net_version"
+	EthNetworkID           = "eth_networkId"
+	EthGetCode             = "eth_getCode"
+	EthGasPrice            = "eth_gasPrice"
+	EthEstimateGas         = "eth_estimateGas"
+	EthCall                = "eth_call"
+	EthGetTransactionCount = "eth_getTransactionCount"
+	EthSendRawTransaction  = "eth_sendRawTransaction"
 )
 
 var SupportedEthQueryRequests = []string{
@@ -35,6 +41,12 @@ var SupportedEthQueryRequests = []string{
 	EthChainID,
 	NetVersion,
 	EthNetworkID,
+	EthGetCode,
+	EthGasPrice,
+	EthEstimateGas,
+	EthCall,
+	EthGetTransactionCount,
+	EthSendRawTransaction,
 }
 
 // a wrapper to emulate a sum type: jsonrpcid = string | int
@@ -269,7 +281,17 @@ func NewEthRPCSuccessResponse(id jsonrpcid, res interface{}, method string) RPCR
 			if err != nil {
 				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
 			}
-		// return int string for net_version
+		//return hex string for eth_chainId
+		case EthGasPrice, EthCall, EthGetCode, EthGetTransactionCount, EthEstimateGas:
+			// metamask do not support the Hex signed 2's complement, need to trim the prefix `0`
+			resultStr := strings.TrimLeft(hex.EncodeToString(bz), "0")
+			result, err = json.Marshal("0x" + resultStr)
+			if err != nil {
+				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
+			}
+		case EthSendRawTransaction:
+			return RPCInvalidRequestError(id, fmt.Errorf("Transfer BNB through EVM wallet on Greenfield is not available yet, please go to decellar.io or refer to latest docs.\n"))
+		//return int string for net_version
 		case NetVersion:
 			hexStr := hex.EncodeToString(bz)
 			netVersion, err := strconv.ParseInt(hexStr, 16, 64)

@@ -315,4 +315,5 @@ replace (
 	github.com/cometbft/cometbft-db => github.com/bnb-chain/greenfield-cometbft-db v0.8.1-alpha.1
 	// to be compatible with rocksdb v6.22.1
 	github.com/linxGnu/grocksdb => github.com/linxGnu/grocksdb v1.6.22
+	github.com/wercker/journalhook => github.com/wercker/journalhook v0.0.0-20230927020745-64542ffa4117
 )
