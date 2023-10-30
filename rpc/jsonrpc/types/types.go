@@ -281,7 +281,7 @@ func NewEthRPCSuccessResponse(id jsonrpcid, res interface{}, method string) RPCR
 			if err != nil {
 				return RPCInternalError(id, fmt.Errorf("error decode response: %w", err))
 			}
-		//return hex string for eth_chainId
+		// return hex string for EthGasPrice, EthCall, EthGetCode, EthGetTransactionCount, EthEstimateGas
 		case EthGasPrice, EthCall, EthGetCode, EthGetTransactionCount, EthEstimateGas:
 			// metamask do not support the Hex signed 2's complement, need to trim the prefix `0`
 			resultStr := strings.TrimLeft(hex.EncodeToString(bz), "0")
