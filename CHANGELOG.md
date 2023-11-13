@@ -9,6 +9,8 @@ Features:
 Bugfixes:
 * [#37](https://github.com/bnb-chain/greenfield-cometbft/pull/37) fix: replay issue with mock app
 
+Chores:
+* [#49](https://github.com/bnb-chain/greenfield-cometbft/pull/49) chore: bump golang net and grpc lib to secure version
 
 ## v1.0.0
 This release includes 1 bugfix.
