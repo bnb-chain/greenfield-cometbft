@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v1.1.0
+This release supports 6 new json rpc queries and also resolves a replay issue.
+
+Features:
+* [#42](https://github.com/bnb-chain/greenfield-cometbft/pull/42) feat: add support for some json rpc queries
+
+Bugfixes:
+* [#37](https://github.com/bnb-chain/greenfield-cometbft/pull/37) fix: replay issue with mock app
+
+Chores:
+* [#49](https://github.com/bnb-chain/greenfield-cometbft/pull/49) chore: bump golang net and grpc lib to secure version
+
 ## v1.0.0
 This release includes 1 bugfix.
 
