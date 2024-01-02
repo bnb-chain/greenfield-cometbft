@@ -73,7 +73,7 @@ type Config struct {
 	Mempool   *MempoolConfig   `mapstructure:"mempool"`
 	StateSync *StateSyncConfig `mapstructure:"statesync"`
 	BlockSync *BlockSyncConfig `mapstructure:"blocksync"`
-	//TODO(williambanfield): remove this field once v0.37 is released.
+	// TODO(williambanfield): remove this field once v0.37 is released.
 	// https://github.com/tendermint/tendermint/issues/9279
 	DeprecatedFastSyncConfig map[interface{}]interface{} `mapstructure:"fastsync"`
 	Consensus                *ConsensusConfig            `mapstructure:"consensus"`
@@ -202,7 +202,7 @@ type BaseConfig struct { //nolint: maligned
 	// Deprecated: BlockSync will be enabled unconditionally in the next major release.
 	BlockSyncMode bool `mapstructure:"block_sync"`
 
-	//TODO(williambanfield): remove this field once v0.37 is released.
+	// TODO(williambanfield): remove this field once v0.37 is released.
 	// https://github.com/tendermint/tendermint/issues/9279
 	DeprecatedFastSyncMode interface{} `mapstructure:"fast_sync"`
 
@@ -854,6 +854,7 @@ type StateSyncConfig struct {
 	DiscoveryTime       time.Duration `mapstructure:"discovery_time"`
 	ChunkRequestTimeout time.Duration `mapstructure:"chunk_request_timeout"`
 	ChunkFetchers       int32         `mapstructure:"chunk_fetchers"`
+	TargetHeight        int64         `mapstructure:"target_height"`
 }
 
 func (cfg *StateSyncConfig) TrustHashBytes() []byte {

@@ -717,7 +717,7 @@ func startStateSync(ssR *statesync.Reactor, bcR blockSyncReactor, conR *cs.React
 	}
 
 	go func() {
-		state, commit, err := ssR.Sync(stateProvider, config.DiscoveryTime)
+		state, commit, err := ssR.Sync(stateProvider, config.DiscoveryTime, config.TargetHeight)
 		if err != nil {
 			ssR.Logger.Error("State sync failed", "err", err)
 			return

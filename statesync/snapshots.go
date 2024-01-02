@@ -2,6 +2,7 @@ package statesync
 
 import (
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"math/rand"
 	"sort"
@@ -126,6 +127,19 @@ func (p *snapshotPool) Best() *snapshot {
 	return ranked[0]
 }
 
+// At returns the known snapshot at the height.
+// If there are multiple snapshots or no snapshot at the height, it will return nil.
+func (p *snapshotPool) At(height uint64) (*snapshot, error) {
+	keys := p.heightIndex[height]
+	if len(keys) > 1 {
+		return nil, errors.New("multiple snapshots at height")
+	}
+	for key := range keys {
+		return p.snapshots[key], nil
+	}
+	return nil, errors.New("no snapshot at height")
+}
+
 // GetPeer returns a random peer for a snapshot, if any.
 func (p *snapshotPool) GetPeer(snapshot *snapshot) p2p.Peer {
 	peers := p.GetPeers(snapshot)
@@ -146,7 +160,7 @@ func (p *snapshotPool) GetPeers(snapshot *snapshot) []p2p.Peer {
 		peers = append(peers, peer)
 	}
 	// sort results, for testability (otherwise order is random, so tests randomly fail)
-	sort.Slice(peers, func(a int, b int) bool {
+	sort.Slice(peers, func(a, b int) bool {
 		return peers[a].ID() < peers[b].ID()
 	})
 	return peers
