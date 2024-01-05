@@ -15,25 +15,27 @@ import (
 )
 
 var removeBlock = false
+var rollbackBlocks = uint(1)
 
 func init() {
-	RollbackStateCmd.Flags().BoolVar(&removeBlock, "hard", false, "remove last block as well as state")
+	RollbackStateCmd.Flags().UintVar(&rollbackBlocks, "blocks", 1, "number of blocks to rollback")
+	RollbackStateCmd.Flags().BoolVar(&removeBlock, "hard", false, "remove blocks as well as state")
 }
 
 var RollbackStateCmd = &cobra.Command{
 	Use:   "rollback",
-	Short: "rollback CometBFT state by one height",
+	Short: "rollback CometBFT state",
 	Long: `
 A state rollback is performed to recover from an incorrect application state transition,
 when CometBFT has persisted an incorrect app hash and is thus unable to make
-progress. Rollback overwrites a state at height n with the state at height n - 1.
-The application should also roll back to height n - 1. If the --hard flag is not used, 
-no blocks will be removed so upon restarting CometBFT the transactions in block n will be 
-re-executed against the application. Using --hard will also remove block n. This can
+progress. Rollback overwrites a state at height n with the state at height n - rollbackBlocks.
+The application should also roll back to height n - rollbackBlocks. If the --hard flag is not used,
+no blocks will be removed so upon restarting CometBFT the transactions in block n will be
+re-executed against the application. Using --hard will also remove blocks n, n-1 ...n - rollbackBlocks + 1 . This can
 be done multiple times.
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		height, hash, err := RollbackState(config, removeBlock)
+		height, hash, err := RollbackState(config, removeBlock, int64(rollbackBlocks))
 		if err != nil {
 			return fmt.Errorf("failed to rollback state: %w", err)
 		}
@@ -49,9 +51,9 @@ be done multiple times.
 }
 
 // RollbackState takes the state at the current height n and overwrites it with the state
-// at height n - 1. Note state here refers to CometBFT state not application state.
+// at height n - rollbackBlocks. Note state here refers to CometBFT state not application state.
 // Returns the latest state height and app hash alongside an error if there was one.
-func RollbackState(config *cfg.Config, removeBlock bool) (int64, []byte, error) {
+func RollbackState(config *cfg.Config, removeBlock bool, rollbackBlocks int64) (int64, []byte, error) {
 	// use the parsed config to load the block and state store
 	blockStore, stateStore, err := loadStateAndBlockStore(config)
 	if err != nil {
@@ -63,7 +65,7 @@ func RollbackState(config *cfg.Config, removeBlock bool) (int64, []byte, error) 
 	}()
 
 	// rollback the last state
-	return state.Rollback(blockStore, stateStore, removeBlock)
+	return state.Rollback(blockStore, stateStore, removeBlock, rollbackBlocks)
 }
 
 func loadStateAndBlockStore(config *cfg.Config) (*store.BlockStore, state.Store, error) {
