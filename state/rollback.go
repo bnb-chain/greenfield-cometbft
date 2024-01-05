@@ -12,7 +12,7 @@ import (
 // Rollback overwrites the current CometBFT state (height n) with the most
 // recent previous state (height n - 1).
 // Note that this function does not affect application state.
-func Rollback(bs BlockStore, ss Store, removeBlock bool) (int64, []byte, error) {
+func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (int64, []byte, error) {
 	invalidState, err := ss.Load()
 	if err != nil {
 		return -1, nil, err
@@ -43,7 +43,7 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool) (int64, []byte, error) 
 	}
 
 	// state store height is equal to blockstore height. We're good to proceed with rolling back state
-	rollbackHeight := invalidState.LastBlockHeight - 1
+	rollbackHeight := invalidState.LastBlockHeight - rollbackBlocks
 	rollbackBlock := bs.LoadBlockMeta(rollbackHeight)
 	if rollbackBlock == nil {
 		return -1, nil, fmt.Errorf("block at height %d not found", rollbackHeight)
@@ -60,7 +60,7 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool) (int64, []byte, error) 
 		return -1, nil, err
 	}
 
-	previousParams, err := ss.LoadConsensusParams(rollbackHeight + 1)
+	previousParams, err := ss.LoadConsensusParams(rollbackHeight + rollbackBlocks)
 	if err != nil {
 		return -1, nil, err
 	}
@@ -118,8 +118,10 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool) (int64, []byte, error) 
 	// If removeBlock is true then also remove the block associated with the previous state.
 	// This will mean both the last state and last block height is equal to n - 1
 	if removeBlock {
-		if err := bs.DeleteLatestBlock(); err != nil {
-			return -1, nil, fmt.Errorf("failed to remove final block from blockstore: %w", err)
+		for i := 0; i < int(rollbackBlocks); i++ {
+			if err := bs.DeleteLatestBlock(); err != nil {
+				return -1, nil, fmt.Errorf("failed to remove final block from blockstore: %w", err)
+			}
 		}
 	}
 
