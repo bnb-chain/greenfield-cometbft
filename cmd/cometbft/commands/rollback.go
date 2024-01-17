@@ -14,6 +14,10 @@ import (
 	"github.com/cometbft/cometbft/store"
 )
 
+const (
+	maxRollbackBlocks = uint(1000)
+)
+
 var removeBlock = false
 var rollbackBlocks = uint(1)
 
@@ -35,6 +39,10 @@ re-executed against the application. Using --hard will also remove blocks n, n-1
 be done multiple times.
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if rollbackBlocks == 0 || rollbackBlocks > maxRollbackBlocks {
+			return fmt.Errorf("invalid rollback blocks: %v", rollbackBlocks)
+		}
+
 		height, hash, err := RollbackState(config, removeBlock, int64(rollbackBlocks))
 		if err != nil {
 			return fmt.Errorf("failed to rollback state: %w", err)

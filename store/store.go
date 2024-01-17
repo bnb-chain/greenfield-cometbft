@@ -600,7 +600,6 @@ func (bs *BlockStore) DeleteLatestBlocks(n uint64) error {
 }
 
 func (bs *BlockStore) deleteLatestBlocks(batch dbm.Batch, targetHeight int64, n uint64) error {
-
 	for i := uint64(0); i < n; i++ {
 		// delete what we can, skipping what's already missing, to ensure partial
 		// blocks get deleted fully.
