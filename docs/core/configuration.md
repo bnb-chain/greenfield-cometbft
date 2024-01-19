@@ -40,7 +40,7 @@ moniker = "anonymous"
 # allows them to catchup quickly by downloading blocks in parallel
 # and verifying their commits
 #
-# Deprecated: this key will be removed and BlockSync will be enabled 
+# Deprecated: this key will be removed and BlockSync will be enabled
 # unconditionally in the next major release.
 block_sync = true
 
@@ -380,13 +380,17 @@ chunk_request_timeout = "10s"
 # The number of concurrent chunk fetchers to run (default: 1).
 chunk_fetchers = "4"
 
+# The target height to sync (default: 0).
+# If not provided, the node will sync to the best snapshot.
+target_height = "0"
+
 #######################################################
 ###       Block Sync Configuration Options          ###
 #######################################################
 [blocksync]
 
 # Block Sync version to use:
-# 
+#
 # In v0.37, v1 and v2 of the block sync protocols were deprecated.
 # Please use v0 instead.
 #
@@ -541,4 +545,3 @@ Here's a brief summary of the timeouts:
 - `timeout_commit` = how long we wait after committing a block, before starting
   on the new height (this gives us a chance to receive some more precommits,
   even though we already have +2/3)
-

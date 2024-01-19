@@ -434,6 +434,10 @@ chunk_request_timeout = "{{ .StateSync.ChunkRequestTimeout }}"
 # The number of concurrent chunk fetchers to run (default: 1).
 chunk_fetchers = "{{ .StateSync.ChunkFetchers }}"
 
+# The target height to sync (default: 0).
+# If not provided, the node will sync to the best snapshot.
+target_height = "{{ .StateSync.TargetHeight }}"
+
 #######################################################
 ###       Block Sync Configuration Options          ###
 #######################################################
