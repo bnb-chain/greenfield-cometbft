@@ -3,10 +3,10 @@ package state
 import (
 	"errors"
 	"fmt"
-	"github.com/cometbft/cometbft/types"
 
 	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	cmtversion "github.com/cometbft/cometbft/proto/tendermint/version"
+	"github.com/cometbft/cometbft/types"
 	"github.com/cometbft/cometbft/version"
 )
 
