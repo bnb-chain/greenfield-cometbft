@@ -3,6 +3,7 @@ package state
 import (
 	"errors"
 	"fmt"
+	"github.com/cometbft/cometbft/types"
 
 	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	cmtversion "github.com/cometbft/cometbft/proto/tendermint/version"
@@ -77,14 +78,20 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 		paramsChangeHeight = rollbackHeight + 1
 	}
 
-	validators, err := ss.LoadValidators(rollbackHeight)
-	if err != nil {
-		return -1, nil, err
-	}
-
-	nextValidators, err := ss.LoadValidators(rollbackHeight + 1)
-	if err != nil {
-		return -1, nil, err
+	var validators *types.ValidatorSet
+	var nextValidators *types.ValidatorSet
+	if rollbackBlocks == 1 {
+		validators = invalidState.LastValidators
+		nextValidators = invalidState.Validators
+	} else {
+		validators, err = ss.LoadValidators(rollbackHeight + 1)
+		if err != nil {
+			return -1, nil, err
+		}
+		nextValidators, err = ss.LoadValidators(rollbackHeight + 2)
+		if err != nil {
+			return -1, nil, err
+		}
 	}
 
 	// build the new state from the old state and the prior block
