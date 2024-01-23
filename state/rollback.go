@@ -3,7 +3,6 @@ package state
 import (
 	"errors"
 	"fmt"
-
 	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	cmtversion "github.com/cometbft/cometbft/proto/tendermint/version"
 	"github.com/cometbft/cometbft/version"
@@ -32,12 +31,11 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 				return -1, nil, fmt.Errorf("failed to remove final block from blockstore: %w", err)
 			}
 		}
-		return invalidState.LastBlockHeight, invalidState.AppHash, nil
-	}
-
-	// If the state store isn't one below nor equal to the blockstore height than this violates the
-	// invariant
-	if height != invalidState.LastBlockHeight {
+		rollbackBlocks--
+		if rollbackBlocks == 0 {
+			return invalidState.LastBlockHeight, invalidState.AppHash, nil
+		}
+	} else if height != invalidState.LastBlockHeight {
 		return -1, nil, fmt.Errorf("statestore height (%d) is not one below or equal to blockstore height (%d)",
 			invalidState.LastBlockHeight, height)
 	}
@@ -48,19 +46,20 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 	if rollbackBlock == nil {
 		return -1, nil, fmt.Errorf("block at height %d not found", rollbackHeight)
 	}
+
 	// We also need to retrieve the latest block because the app hash and last
 	// results hash is only agreed upon in the following block.
-	latestBlock := bs.LoadBlockMeta(invalidState.LastBlockHeight)
+	latestBlock := bs.LoadBlockMeta(rollbackHeight + 1)
 	if latestBlock == nil {
 		return -1, nil, fmt.Errorf("block at height %d not found", invalidState.LastBlockHeight)
 	}
 
-	previousLastValidatorSet, err := ss.LoadValidators(rollbackHeight)
+	previousLastValidatorSet, err := ss.LoadValidators(rollbackHeight - 1)
 	if err != nil {
 		return -1, nil, err
 	}
 
-	previousParams, err := ss.LoadConsensusParams(rollbackHeight + rollbackBlocks)
+	previousParams, err := ss.LoadConsensusParams(rollbackHeight + 1)
 	if err != nil {
 		return -1, nil, err
 	}
@@ -75,6 +74,16 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 	// this can only happen if params changed from the last block
 	if paramsChangeHeight > rollbackHeight {
 		paramsChangeHeight = rollbackHeight + 1
+	}
+
+	validators, err := ss.LoadValidators(rollbackHeight)
+	if err != nil {
+		return -1, nil, err
+	}
+
+	nextValidators, err := ss.LoadValidators(rollbackHeight + 1)
+	if err != nil {
+		return -1, nil, err
 	}
 
 	// build the new state from the old state and the prior block
@@ -94,8 +103,8 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 		LastBlockID:     rollbackBlock.BlockID,
 		LastBlockTime:   rollbackBlock.Header.Time,
 
-		NextValidators:              invalidState.Validators,
-		Validators:                  invalidState.LastValidators,
+		NextValidators:              nextValidators,
+		Validators:                  validators,
 		LastValidators:              previousLastValidatorSet,
 		LastHeightValidatorsChanged: valChangeHeight,
 
@@ -118,10 +127,8 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 	// If removeBlock is true then also remove the block associated with the previous state.
 	// This will mean both the last state and last block height is equal to n - 1
 	if removeBlock {
-		for i := 0; i < int(rollbackBlocks); i++ {
-			if err := bs.DeleteLatestBlock(); err != nil {
-				return -1, nil, fmt.Errorf("failed to remove final block from blockstore: %w", err)
-			}
+		if err := bs.DeleteLatestBlocks(uint64(rollbackBlocks)); err != nil {
+			return -1, nil, fmt.Errorf("failed to remove final block from blockstore: %w", err)
 		}
 	}
 
