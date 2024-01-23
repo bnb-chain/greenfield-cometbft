@@ -55,7 +55,7 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 		return -1, nil, fmt.Errorf("block at height %d not found", invalidState.LastBlockHeight)
 	}
 
-	previousLastValidatorSet, err := ss.LoadValidators(rollbackHeight - 1)
+	previousLastValidatorSet, err := ss.LoadValidators(rollbackHeight)
 	if err != nil {
 		return -1, nil, err
 	}
