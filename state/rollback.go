@@ -66,13 +66,22 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 		return -1, nil, err
 	}
 
-	valChangeHeight := invalidState.LastHeightValidatorsChanged
-	// this can only happen if the validator set changed since the last block
-	if valChangeHeight > rollbackHeight {
-		valChangeHeight = rollbackHeight + 1
+	nextHeight := rollbackHeight + 1
+	lastHeightValidatorsChanged, err := ss.LoadLastHeightValidatorsChanged(nextHeight + 1)
+	if err != nil {
+		return -1, nil, err
 	}
 
-	paramsChangeHeight := invalidState.LastHeightConsensusParamsChanged
+	// this can only happen if the validator set changed since the last block
+	if lastHeightValidatorsChanged > nextHeight {
+		lastHeightValidatorsChanged = nextHeight + 1
+	}
+
+	//paramsChangeHeight := invalidState.LastHeightConsensusParamsChanged
+	paramsChangeHeight, err := ss.LoadLastHeightConsensusParamsChanged(nextHeight)
+	if err != nil {
+		return -1, nil, err
+	}
 	// this can only happen if params changed from the last block
 	if paramsChangeHeight > rollbackHeight {
 		paramsChangeHeight = rollbackHeight + 1
@@ -104,17 +113,15 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 			Software: version.TMCoreSemVer,
 		},
 		// immutable fields
-		ChainID:       invalidState.ChainID,
-		InitialHeight: invalidState.InitialHeight,
-
-		LastBlockHeight: rollbackBlock.Header.Height,
-		LastBlockID:     rollbackBlock.BlockID,
-		LastBlockTime:   rollbackBlock.Header.Time,
-
+		ChainID:                     invalidState.ChainID,
+		InitialHeight:               invalidState.InitialHeight,
+		LastBlockHeight:             rollbackBlock.Header.Height,
+		LastBlockID:                 rollbackBlock.BlockID,
+		LastBlockTime:               rollbackBlock.Header.Time,
 		NextValidators:              nextValidators,
 		Validators:                  validators,
 		LastValidators:              previousLastValidatorSet,
-		LastHeightValidatorsChanged: valChangeHeight,
+		LastHeightValidatorsChanged: lastHeightValidatorsChanged,
 
 		ConsensusParams:                  previousParams,
 		LastHeightConsensusParamsChanged: paramsChangeHeight,
