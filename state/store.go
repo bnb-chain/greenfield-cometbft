@@ -642,28 +642,10 @@ func (store dbStore) loadConsensusParamsInfo(height int64) (*cmtstate.ConsensusP
 }
 
 func (store dbStore) LoadLastHeightConsensusParamsChanged(height int64) (int64, error) {
-	var (
-		emptypb = cmtproto.ConsensusParams{}
-	)
 	paramsInfo, err := store.loadConsensusParamsInfo(height)
 	if err != nil {
 		return 0, fmt.Errorf("could not find consensus params for height #%d: %w", height, err)
 	}
-
-	if paramsInfo.ConsensusParams.Equal(&emptypb) {
-		paramsInfo2, err := store.loadConsensusParamsInfo(paramsInfo.LastHeightChanged)
-		if err != nil {
-			return 0, fmt.Errorf(
-				"couldn't find consensus params at height %d as last changed from height %d: %w",
-				paramsInfo.LastHeightChanged,
-				height,
-				err,
-			)
-		}
-
-		paramsInfo = paramsInfo2
-	}
-
 	return paramsInfo.LastHeightChanged, nil
 }
 
