@@ -177,7 +177,6 @@ func (store dbStore) Save(state State) error {
 	return store.save(state, stateKey)
 }
 
-// [243 5vals] ==state243(4 vals)=> [244 4vals] => [245 4vals]
 func (store dbStore) save(state State, key []byte) error {
 	//  state.LastBlockHeight == 242
 	//  nextHeight == 243
