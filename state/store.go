@@ -65,6 +65,10 @@ type Store interface {
 	LoadLastABCIResponse(int64) (*cmtstate.ABCIResponses, error)
 	// LoadConsensusParams loads the consensus params for a given height
 	LoadConsensusParams(int64) (types.ConsensusParams, error)
+	// LoadLastHeightValidatorsChanged loads the last validators changed height for a given height
+	LoadLastHeightValidatorsChanged(height int64) (int64, error)
+	// LoadLastHeightConsensusParamsChanged loads the consensus params changed height for a given height
+	LoadLastHeightConsensusParamsChanged(height int64) (int64, error)
 	// Save overwrites the previous state with the updated one
 	Save(State) error
 	// SaveABCIResponses saves ABCIResponses for a given height
@@ -174,6 +178,8 @@ func (store dbStore) Save(state State) error {
 }
 
 func (store dbStore) save(state State, key []byte) error {
+	//  state.LastBlockHeight == 242
+	//  nextHeight == 243
 	nextHeight := state.LastBlockHeight + 1
 	// If first block, save validators for the block.
 	if nextHeight == 1 {
@@ -483,6 +489,7 @@ func (store dbStore) LoadValidators(height int64) (*types.ValidatorSet, error) {
 	if err != nil {
 		return nil, ErrNoValSetForHeight{height}
 	}
+
 	if valInfo.ValidatorSet == nil {
 		lastStoredHeight := lastStoredHeightFor(height, valInfo.LastHeightChanged)
 		valInfo2, err := loadValidatorsInfo(store.db, lastStoredHeight)
@@ -631,6 +638,23 @@ func (store dbStore) loadConsensusParamsInfo(height int64) (*cmtstate.ConsensusP
 	// TODO: ensure that buf is completely read.
 
 	return paramsInfo, nil
+}
+
+func (store dbStore) LoadLastHeightConsensusParamsChanged(height int64) (int64, error) {
+	paramsInfo, err := store.loadConsensusParamsInfo(height)
+	if err != nil {
+		return 0, fmt.Errorf("could not find consensus params for height #%d: %w", height, err)
+	}
+	return paramsInfo.LastHeightChanged, nil
+}
+
+func (store dbStore) LoadLastHeightValidatorsChanged(height int64) (int64, error) {
+	valInfo, err := loadValidatorsInfo(store.db, height)
+	if err != nil {
+		return 0, ErrNoValSetForHeight{height}
+	}
+
+	return valInfo.LastHeightChanged, nil
 }
 
 // saveConsensusParamsInfo persists the consensus params for the next block to disk.
