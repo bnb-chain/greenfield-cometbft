@@ -1232,6 +1232,8 @@ func (bs *mockBlockStore) PruneBlocks(height int64) (uint64, error) {
 
 func (bs *mockBlockStore) DeleteLatestBlock() error { return nil }
 
+func (bs *mockBlockStore) DeleteLatestBlocks(n uint64) error { return nil }
+
 //---------------------------------------
 // Test handshake/init chain
 
