@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v1.3.0
+This release fixes the vulnerabilities in the repo
+
+* [#69](https://github.com/bnb-chain/greenfield-cometbft/pull/69) chore: upgrade deps for fixing vulnerabilities
+
+## v1.2.0
+This release supports state sync at specific height and custom blocks to rollback
+
+Features:
+* [#54](https://github.com/bnb-chain/greenfield-cometbft/pull/54) feat: add support for state sync at specific height
+* [#55](https://github.com/bnb-chain/greenfield-cometbft/pull/55) feat: add support for custom blocks to rollback
+
 ## v1.1.0
 This release supports 6 new json rpc queries and also resolves a replay issue.
 
