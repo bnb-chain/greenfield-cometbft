@@ -163,6 +163,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/herumi/bls-eth-go-binary v0.0.0-20210917013441-d37c07cfda4e // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
