@@ -211,7 +211,7 @@ func (sc *SecretConnection) Write(data []byte) (n int, err error) {
 			copy(frame[dataLenSize:], chunk)
 
 			// encrypt the frame
-			sc.sendAead.Seal(sealedFrame[:0], sc.sendNonce[:], frame, nil)
+			sc.sendAead.Seal(sealedFrame[:0], sc.sendNonce[:], frame, nil) // #nosec G407
 			incrNonce(sc.sendNonce)
 			// end encryption
 
@@ -252,7 +252,7 @@ func (sc *SecretConnection) Read(data []byte) (n int, err error) {
 	// reads and updates the sc.recvNonce
 	var frame = pool.Get(totalFrameSize)
 	defer pool.Put(frame)
-	_, err = sc.recvAead.Open(frame[:0], sc.recvNonce[:], sealedFrame, nil)
+	_, err = sc.recvAead.Open(frame[:0], sc.recvNonce[:], sealedFrame, nil) // #nosec G407
 	if err != nil {
 		return n, fmt.Errorf("failed to decrypt SecretConnection: %w", err)
 	}

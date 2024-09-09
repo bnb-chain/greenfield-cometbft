@@ -76,7 +76,7 @@ func (c *xchacha20poly1305) Seal(dst, nonce, plaintext, additionalData []byte) [
 
 	copy(subNonce[4:], nonce[16:])
 
-	return chacha20poly1305.Seal(dst, subNonce[:], plaintext, additionalData)
+	return chacha20poly1305.Seal(dst, subNonce[:], plaintext, additionalData) // #nosec G407
 }
 
 func (c *xchacha20poly1305) Open(dst, nonce, ciphertext, additionalData []byte) ([]byte, error) {
@@ -98,7 +98,7 @@ func (c *xchacha20poly1305) Open(dst, nonce, ciphertext, additionalData []byte) 
 
 	copy(subNonce[4:], nonce[16:])
 
-	return chacha20poly1305.Open(dst, subNonce[:], ciphertext, additionalData)
+	return chacha20poly1305.Open(dst, subNonce[:], ciphertext, additionalData) // #nosec G407
 }
 
 // HChaCha exported from

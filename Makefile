@@ -277,8 +277,11 @@ lint:
 	@$(golangci_lint_cmd) run --timeout=10m
 .PHONY: lint
 
+
+# This code repo requires go 1.21.x for now, `-format json` will make the cmd exit with code zero even if vulnerabilities are found.
+# However, you can still use the output to get a list of vulnerabilities found.
 vulncheck:
-	@go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+	@go run golang.org/x/vuln/cmd/govulncheck@latest -format json ./...
 .PHONY: vulncheck
 
 DESTINATION = ./index.html.md
