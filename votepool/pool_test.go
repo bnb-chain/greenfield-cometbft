@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/prysmaticlabs/prysm/crypto/bls/blst"
-	blsCommon "github.com/prysmaticlabs/prysm/crypto/bls/common"
+	"github.com/prysmaticlabs/prysm/v4/crypto/bls/blst"
+	blsCommon "github.com/prysmaticlabs/prysm/v4/crypto/bls/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

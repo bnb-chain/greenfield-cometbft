@@ -16,9 +16,21 @@ type Client struct {
 	mock.Mock
 }
 
+type Client_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *Client) EXPECT() *Client_Expecter {
+	return &Client_Expecter{mock: &_m.Mock}
+}
+
 // ApplySnapshotChunkAsync provides a mock function with given fields: _a0
 func (_m *Client) ApplySnapshotChunkAsync(_a0 types.RequestApplySnapshotChunk) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ApplySnapshotChunkAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestApplySnapshotChunk) *abcicli.ReqRes); ok {
@@ -32,11 +44,47 @@ func (_m *Client) ApplySnapshotChunkAsync(_a0 types.RequestApplySnapshotChunk) *
 	return r0
 }
 
+// Client_ApplySnapshotChunkAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ApplySnapshotChunkAsync'
+type Client_ApplySnapshotChunkAsync_Call struct {
+	*mock.Call
+}
+
+// ApplySnapshotChunkAsync is a helper method to define mock.On call
+//   - _a0 types.RequestApplySnapshotChunk
+func (_e *Client_Expecter) ApplySnapshotChunkAsync(_a0 interface{}) *Client_ApplySnapshotChunkAsync_Call {
+	return &Client_ApplySnapshotChunkAsync_Call{Call: _e.mock.On("ApplySnapshotChunkAsync", _a0)}
+}
+
+func (_c *Client_ApplySnapshotChunkAsync_Call) Run(run func(_a0 types.RequestApplySnapshotChunk)) *Client_ApplySnapshotChunkAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestApplySnapshotChunk))
+	})
+	return _c
+}
+
+func (_c *Client_ApplySnapshotChunkAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_ApplySnapshotChunkAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_ApplySnapshotChunkAsync_Call) RunAndReturn(run func(types.RequestApplySnapshotChunk) *abcicli.ReqRes) *Client_ApplySnapshotChunkAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ApplySnapshotChunkSync provides a mock function with given fields: _a0
 func (_m *Client) ApplySnapshotChunkSync(_a0 types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for ApplySnapshotChunkSync")
+	}
+
 	var r0 *types.ResponseApplySnapshotChunk
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestApplySnapshotChunk) *types.ResponseApplySnapshotChunk); ok {
 		r0 = rf(_a0)
 	} else {
@@ -45,7 +93,6 @@ func (_m *Client) ApplySnapshotChunkSync(_a0 types.RequestApplySnapshotChunk) (*
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestApplySnapshotChunk) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -55,9 +102,41 @@ func (_m *Client) ApplySnapshotChunkSync(_a0 types.RequestApplySnapshotChunk) (*
 	return r0, r1
 }
 
+// Client_ApplySnapshotChunkSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ApplySnapshotChunkSync'
+type Client_ApplySnapshotChunkSync_Call struct {
+	*mock.Call
+}
+
+// ApplySnapshotChunkSync is a helper method to define mock.On call
+//   - _a0 types.RequestApplySnapshotChunk
+func (_e *Client_Expecter) ApplySnapshotChunkSync(_a0 interface{}) *Client_ApplySnapshotChunkSync_Call {
+	return &Client_ApplySnapshotChunkSync_Call{Call: _e.mock.On("ApplySnapshotChunkSync", _a0)}
+}
+
+func (_c *Client_ApplySnapshotChunkSync_Call) Run(run func(_a0 types.RequestApplySnapshotChunk)) *Client_ApplySnapshotChunkSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestApplySnapshotChunk))
+	})
+	return _c
+}
+
+func (_c *Client_ApplySnapshotChunkSync_Call) Return(_a0 *types.ResponseApplySnapshotChunk, _a1 error) *Client_ApplySnapshotChunkSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_ApplySnapshotChunkSync_Call) RunAndReturn(run func(types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error)) *Client_ApplySnapshotChunkSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // BeginBlockAsync provides a mock function with given fields: _a0
 func (_m *Client) BeginBlockAsync(_a0 types.RequestBeginBlock) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for BeginBlockAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestBeginBlock) *abcicli.ReqRes); ok {
@@ -71,11 +150,47 @@ func (_m *Client) BeginBlockAsync(_a0 types.RequestBeginBlock) *abcicli.ReqRes {
 	return r0
 }
 
+// Client_BeginBlockAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'BeginBlockAsync'
+type Client_BeginBlockAsync_Call struct {
+	*mock.Call
+}
+
+// BeginBlockAsync is a helper method to define mock.On call
+//   - _a0 types.RequestBeginBlock
+func (_e *Client_Expecter) BeginBlockAsync(_a0 interface{}) *Client_BeginBlockAsync_Call {
+	return &Client_BeginBlockAsync_Call{Call: _e.mock.On("BeginBlockAsync", _a0)}
+}
+
+func (_c *Client_BeginBlockAsync_Call) Run(run func(_a0 types.RequestBeginBlock)) *Client_BeginBlockAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestBeginBlock))
+	})
+	return _c
+}
+
+func (_c *Client_BeginBlockAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_BeginBlockAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_BeginBlockAsync_Call) RunAndReturn(run func(types.RequestBeginBlock) *abcicli.ReqRes) *Client_BeginBlockAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // BeginBlockSync provides a mock function with given fields: _a0
 func (_m *Client) BeginBlockSync(_a0 types.RequestBeginBlock) (*types.ResponseBeginBlock, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for BeginBlockSync")
+	}
+
 	var r0 *types.ResponseBeginBlock
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestBeginBlock) (*types.ResponseBeginBlock, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestBeginBlock) *types.ResponseBeginBlock); ok {
 		r0 = rf(_a0)
 	} else {
@@ -84,7 +199,6 @@ func (_m *Client) BeginBlockSync(_a0 types.RequestBeginBlock) (*types.ResponseBe
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestBeginBlock) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -94,9 +208,41 @@ func (_m *Client) BeginBlockSync(_a0 types.RequestBeginBlock) (*types.ResponseBe
 	return r0, r1
 }
 
+// Client_BeginBlockSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'BeginBlockSync'
+type Client_BeginBlockSync_Call struct {
+	*mock.Call
+}
+
+// BeginBlockSync is a helper method to define mock.On call
+//   - _a0 types.RequestBeginBlock
+func (_e *Client_Expecter) BeginBlockSync(_a0 interface{}) *Client_BeginBlockSync_Call {
+	return &Client_BeginBlockSync_Call{Call: _e.mock.On("BeginBlockSync", _a0)}
+}
+
+func (_c *Client_BeginBlockSync_Call) Run(run func(_a0 types.RequestBeginBlock)) *Client_BeginBlockSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestBeginBlock))
+	})
+	return _c
+}
+
+func (_c *Client_BeginBlockSync_Call) Return(_a0 *types.ResponseBeginBlock, _a1 error) *Client_BeginBlockSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_BeginBlockSync_Call) RunAndReturn(run func(types.RequestBeginBlock) (*types.ResponseBeginBlock, error)) *Client_BeginBlockSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CheckTxAsync provides a mock function with given fields: _a0
 func (_m *Client) CheckTxAsync(_a0 types.RequestCheckTx) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckTxAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestCheckTx) *abcicli.ReqRes); ok {
@@ -110,11 +256,47 @@ func (_m *Client) CheckTxAsync(_a0 types.RequestCheckTx) *abcicli.ReqRes {
 	return r0
 }
 
+// Client_CheckTxAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CheckTxAsync'
+type Client_CheckTxAsync_Call struct {
+	*mock.Call
+}
+
+// CheckTxAsync is a helper method to define mock.On call
+//   - _a0 types.RequestCheckTx
+func (_e *Client_Expecter) CheckTxAsync(_a0 interface{}) *Client_CheckTxAsync_Call {
+	return &Client_CheckTxAsync_Call{Call: _e.mock.On("CheckTxAsync", _a0)}
+}
+
+func (_c *Client_CheckTxAsync_Call) Run(run func(_a0 types.RequestCheckTx)) *Client_CheckTxAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestCheckTx))
+	})
+	return _c
+}
+
+func (_c *Client_CheckTxAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_CheckTxAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_CheckTxAsync_Call) RunAndReturn(run func(types.RequestCheckTx) *abcicli.ReqRes) *Client_CheckTxAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CheckTxSync provides a mock function with given fields: _a0
 func (_m *Client) CheckTxSync(_a0 types.RequestCheckTx) (*types.ResponseCheckTx, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for CheckTxSync")
+	}
+
 	var r0 *types.ResponseCheckTx
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestCheckTx) (*types.ResponseCheckTx, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestCheckTx) *types.ResponseCheckTx); ok {
 		r0 = rf(_a0)
 	} else {
@@ -123,7 +305,6 @@ func (_m *Client) CheckTxSync(_a0 types.RequestCheckTx) (*types.ResponseCheckTx,
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestCheckTx) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -133,9 +314,41 @@ func (_m *Client) CheckTxSync(_a0 types.RequestCheckTx) (*types.ResponseCheckTx,
 	return r0, r1
 }
 
-// CommitAsync provides a mock function with given fields:
+// Client_CheckTxSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CheckTxSync'
+type Client_CheckTxSync_Call struct {
+	*mock.Call
+}
+
+// CheckTxSync is a helper method to define mock.On call
+//   - _a0 types.RequestCheckTx
+func (_e *Client_Expecter) CheckTxSync(_a0 interface{}) *Client_CheckTxSync_Call {
+	return &Client_CheckTxSync_Call{Call: _e.mock.On("CheckTxSync", _a0)}
+}
+
+func (_c *Client_CheckTxSync_Call) Run(run func(_a0 types.RequestCheckTx)) *Client_CheckTxSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestCheckTx))
+	})
+	return _c
+}
+
+func (_c *Client_CheckTxSync_Call) Return(_a0 *types.ResponseCheckTx, _a1 error) *Client_CheckTxSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_CheckTxSync_Call) RunAndReturn(run func(types.RequestCheckTx) (*types.ResponseCheckTx, error)) *Client_CheckTxSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CommitAsync provides a mock function with no fields
 func (_m *Client) CommitAsync() *abcicli.ReqRes {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for CommitAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func() *abcicli.ReqRes); ok {
@@ -149,11 +362,46 @@ func (_m *Client) CommitAsync() *abcicli.ReqRes {
 	return r0
 }
 
-// CommitSync provides a mock function with given fields:
+// Client_CommitAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CommitAsync'
+type Client_CommitAsync_Call struct {
+	*mock.Call
+}
+
+// CommitAsync is a helper method to define mock.On call
+func (_e *Client_Expecter) CommitAsync() *Client_CommitAsync_Call {
+	return &Client_CommitAsync_Call{Call: _e.mock.On("CommitAsync")}
+}
+
+func (_c *Client_CommitAsync_Call) Run(run func()) *Client_CommitAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_CommitAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_CommitAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_CommitAsync_Call) RunAndReturn(run func() *abcicli.ReqRes) *Client_CommitAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CommitSync provides a mock function with no fields
 func (_m *Client) CommitSync() (*types.ResponseCommit, error) {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for CommitSync")
+	}
+
 	var r0 *types.ResponseCommit
+	var r1 error
+	if rf, ok := ret.Get(0).(func() (*types.ResponseCommit, error)); ok {
+		return rf()
+	}
 	if rf, ok := ret.Get(0).(func() *types.ResponseCommit); ok {
 		r0 = rf()
 	} else {
@@ -162,7 +410,6 @@ func (_m *Client) CommitSync() (*types.ResponseCommit, error) {
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func() error); ok {
 		r1 = rf()
 	} else {
@@ -172,9 +419,40 @@ func (_m *Client) CommitSync() (*types.ResponseCommit, error) {
 	return r0, r1
 }
 
+// Client_CommitSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CommitSync'
+type Client_CommitSync_Call struct {
+	*mock.Call
+}
+
+// CommitSync is a helper method to define mock.On call
+func (_e *Client_Expecter) CommitSync() *Client_CommitSync_Call {
+	return &Client_CommitSync_Call{Call: _e.mock.On("CommitSync")}
+}
+
+func (_c *Client_CommitSync_Call) Run(run func()) *Client_CommitSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_CommitSync_Call) Return(_a0 *types.ResponseCommit, _a1 error) *Client_CommitSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_CommitSync_Call) RunAndReturn(run func() (*types.ResponseCommit, error)) *Client_CommitSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeliverTxAsync provides a mock function with given fields: _a0
 func (_m *Client) DeliverTxAsync(_a0 types.RequestDeliverTx) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeliverTxAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestDeliverTx) *abcicli.ReqRes); ok {
@@ -188,11 +466,47 @@ func (_m *Client) DeliverTxAsync(_a0 types.RequestDeliverTx) *abcicli.ReqRes {
 	return r0
 }
 
+// Client_DeliverTxAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeliverTxAsync'
+type Client_DeliverTxAsync_Call struct {
+	*mock.Call
+}
+
+// DeliverTxAsync is a helper method to define mock.On call
+//   - _a0 types.RequestDeliverTx
+func (_e *Client_Expecter) DeliverTxAsync(_a0 interface{}) *Client_DeliverTxAsync_Call {
+	return &Client_DeliverTxAsync_Call{Call: _e.mock.On("DeliverTxAsync", _a0)}
+}
+
+func (_c *Client_DeliverTxAsync_Call) Run(run func(_a0 types.RequestDeliverTx)) *Client_DeliverTxAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestDeliverTx))
+	})
+	return _c
+}
+
+func (_c *Client_DeliverTxAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_DeliverTxAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_DeliverTxAsync_Call) RunAndReturn(run func(types.RequestDeliverTx) *abcicli.ReqRes) *Client_DeliverTxAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeliverTxSync provides a mock function with given fields: _a0
 func (_m *Client) DeliverTxSync(_a0 types.RequestDeliverTx) (*types.ResponseDeliverTx, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for DeliverTxSync")
+	}
+
 	var r0 *types.ResponseDeliverTx
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestDeliverTx) (*types.ResponseDeliverTx, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestDeliverTx) *types.ResponseDeliverTx); ok {
 		r0 = rf(_a0)
 	} else {
@@ -201,7 +515,6 @@ func (_m *Client) DeliverTxSync(_a0 types.RequestDeliverTx) (*types.ResponseDeli
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestDeliverTx) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -211,9 +524,41 @@ func (_m *Client) DeliverTxSync(_a0 types.RequestDeliverTx) (*types.ResponseDeli
 	return r0, r1
 }
 
+// Client_DeliverTxSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeliverTxSync'
+type Client_DeliverTxSync_Call struct {
+	*mock.Call
+}
+
+// DeliverTxSync is a helper method to define mock.On call
+//   - _a0 types.RequestDeliverTx
+func (_e *Client_Expecter) DeliverTxSync(_a0 interface{}) *Client_DeliverTxSync_Call {
+	return &Client_DeliverTxSync_Call{Call: _e.mock.On("DeliverTxSync", _a0)}
+}
+
+func (_c *Client_DeliverTxSync_Call) Run(run func(_a0 types.RequestDeliverTx)) *Client_DeliverTxSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestDeliverTx))
+	})
+	return _c
+}
+
+func (_c *Client_DeliverTxSync_Call) Return(_a0 *types.ResponseDeliverTx, _a1 error) *Client_DeliverTxSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_DeliverTxSync_Call) RunAndReturn(run func(types.RequestDeliverTx) (*types.ResponseDeliverTx, error)) *Client_DeliverTxSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // EchoAsync provides a mock function with given fields: msg
 func (_m *Client) EchoAsync(msg string) *abcicli.ReqRes {
 	ret := _m.Called(msg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for EchoAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(string) *abcicli.ReqRes); ok {
@@ -227,11 +572,47 @@ func (_m *Client) EchoAsync(msg string) *abcicli.ReqRes {
 	return r0
 }
 
+// Client_EchoAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EchoAsync'
+type Client_EchoAsync_Call struct {
+	*mock.Call
+}
+
+// EchoAsync is a helper method to define mock.On call
+//   - msg string
+func (_e *Client_Expecter) EchoAsync(msg interface{}) *Client_EchoAsync_Call {
+	return &Client_EchoAsync_Call{Call: _e.mock.On("EchoAsync", msg)}
+}
+
+func (_c *Client_EchoAsync_Call) Run(run func(msg string)) *Client_EchoAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *Client_EchoAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_EchoAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_EchoAsync_Call) RunAndReturn(run func(string) *abcicli.ReqRes) *Client_EchoAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // EchoSync provides a mock function with given fields: msg
 func (_m *Client) EchoSync(msg string) (*types.ResponseEcho, error) {
 	ret := _m.Called(msg)
 
+	if len(ret) == 0 {
+		panic("no return value specified for EchoSync")
+	}
+
 	var r0 *types.ResponseEcho
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (*types.ResponseEcho, error)); ok {
+		return rf(msg)
+	}
 	if rf, ok := ret.Get(0).(func(string) *types.ResponseEcho); ok {
 		r0 = rf(msg)
 	} else {
@@ -240,7 +621,6 @@ func (_m *Client) EchoSync(msg string) (*types.ResponseEcho, error) {
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(msg)
 	} else {
@@ -250,9 +630,41 @@ func (_m *Client) EchoSync(msg string) (*types.ResponseEcho, error) {
 	return r0, r1
 }
 
+// Client_EchoSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EchoSync'
+type Client_EchoSync_Call struct {
+	*mock.Call
+}
+
+// EchoSync is a helper method to define mock.On call
+//   - msg string
+func (_e *Client_Expecter) EchoSync(msg interface{}) *Client_EchoSync_Call {
+	return &Client_EchoSync_Call{Call: _e.mock.On("EchoSync", msg)}
+}
+
+func (_c *Client_EchoSync_Call) Run(run func(msg string)) *Client_EchoSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *Client_EchoSync_Call) Return(_a0 *types.ResponseEcho, _a1 error) *Client_EchoSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_EchoSync_Call) RunAndReturn(run func(string) (*types.ResponseEcho, error)) *Client_EchoSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // EndBlockAsync provides a mock function with given fields: _a0
 func (_m *Client) EndBlockAsync(_a0 types.RequestEndBlock) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for EndBlockAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestEndBlock) *abcicli.ReqRes); ok {
@@ -266,11 +678,47 @@ func (_m *Client) EndBlockAsync(_a0 types.RequestEndBlock) *abcicli.ReqRes {
 	return r0
 }
 
+// Client_EndBlockAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EndBlockAsync'
+type Client_EndBlockAsync_Call struct {
+	*mock.Call
+}
+
+// EndBlockAsync is a helper method to define mock.On call
+//   - _a0 types.RequestEndBlock
+func (_e *Client_Expecter) EndBlockAsync(_a0 interface{}) *Client_EndBlockAsync_Call {
+	return &Client_EndBlockAsync_Call{Call: _e.mock.On("EndBlockAsync", _a0)}
+}
+
+func (_c *Client_EndBlockAsync_Call) Run(run func(_a0 types.RequestEndBlock)) *Client_EndBlockAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestEndBlock))
+	})
+	return _c
+}
+
+func (_c *Client_EndBlockAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_EndBlockAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_EndBlockAsync_Call) RunAndReturn(run func(types.RequestEndBlock) *abcicli.ReqRes) *Client_EndBlockAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // EndBlockSync provides a mock function with given fields: _a0
 func (_m *Client) EndBlockSync(_a0 types.RequestEndBlock) (*types.ResponseEndBlock, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for EndBlockSync")
+	}
+
 	var r0 *types.ResponseEndBlock
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestEndBlock) (*types.ResponseEndBlock, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestEndBlock) *types.ResponseEndBlock); ok {
 		r0 = rf(_a0)
 	} else {
@@ -279,7 +727,6 @@ func (_m *Client) EndBlockSync(_a0 types.RequestEndBlock) (*types.ResponseEndBlo
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestEndBlock) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -289,9 +736,41 @@ func (_m *Client) EndBlockSync(_a0 types.RequestEndBlock) (*types.ResponseEndBlo
 	return r0, r1
 }
 
-// Error provides a mock function with given fields:
+// Client_EndBlockSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EndBlockSync'
+type Client_EndBlockSync_Call struct {
+	*mock.Call
+}
+
+// EndBlockSync is a helper method to define mock.On call
+//   - _a0 types.RequestEndBlock
+func (_e *Client_Expecter) EndBlockSync(_a0 interface{}) *Client_EndBlockSync_Call {
+	return &Client_EndBlockSync_Call{Call: _e.mock.On("EndBlockSync", _a0)}
+}
+
+func (_c *Client_EndBlockSync_Call) Run(run func(_a0 types.RequestEndBlock)) *Client_EndBlockSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestEndBlock))
+	})
+	return _c
+}
+
+func (_c *Client_EndBlockSync_Call) Return(_a0 *types.ResponseEndBlock, _a1 error) *Client_EndBlockSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_EndBlockSync_Call) RunAndReturn(run func(types.RequestEndBlock) (*types.ResponseEndBlock, error)) *Client_EndBlockSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Error provides a mock function with no fields
 func (_m *Client) Error() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Error")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -303,9 +782,40 @@ func (_m *Client) Error() error {
 	return r0
 }
 
+// Client_Error_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Error'
+type Client_Error_Call struct {
+	*mock.Call
+}
+
+// Error is a helper method to define mock.On call
+func (_e *Client_Expecter) Error() *Client_Error_Call {
+	return &Client_Error_Call{Call: _e.mock.On("Error")}
+}
+
+func (_c *Client_Error_Call) Run(run func()) *Client_Error_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_Error_Call) Return(_a0 error) *Client_Error_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_Error_Call) RunAndReturn(run func() error) *Client_Error_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // EthQueryAsync provides a mock function with given fields: _a0
 func (_m *Client) EthQueryAsync(_a0 types.RequestEthQuery) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for EthQueryAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestEthQuery) *abcicli.ReqRes); ok {
@@ -319,11 +829,47 @@ func (_m *Client) EthQueryAsync(_a0 types.RequestEthQuery) *abcicli.ReqRes {
 	return r0
 }
 
+// Client_EthQueryAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EthQueryAsync'
+type Client_EthQueryAsync_Call struct {
+	*mock.Call
+}
+
+// EthQueryAsync is a helper method to define mock.On call
+//   - _a0 types.RequestEthQuery
+func (_e *Client_Expecter) EthQueryAsync(_a0 interface{}) *Client_EthQueryAsync_Call {
+	return &Client_EthQueryAsync_Call{Call: _e.mock.On("EthQueryAsync", _a0)}
+}
+
+func (_c *Client_EthQueryAsync_Call) Run(run func(_a0 types.RequestEthQuery)) *Client_EthQueryAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestEthQuery))
+	})
+	return _c
+}
+
+func (_c *Client_EthQueryAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_EthQueryAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_EthQueryAsync_Call) RunAndReturn(run func(types.RequestEthQuery) *abcicli.ReqRes) *Client_EthQueryAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // EthQuerySync provides a mock function with given fields: _a0
 func (_m *Client) EthQuerySync(_a0 types.RequestEthQuery) (*types.ResponseEthQuery, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for EthQuerySync")
+	}
+
 	var r0 *types.ResponseEthQuery
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestEthQuery) (*types.ResponseEthQuery, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestEthQuery) *types.ResponseEthQuery); ok {
 		r0 = rf(_a0)
 	} else {
@@ -332,7 +878,6 @@ func (_m *Client) EthQuerySync(_a0 types.RequestEthQuery) (*types.ResponseEthQue
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestEthQuery) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -342,9 +887,41 @@ func (_m *Client) EthQuerySync(_a0 types.RequestEthQuery) (*types.ResponseEthQue
 	return r0, r1
 }
 
-// FlushAsync provides a mock function with given fields:
+// Client_EthQuerySync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EthQuerySync'
+type Client_EthQuerySync_Call struct {
+	*mock.Call
+}
+
+// EthQuerySync is a helper method to define mock.On call
+//   - _a0 types.RequestEthQuery
+func (_e *Client_Expecter) EthQuerySync(_a0 interface{}) *Client_EthQuerySync_Call {
+	return &Client_EthQuerySync_Call{Call: _e.mock.On("EthQuerySync", _a0)}
+}
+
+func (_c *Client_EthQuerySync_Call) Run(run func(_a0 types.RequestEthQuery)) *Client_EthQuerySync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestEthQuery))
+	})
+	return _c
+}
+
+func (_c *Client_EthQuerySync_Call) Return(_a0 *types.ResponseEthQuery, _a1 error) *Client_EthQuerySync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_EthQuerySync_Call) RunAndReturn(run func(types.RequestEthQuery) (*types.ResponseEthQuery, error)) *Client_EthQuerySync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// FlushAsync provides a mock function with no fields
 func (_m *Client) FlushAsync() *abcicli.ReqRes {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for FlushAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func() *abcicli.ReqRes); ok {
@@ -358,9 +935,40 @@ func (_m *Client) FlushAsync() *abcicli.ReqRes {
 	return r0
 }
 
-// FlushSync provides a mock function with given fields:
+// Client_FlushAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FlushAsync'
+type Client_FlushAsync_Call struct {
+	*mock.Call
+}
+
+// FlushAsync is a helper method to define mock.On call
+func (_e *Client_Expecter) FlushAsync() *Client_FlushAsync_Call {
+	return &Client_FlushAsync_Call{Call: _e.mock.On("FlushAsync")}
+}
+
+func (_c *Client_FlushAsync_Call) Run(run func()) *Client_FlushAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_FlushAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_FlushAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_FlushAsync_Call) RunAndReturn(run func() *abcicli.ReqRes) *Client_FlushAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// FlushSync provides a mock function with no fields
 func (_m *Client) FlushSync() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for FlushSync")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -372,9 +980,40 @@ func (_m *Client) FlushSync() error {
 	return r0
 }
 
+// Client_FlushSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FlushSync'
+type Client_FlushSync_Call struct {
+	*mock.Call
+}
+
+// FlushSync is a helper method to define mock.On call
+func (_e *Client_Expecter) FlushSync() *Client_FlushSync_Call {
+	return &Client_FlushSync_Call{Call: _e.mock.On("FlushSync")}
+}
+
+func (_c *Client_FlushSync_Call) Run(run func()) *Client_FlushSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_FlushSync_Call) Return(_a0 error) *Client_FlushSync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_FlushSync_Call) RunAndReturn(run func() error) *Client_FlushSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // InfoAsync provides a mock function with given fields: _a0
 func (_m *Client) InfoAsync(_a0 types.RequestInfo) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for InfoAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestInfo) *abcicli.ReqRes); ok {
@@ -388,11 +1027,47 @@ func (_m *Client) InfoAsync(_a0 types.RequestInfo) *abcicli.ReqRes {
 	return r0
 }
 
+// Client_InfoAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InfoAsync'
+type Client_InfoAsync_Call struct {
+	*mock.Call
+}
+
+// InfoAsync is a helper method to define mock.On call
+//   - _a0 types.RequestInfo
+func (_e *Client_Expecter) InfoAsync(_a0 interface{}) *Client_InfoAsync_Call {
+	return &Client_InfoAsync_Call{Call: _e.mock.On("InfoAsync", _a0)}
+}
+
+func (_c *Client_InfoAsync_Call) Run(run func(_a0 types.RequestInfo)) *Client_InfoAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestInfo))
+	})
+	return _c
+}
+
+func (_c *Client_InfoAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_InfoAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_InfoAsync_Call) RunAndReturn(run func(types.RequestInfo) *abcicli.ReqRes) *Client_InfoAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // InfoSync provides a mock function with given fields: _a0
 func (_m *Client) InfoSync(_a0 types.RequestInfo) (*types.ResponseInfo, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for InfoSync")
+	}
+
 	var r0 *types.ResponseInfo
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestInfo) (*types.ResponseInfo, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestInfo) *types.ResponseInfo); ok {
 		r0 = rf(_a0)
 	} else {
@@ -401,7 +1076,6 @@ func (_m *Client) InfoSync(_a0 types.RequestInfo) (*types.ResponseInfo, error) {
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestInfo) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -411,9 +1085,41 @@ func (_m *Client) InfoSync(_a0 types.RequestInfo) (*types.ResponseInfo, error) {
 	return r0, r1
 }
 
+// Client_InfoSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InfoSync'
+type Client_InfoSync_Call struct {
+	*mock.Call
+}
+
+// InfoSync is a helper method to define mock.On call
+//   - _a0 types.RequestInfo
+func (_e *Client_Expecter) InfoSync(_a0 interface{}) *Client_InfoSync_Call {
+	return &Client_InfoSync_Call{Call: _e.mock.On("InfoSync", _a0)}
+}
+
+func (_c *Client_InfoSync_Call) Run(run func(_a0 types.RequestInfo)) *Client_InfoSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestInfo))
+	})
+	return _c
+}
+
+func (_c *Client_InfoSync_Call) Return(_a0 *types.ResponseInfo, _a1 error) *Client_InfoSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_InfoSync_Call) RunAndReturn(run func(types.RequestInfo) (*types.ResponseInfo, error)) *Client_InfoSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // InitChainAsync provides a mock function with given fields: _a0
 func (_m *Client) InitChainAsync(_a0 types.RequestInitChain) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for InitChainAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestInitChain) *abcicli.ReqRes); ok {
@@ -427,11 +1133,47 @@ func (_m *Client) InitChainAsync(_a0 types.RequestInitChain) *abcicli.ReqRes {
 	return r0
 }
 
+// Client_InitChainAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InitChainAsync'
+type Client_InitChainAsync_Call struct {
+	*mock.Call
+}
+
+// InitChainAsync is a helper method to define mock.On call
+//   - _a0 types.RequestInitChain
+func (_e *Client_Expecter) InitChainAsync(_a0 interface{}) *Client_InitChainAsync_Call {
+	return &Client_InitChainAsync_Call{Call: _e.mock.On("InitChainAsync", _a0)}
+}
+
+func (_c *Client_InitChainAsync_Call) Run(run func(_a0 types.RequestInitChain)) *Client_InitChainAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestInitChain))
+	})
+	return _c
+}
+
+func (_c *Client_InitChainAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_InitChainAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_InitChainAsync_Call) RunAndReturn(run func(types.RequestInitChain) *abcicli.ReqRes) *Client_InitChainAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // InitChainSync provides a mock function with given fields: _a0
 func (_m *Client) InitChainSync(_a0 types.RequestInitChain) (*types.ResponseInitChain, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for InitChainSync")
+	}
+
 	var r0 *types.ResponseInitChain
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestInitChain) (*types.ResponseInitChain, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestInitChain) *types.ResponseInitChain); ok {
 		r0 = rf(_a0)
 	} else {
@@ -440,7 +1182,6 @@ func (_m *Client) InitChainSync(_a0 types.RequestInitChain) (*types.ResponseInit
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestInitChain) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -450,9 +1191,41 @@ func (_m *Client) InitChainSync(_a0 types.RequestInitChain) (*types.ResponseInit
 	return r0, r1
 }
 
-// IsRunning provides a mock function with given fields:
+// Client_InitChainSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InitChainSync'
+type Client_InitChainSync_Call struct {
+	*mock.Call
+}
+
+// InitChainSync is a helper method to define mock.On call
+//   - _a0 types.RequestInitChain
+func (_e *Client_Expecter) InitChainSync(_a0 interface{}) *Client_InitChainSync_Call {
+	return &Client_InitChainSync_Call{Call: _e.mock.On("InitChainSync", _a0)}
+}
+
+func (_c *Client_InitChainSync_Call) Run(run func(_a0 types.RequestInitChain)) *Client_InitChainSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestInitChain))
+	})
+	return _c
+}
+
+func (_c *Client_InitChainSync_Call) Return(_a0 *types.ResponseInitChain, _a1 error) *Client_InitChainSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_InitChainSync_Call) RunAndReturn(run func(types.RequestInitChain) (*types.ResponseInitChain, error)) *Client_InitChainSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// IsRunning provides a mock function with no fields
 func (_m *Client) IsRunning() bool {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for IsRunning")
+	}
 
 	var r0 bool
 	if rf, ok := ret.Get(0).(func() bool); ok {
@@ -464,9 +1237,40 @@ func (_m *Client) IsRunning() bool {
 	return r0
 }
 
+// Client_IsRunning_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsRunning'
+type Client_IsRunning_Call struct {
+	*mock.Call
+}
+
+// IsRunning is a helper method to define mock.On call
+func (_e *Client_Expecter) IsRunning() *Client_IsRunning_Call {
+	return &Client_IsRunning_Call{Call: _e.mock.On("IsRunning")}
+}
+
+func (_c *Client_IsRunning_Call) Run(run func()) *Client_IsRunning_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_IsRunning_Call) Return(_a0 bool) *Client_IsRunning_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_IsRunning_Call) RunAndReturn(run func() bool) *Client_IsRunning_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ListSnapshotsAsync provides a mock function with given fields: _a0
 func (_m *Client) ListSnapshotsAsync(_a0 types.RequestListSnapshots) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListSnapshotsAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestListSnapshots) *abcicli.ReqRes); ok {
@@ -480,11 +1284,47 @@ func (_m *Client) ListSnapshotsAsync(_a0 types.RequestListSnapshots) *abcicli.Re
 	return r0
 }
 
+// Client_ListSnapshotsAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListSnapshotsAsync'
+type Client_ListSnapshotsAsync_Call struct {
+	*mock.Call
+}
+
+// ListSnapshotsAsync is a helper method to define mock.On call
+//   - _a0 types.RequestListSnapshots
+func (_e *Client_Expecter) ListSnapshotsAsync(_a0 interface{}) *Client_ListSnapshotsAsync_Call {
+	return &Client_ListSnapshotsAsync_Call{Call: _e.mock.On("ListSnapshotsAsync", _a0)}
+}
+
+func (_c *Client_ListSnapshotsAsync_Call) Run(run func(_a0 types.RequestListSnapshots)) *Client_ListSnapshotsAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestListSnapshots))
+	})
+	return _c
+}
+
+func (_c *Client_ListSnapshotsAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_ListSnapshotsAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_ListSnapshotsAsync_Call) RunAndReturn(run func(types.RequestListSnapshots) *abcicli.ReqRes) *Client_ListSnapshotsAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ListSnapshotsSync provides a mock function with given fields: _a0
 func (_m *Client) ListSnapshotsSync(_a0 types.RequestListSnapshots) (*types.ResponseListSnapshots, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for ListSnapshotsSync")
+	}
+
 	var r0 *types.ResponseListSnapshots
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestListSnapshots) (*types.ResponseListSnapshots, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestListSnapshots) *types.ResponseListSnapshots); ok {
 		r0 = rf(_a0)
 	} else {
@@ -493,7 +1333,6 @@ func (_m *Client) ListSnapshotsSync(_a0 types.RequestListSnapshots) (*types.Resp
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestListSnapshots) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -503,9 +1342,41 @@ func (_m *Client) ListSnapshotsSync(_a0 types.RequestListSnapshots) (*types.Resp
 	return r0, r1
 }
 
+// Client_ListSnapshotsSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListSnapshotsSync'
+type Client_ListSnapshotsSync_Call struct {
+	*mock.Call
+}
+
+// ListSnapshotsSync is a helper method to define mock.On call
+//   - _a0 types.RequestListSnapshots
+func (_e *Client_Expecter) ListSnapshotsSync(_a0 interface{}) *Client_ListSnapshotsSync_Call {
+	return &Client_ListSnapshotsSync_Call{Call: _e.mock.On("ListSnapshotsSync", _a0)}
+}
+
+func (_c *Client_ListSnapshotsSync_Call) Run(run func(_a0 types.RequestListSnapshots)) *Client_ListSnapshotsSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestListSnapshots))
+	})
+	return _c
+}
+
+func (_c *Client_ListSnapshotsSync_Call) Return(_a0 *types.ResponseListSnapshots, _a1 error) *Client_ListSnapshotsSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_ListSnapshotsSync_Call) RunAndReturn(run func(types.RequestListSnapshots) (*types.ResponseListSnapshots, error)) *Client_ListSnapshotsSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // LoadSnapshotChunkAsync provides a mock function with given fields: _a0
 func (_m *Client) LoadSnapshotChunkAsync(_a0 types.RequestLoadSnapshotChunk) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LoadSnapshotChunkAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestLoadSnapshotChunk) *abcicli.ReqRes); ok {
@@ -519,11 +1390,47 @@ func (_m *Client) LoadSnapshotChunkAsync(_a0 types.RequestLoadSnapshotChunk) *ab
 	return r0
 }
 
+// Client_LoadSnapshotChunkAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadSnapshotChunkAsync'
+type Client_LoadSnapshotChunkAsync_Call struct {
+	*mock.Call
+}
+
+// LoadSnapshotChunkAsync is a helper method to define mock.On call
+//   - _a0 types.RequestLoadSnapshotChunk
+func (_e *Client_Expecter) LoadSnapshotChunkAsync(_a0 interface{}) *Client_LoadSnapshotChunkAsync_Call {
+	return &Client_LoadSnapshotChunkAsync_Call{Call: _e.mock.On("LoadSnapshotChunkAsync", _a0)}
+}
+
+func (_c *Client_LoadSnapshotChunkAsync_Call) Run(run func(_a0 types.RequestLoadSnapshotChunk)) *Client_LoadSnapshotChunkAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestLoadSnapshotChunk))
+	})
+	return _c
+}
+
+func (_c *Client_LoadSnapshotChunkAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_LoadSnapshotChunkAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_LoadSnapshotChunkAsync_Call) RunAndReturn(run func(types.RequestLoadSnapshotChunk) *abcicli.ReqRes) *Client_LoadSnapshotChunkAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // LoadSnapshotChunkSync provides a mock function with given fields: _a0
 func (_m *Client) LoadSnapshotChunkSync(_a0 types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for LoadSnapshotChunkSync")
+	}
+
 	var r0 *types.ResponseLoadSnapshotChunk
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestLoadSnapshotChunk) *types.ResponseLoadSnapshotChunk); ok {
 		r0 = rf(_a0)
 	} else {
@@ -532,7 +1439,6 @@ func (_m *Client) LoadSnapshotChunkSync(_a0 types.RequestLoadSnapshotChunk) (*ty
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestLoadSnapshotChunk) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -542,9 +1448,41 @@ func (_m *Client) LoadSnapshotChunkSync(_a0 types.RequestLoadSnapshotChunk) (*ty
 	return r0, r1
 }
 
+// Client_LoadSnapshotChunkSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadSnapshotChunkSync'
+type Client_LoadSnapshotChunkSync_Call struct {
+	*mock.Call
+}
+
+// LoadSnapshotChunkSync is a helper method to define mock.On call
+//   - _a0 types.RequestLoadSnapshotChunk
+func (_e *Client_Expecter) LoadSnapshotChunkSync(_a0 interface{}) *Client_LoadSnapshotChunkSync_Call {
+	return &Client_LoadSnapshotChunkSync_Call{Call: _e.mock.On("LoadSnapshotChunkSync", _a0)}
+}
+
+func (_c *Client_LoadSnapshotChunkSync_Call) Run(run func(_a0 types.RequestLoadSnapshotChunk)) *Client_LoadSnapshotChunkSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestLoadSnapshotChunk))
+	})
+	return _c
+}
+
+func (_c *Client_LoadSnapshotChunkSync_Call) Return(_a0 *types.ResponseLoadSnapshotChunk, _a1 error) *Client_LoadSnapshotChunkSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_LoadSnapshotChunkSync_Call) RunAndReturn(run func(types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error)) *Client_LoadSnapshotChunkSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // OfferSnapshotAsync provides a mock function with given fields: _a0
 func (_m *Client) OfferSnapshotAsync(_a0 types.RequestOfferSnapshot) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for OfferSnapshotAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestOfferSnapshot) *abcicli.ReqRes); ok {
@@ -558,11 +1496,47 @@ func (_m *Client) OfferSnapshotAsync(_a0 types.RequestOfferSnapshot) *abcicli.Re
 	return r0
 }
 
+// Client_OfferSnapshotAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'OfferSnapshotAsync'
+type Client_OfferSnapshotAsync_Call struct {
+	*mock.Call
+}
+
+// OfferSnapshotAsync is a helper method to define mock.On call
+//   - _a0 types.RequestOfferSnapshot
+func (_e *Client_Expecter) OfferSnapshotAsync(_a0 interface{}) *Client_OfferSnapshotAsync_Call {
+	return &Client_OfferSnapshotAsync_Call{Call: _e.mock.On("OfferSnapshotAsync", _a0)}
+}
+
+func (_c *Client_OfferSnapshotAsync_Call) Run(run func(_a0 types.RequestOfferSnapshot)) *Client_OfferSnapshotAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestOfferSnapshot))
+	})
+	return _c
+}
+
+func (_c *Client_OfferSnapshotAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_OfferSnapshotAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_OfferSnapshotAsync_Call) RunAndReturn(run func(types.RequestOfferSnapshot) *abcicli.ReqRes) *Client_OfferSnapshotAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // OfferSnapshotSync provides a mock function with given fields: _a0
 func (_m *Client) OfferSnapshotSync(_a0 types.RequestOfferSnapshot) (*types.ResponseOfferSnapshot, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for OfferSnapshotSync")
+	}
+
 	var r0 *types.ResponseOfferSnapshot
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestOfferSnapshot) (*types.ResponseOfferSnapshot, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestOfferSnapshot) *types.ResponseOfferSnapshot); ok {
 		r0 = rf(_a0)
 	} else {
@@ -571,7 +1545,6 @@ func (_m *Client) OfferSnapshotSync(_a0 types.RequestOfferSnapshot) (*types.Resp
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestOfferSnapshot) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -581,10 +1554,42 @@ func (_m *Client) OfferSnapshotSync(_a0 types.RequestOfferSnapshot) (*types.Resp
 	return r0, r1
 }
 
-// OnReset provides a mock function with given fields:
+// Client_OfferSnapshotSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'OfferSnapshotSync'
+type Client_OfferSnapshotSync_Call struct {
+	*mock.Call
+}
+
+// OfferSnapshotSync is a helper method to define mock.On call
+//   - _a0 types.RequestOfferSnapshot
+func (_e *Client_Expecter) OfferSnapshotSync(_a0 interface{}) *Client_OfferSnapshotSync_Call {
+	return &Client_OfferSnapshotSync_Call{Call: _e.mock.On("OfferSnapshotSync", _a0)}
+}
+
+func (_c *Client_OfferSnapshotSync_Call) Run(run func(_a0 types.RequestOfferSnapshot)) *Client_OfferSnapshotSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestOfferSnapshot))
+	})
+	return _c
+}
+
+func (_c *Client_OfferSnapshotSync_Call) Return(_a0 *types.ResponseOfferSnapshot, _a1 error) *Client_OfferSnapshotSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_OfferSnapshotSync_Call) RunAndReturn(run func(types.RequestOfferSnapshot) (*types.ResponseOfferSnapshot, error)) *Client_OfferSnapshotSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// OnReset provides a mock function with no fields
 func (_m *Client) OnReset() error {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for OnReset")
+	}
+
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
 		r0 = rf()
@@ -595,10 +1600,41 @@ func (_m *Client) OnReset() error {
 	return r0
 }
 
-// OnStart provides a mock function with given fields:
+// Client_OnReset_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'OnReset'
+type Client_OnReset_Call struct {
+	*mock.Call
+}
+
+// OnReset is a helper method to define mock.On call
+func (_e *Client_Expecter) OnReset() *Client_OnReset_Call {
+	return &Client_OnReset_Call{Call: _e.mock.On("OnReset")}
+}
+
+func (_c *Client_OnReset_Call) Run(run func()) *Client_OnReset_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_OnReset_Call) Return(_a0 error) *Client_OnReset_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_OnReset_Call) RunAndReturn(run func() error) *Client_OnReset_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// OnStart provides a mock function with no fields
 func (_m *Client) OnStart() error {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for OnStart")
+	}
+
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
 		r0 = rf()
@@ -609,14 +1645,72 @@ func (_m *Client) OnStart() error {
 	return r0
 }
 
-// OnStop provides a mock function with given fields:
+// Client_OnStart_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'OnStart'
+type Client_OnStart_Call struct {
+	*mock.Call
+}
+
+// OnStart is a helper method to define mock.On call
+func (_e *Client_Expecter) OnStart() *Client_OnStart_Call {
+	return &Client_OnStart_Call{Call: _e.mock.On("OnStart")}
+}
+
+func (_c *Client_OnStart_Call) Run(run func()) *Client_OnStart_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_OnStart_Call) Return(_a0 error) *Client_OnStart_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_OnStart_Call) RunAndReturn(run func() error) *Client_OnStart_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// OnStop provides a mock function with no fields
 func (_m *Client) OnStop() {
 	_m.Called()
+}
+
+// Client_OnStop_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'OnStop'
+type Client_OnStop_Call struct {
+	*mock.Call
+}
+
+// OnStop is a helper method to define mock.On call
+func (_e *Client_Expecter) OnStop() *Client_OnStop_Call {
+	return &Client_OnStop_Call{Call: _e.mock.On("OnStop")}
+}
+
+func (_c *Client_OnStop_Call) Run(run func()) *Client_OnStop_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_OnStop_Call) Return() *Client_OnStop_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Client_OnStop_Call) RunAndReturn(run func()) *Client_OnStop_Call {
+	_c.Run(run)
+	return _c
 }
 
 // PreBeginBlockSync provides a mock function with given fields: _a0
 func (_m *Client) PreBeginBlockSync(_a0 types.RequestPreBeginBlock) error {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PreBeginBlockSync")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(types.RequestPreBeginBlock) error); ok {
@@ -628,9 +1722,41 @@ func (_m *Client) PreBeginBlockSync(_a0 types.RequestPreBeginBlock) error {
 	return r0
 }
 
+// Client_PreBeginBlockSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PreBeginBlockSync'
+type Client_PreBeginBlockSync_Call struct {
+	*mock.Call
+}
+
+// PreBeginBlockSync is a helper method to define mock.On call
+//   - _a0 types.RequestPreBeginBlock
+func (_e *Client_Expecter) PreBeginBlockSync(_a0 interface{}) *Client_PreBeginBlockSync_Call {
+	return &Client_PreBeginBlockSync_Call{Call: _e.mock.On("PreBeginBlockSync", _a0)}
+}
+
+func (_c *Client_PreBeginBlockSync_Call) Run(run func(_a0 types.RequestPreBeginBlock)) *Client_PreBeginBlockSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestPreBeginBlock))
+	})
+	return _c
+}
+
+func (_c *Client_PreBeginBlockSync_Call) Return(_a0 error) *Client_PreBeginBlockSync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_PreBeginBlockSync_Call) RunAndReturn(run func(types.RequestPreBeginBlock) error) *Client_PreBeginBlockSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // PreCommitSync provides a mock function with given fields: _a0
 func (_m *Client) PreCommitSync(_a0 types.RequestPreCommit) error {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PreCommitSync")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(types.RequestPreCommit) error); ok {
@@ -642,14 +1768,74 @@ func (_m *Client) PreCommitSync(_a0 types.RequestPreCommit) error {
 	return r0
 }
 
+// Client_PreCommitSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PreCommitSync'
+type Client_PreCommitSync_Call struct {
+	*mock.Call
+}
+
+// PreCommitSync is a helper method to define mock.On call
+//   - _a0 types.RequestPreCommit
+func (_e *Client_Expecter) PreCommitSync(_a0 interface{}) *Client_PreCommitSync_Call {
+	return &Client_PreCommitSync_Call{Call: _e.mock.On("PreCommitSync", _a0)}
+}
+
+func (_c *Client_PreCommitSync_Call) Run(run func(_a0 types.RequestPreCommit)) *Client_PreCommitSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestPreCommit))
+	})
+	return _c
+}
+
+func (_c *Client_PreCommitSync_Call) Return(_a0 error) *Client_PreCommitSync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_PreCommitSync_Call) RunAndReturn(run func(types.RequestPreCommit) error) *Client_PreCommitSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // PreDeliverTxAsync provides a mock function with given fields: _a0
 func (_m *Client) PreDeliverTxAsync(_a0 types.RequestPreDeliverTx) {
 	_m.Called(_a0)
 }
 
+// Client_PreDeliverTxAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PreDeliverTxAsync'
+type Client_PreDeliverTxAsync_Call struct {
+	*mock.Call
+}
+
+// PreDeliverTxAsync is a helper method to define mock.On call
+//   - _a0 types.RequestPreDeliverTx
+func (_e *Client_Expecter) PreDeliverTxAsync(_a0 interface{}) *Client_PreDeliverTxAsync_Call {
+	return &Client_PreDeliverTxAsync_Call{Call: _e.mock.On("PreDeliverTxAsync", _a0)}
+}
+
+func (_c *Client_PreDeliverTxAsync_Call) Run(run func(_a0 types.RequestPreDeliverTx)) *Client_PreDeliverTxAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestPreDeliverTx))
+	})
+	return _c
+}
+
+func (_c *Client_PreDeliverTxAsync_Call) Return() *Client_PreDeliverTxAsync_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Client_PreDeliverTxAsync_Call) RunAndReturn(run func(types.RequestPreDeliverTx)) *Client_PreDeliverTxAsync_Call {
+	_c.Run(run)
+	return _c
+}
+
 // PrepareProposalAsync provides a mock function with given fields: _a0
 func (_m *Client) PrepareProposalAsync(_a0 types.RequestPrepareProposal) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PrepareProposalAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestPrepareProposal) *abcicli.ReqRes); ok {
@@ -663,11 +1849,47 @@ func (_m *Client) PrepareProposalAsync(_a0 types.RequestPrepareProposal) *abcicl
 	return r0
 }
 
+// Client_PrepareProposalAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PrepareProposalAsync'
+type Client_PrepareProposalAsync_Call struct {
+	*mock.Call
+}
+
+// PrepareProposalAsync is a helper method to define mock.On call
+//   - _a0 types.RequestPrepareProposal
+func (_e *Client_Expecter) PrepareProposalAsync(_a0 interface{}) *Client_PrepareProposalAsync_Call {
+	return &Client_PrepareProposalAsync_Call{Call: _e.mock.On("PrepareProposalAsync", _a0)}
+}
+
+func (_c *Client_PrepareProposalAsync_Call) Run(run func(_a0 types.RequestPrepareProposal)) *Client_PrepareProposalAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestPrepareProposal))
+	})
+	return _c
+}
+
+func (_c *Client_PrepareProposalAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_PrepareProposalAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_PrepareProposalAsync_Call) RunAndReturn(run func(types.RequestPrepareProposal) *abcicli.ReqRes) *Client_PrepareProposalAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // PrepareProposalSync provides a mock function with given fields: _a0
 func (_m *Client) PrepareProposalSync(_a0 types.RequestPrepareProposal) (*types.ResponsePrepareProposal, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for PrepareProposalSync")
+	}
+
 	var r0 *types.ResponsePrepareProposal
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestPrepareProposal) (*types.ResponsePrepareProposal, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestPrepareProposal) *types.ResponsePrepareProposal); ok {
 		r0 = rf(_a0)
 	} else {
@@ -676,7 +1898,6 @@ func (_m *Client) PrepareProposalSync(_a0 types.RequestPrepareProposal) (*types.
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestPrepareProposal) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -686,9 +1907,41 @@ func (_m *Client) PrepareProposalSync(_a0 types.RequestPrepareProposal) (*types.
 	return r0, r1
 }
 
+// Client_PrepareProposalSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PrepareProposalSync'
+type Client_PrepareProposalSync_Call struct {
+	*mock.Call
+}
+
+// PrepareProposalSync is a helper method to define mock.On call
+//   - _a0 types.RequestPrepareProposal
+func (_e *Client_Expecter) PrepareProposalSync(_a0 interface{}) *Client_PrepareProposalSync_Call {
+	return &Client_PrepareProposalSync_Call{Call: _e.mock.On("PrepareProposalSync", _a0)}
+}
+
+func (_c *Client_PrepareProposalSync_Call) Run(run func(_a0 types.RequestPrepareProposal)) *Client_PrepareProposalSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestPrepareProposal))
+	})
+	return _c
+}
+
+func (_c *Client_PrepareProposalSync_Call) Return(_a0 *types.ResponsePrepareProposal, _a1 error) *Client_PrepareProposalSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_PrepareProposalSync_Call) RunAndReturn(run func(types.RequestPrepareProposal) (*types.ResponsePrepareProposal, error)) *Client_PrepareProposalSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ProcessProposalAsync provides a mock function with given fields: _a0
 func (_m *Client) ProcessProposalAsync(_a0 types.RequestProcessProposal) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ProcessProposalAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestProcessProposal) *abcicli.ReqRes); ok {
@@ -702,11 +1955,47 @@ func (_m *Client) ProcessProposalAsync(_a0 types.RequestProcessProposal) *abcicl
 	return r0
 }
 
+// Client_ProcessProposalAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ProcessProposalAsync'
+type Client_ProcessProposalAsync_Call struct {
+	*mock.Call
+}
+
+// ProcessProposalAsync is a helper method to define mock.On call
+//   - _a0 types.RequestProcessProposal
+func (_e *Client_Expecter) ProcessProposalAsync(_a0 interface{}) *Client_ProcessProposalAsync_Call {
+	return &Client_ProcessProposalAsync_Call{Call: _e.mock.On("ProcessProposalAsync", _a0)}
+}
+
+func (_c *Client_ProcessProposalAsync_Call) Run(run func(_a0 types.RequestProcessProposal)) *Client_ProcessProposalAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestProcessProposal))
+	})
+	return _c
+}
+
+func (_c *Client_ProcessProposalAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_ProcessProposalAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_ProcessProposalAsync_Call) RunAndReturn(run func(types.RequestProcessProposal) *abcicli.ReqRes) *Client_ProcessProposalAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ProcessProposalSync provides a mock function with given fields: _a0
 func (_m *Client) ProcessProposalSync(_a0 types.RequestProcessProposal) (*types.ResponseProcessProposal, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for ProcessProposalSync")
+	}
+
 	var r0 *types.ResponseProcessProposal
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestProcessProposal) (*types.ResponseProcessProposal, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestProcessProposal) *types.ResponseProcessProposal); ok {
 		r0 = rf(_a0)
 	} else {
@@ -715,7 +2004,6 @@ func (_m *Client) ProcessProposalSync(_a0 types.RequestProcessProposal) (*types.
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestProcessProposal) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -725,9 +2013,41 @@ func (_m *Client) ProcessProposalSync(_a0 types.RequestProcessProposal) (*types.
 	return r0, r1
 }
 
+// Client_ProcessProposalSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ProcessProposalSync'
+type Client_ProcessProposalSync_Call struct {
+	*mock.Call
+}
+
+// ProcessProposalSync is a helper method to define mock.On call
+//   - _a0 types.RequestProcessProposal
+func (_e *Client_Expecter) ProcessProposalSync(_a0 interface{}) *Client_ProcessProposalSync_Call {
+	return &Client_ProcessProposalSync_Call{Call: _e.mock.On("ProcessProposalSync", _a0)}
+}
+
+func (_c *Client_ProcessProposalSync_Call) Run(run func(_a0 types.RequestProcessProposal)) *Client_ProcessProposalSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestProcessProposal))
+	})
+	return _c
+}
+
+func (_c *Client_ProcessProposalSync_Call) Return(_a0 *types.ResponseProcessProposal, _a1 error) *Client_ProcessProposalSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_ProcessProposalSync_Call) RunAndReturn(run func(types.RequestProcessProposal) (*types.ResponseProcessProposal, error)) *Client_ProcessProposalSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // QueryAsync provides a mock function with given fields: _a0
 func (_m *Client) QueryAsync(_a0 types.RequestQuery) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for QueryAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestQuery) *abcicli.ReqRes); ok {
@@ -741,11 +2061,47 @@ func (_m *Client) QueryAsync(_a0 types.RequestQuery) *abcicli.ReqRes {
 	return r0
 }
 
+// Client_QueryAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'QueryAsync'
+type Client_QueryAsync_Call struct {
+	*mock.Call
+}
+
+// QueryAsync is a helper method to define mock.On call
+//   - _a0 types.RequestQuery
+func (_e *Client_Expecter) QueryAsync(_a0 interface{}) *Client_QueryAsync_Call {
+	return &Client_QueryAsync_Call{Call: _e.mock.On("QueryAsync", _a0)}
+}
+
+func (_c *Client_QueryAsync_Call) Run(run func(_a0 types.RequestQuery)) *Client_QueryAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestQuery))
+	})
+	return _c
+}
+
+func (_c *Client_QueryAsync_Call) Return(_a0 *abcicli.ReqRes) *Client_QueryAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_QueryAsync_Call) RunAndReturn(run func(types.RequestQuery) *abcicli.ReqRes) *Client_QueryAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // QuerySync provides a mock function with given fields: _a0
 func (_m *Client) QuerySync(_a0 types.RequestQuery) (*types.ResponseQuery, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for QuerySync")
+	}
+
 	var r0 *types.ResponseQuery
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestQuery) (*types.ResponseQuery, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestQuery) *types.ResponseQuery); ok {
 		r0 = rf(_a0)
 	} else {
@@ -754,7 +2110,6 @@ func (_m *Client) QuerySync(_a0 types.RequestQuery) (*types.ResponseQuery, error
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestQuery) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -764,9 +2119,41 @@ func (_m *Client) QuerySync(_a0 types.RequestQuery) (*types.ResponseQuery, error
 	return r0, r1
 }
 
-// Quit provides a mock function with given fields:
+// Client_QuerySync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'QuerySync'
+type Client_QuerySync_Call struct {
+	*mock.Call
+}
+
+// QuerySync is a helper method to define mock.On call
+//   - _a0 types.RequestQuery
+func (_e *Client_Expecter) QuerySync(_a0 interface{}) *Client_QuerySync_Call {
+	return &Client_QuerySync_Call{Call: _e.mock.On("QuerySync", _a0)}
+}
+
+func (_c *Client_QuerySync_Call) Run(run func(_a0 types.RequestQuery)) *Client_QuerySync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestQuery))
+	})
+	return _c
+}
+
+func (_c *Client_QuerySync_Call) Return(_a0 *types.ResponseQuery, _a1 error) *Client_QuerySync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Client_QuerySync_Call) RunAndReturn(run func(types.RequestQuery) (*types.ResponseQuery, error)) *Client_QuerySync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Quit provides a mock function with no fields
 func (_m *Client) Quit() <-chan struct{} {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Quit")
+	}
 
 	var r0 <-chan struct{}
 	if rf, ok := ret.Get(0).(func() <-chan struct{}); ok {
@@ -780,9 +2167,40 @@ func (_m *Client) Quit() <-chan struct{} {
 	return r0
 }
 
-// Reset provides a mock function with given fields:
+// Client_Quit_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Quit'
+type Client_Quit_Call struct {
+	*mock.Call
+}
+
+// Quit is a helper method to define mock.On call
+func (_e *Client_Expecter) Quit() *Client_Quit_Call {
+	return &Client_Quit_Call{Call: _e.mock.On("Quit")}
+}
+
+func (_c *Client_Quit_Call) Run(run func()) *Client_Quit_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_Quit_Call) Return(_a0 <-chan struct{}) *Client_Quit_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_Quit_Call) RunAndReturn(run func() <-chan struct{}) *Client_Quit_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Reset provides a mock function with no fields
 func (_m *Client) Reset() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Reset")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -792,6 +2210,33 @@ func (_m *Client) Reset() error {
 	}
 
 	return r0
+}
+
+// Client_Reset_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Reset'
+type Client_Reset_Call struct {
+	*mock.Call
+}
+
+// Reset is a helper method to define mock.On call
+func (_e *Client_Expecter) Reset() *Client_Reset_Call {
+	return &Client_Reset_Call{Call: _e.mock.On("Reset")}
+}
+
+func (_c *Client_Reset_Call) Run(run func()) *Client_Reset_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_Reset_Call) Return(_a0 error) *Client_Reset_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_Reset_Call) RunAndReturn(run func() error) *Client_Reset_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // SetLogger provides a mock function with given fields: _a0
@@ -799,15 +2244,75 @@ func (_m *Client) SetLogger(_a0 log.Logger) {
 	_m.Called(_a0)
 }
 
+// Client_SetLogger_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetLogger'
+type Client_SetLogger_Call struct {
+	*mock.Call
+}
+
+// SetLogger is a helper method to define mock.On call
+//   - _a0 log.Logger
+func (_e *Client_Expecter) SetLogger(_a0 interface{}) *Client_SetLogger_Call {
+	return &Client_SetLogger_Call{Call: _e.mock.On("SetLogger", _a0)}
+}
+
+func (_c *Client_SetLogger_Call) Run(run func(_a0 log.Logger)) *Client_SetLogger_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(log.Logger))
+	})
+	return _c
+}
+
+func (_c *Client_SetLogger_Call) Return() *Client_SetLogger_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Client_SetLogger_Call) RunAndReturn(run func(log.Logger)) *Client_SetLogger_Call {
+	_c.Run(run)
+	return _c
+}
+
 // SetResponseCallback provides a mock function with given fields: _a0
 func (_m *Client) SetResponseCallback(_a0 abcicli.Callback) {
 	_m.Called(_a0)
 }
 
-// Start provides a mock function with given fields:
+// Client_SetResponseCallback_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetResponseCallback'
+type Client_SetResponseCallback_Call struct {
+	*mock.Call
+}
+
+// SetResponseCallback is a helper method to define mock.On call
+//   - _a0 abcicli.Callback
+func (_e *Client_Expecter) SetResponseCallback(_a0 interface{}) *Client_SetResponseCallback_Call {
+	return &Client_SetResponseCallback_Call{Call: _e.mock.On("SetResponseCallback", _a0)}
+}
+
+func (_c *Client_SetResponseCallback_Call) Run(run func(_a0 abcicli.Callback)) *Client_SetResponseCallback_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(abcicli.Callback))
+	})
+	return _c
+}
+
+func (_c *Client_SetResponseCallback_Call) Return() *Client_SetResponseCallback_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Client_SetResponseCallback_Call) RunAndReturn(run func(abcicli.Callback)) *Client_SetResponseCallback_Call {
+	_c.Run(run)
+	return _c
+}
+
+// Start provides a mock function with no fields
 func (_m *Client) Start() error {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for Start")
+	}
+
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
 		r0 = rf()
@@ -818,10 +2323,41 @@ func (_m *Client) Start() error {
 	return r0
 }
 
-// Stop provides a mock function with given fields:
+// Client_Start_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Start'
+type Client_Start_Call struct {
+	*mock.Call
+}
+
+// Start is a helper method to define mock.On call
+func (_e *Client_Expecter) Start() *Client_Start_Call {
+	return &Client_Start_Call{Call: _e.mock.On("Start")}
+}
+
+func (_c *Client_Start_Call) Run(run func()) *Client_Start_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_Start_Call) Return(_a0 error) *Client_Start_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_Start_Call) RunAndReturn(run func() error) *Client_Start_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Stop provides a mock function with no fields
 func (_m *Client) Stop() error {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for Stop")
+	}
+
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
 		r0 = rf()
@@ -832,9 +2368,40 @@ func (_m *Client) Stop() error {
 	return r0
 }
 
-// String provides a mock function with given fields:
+// Client_Stop_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Stop'
+type Client_Stop_Call struct {
+	*mock.Call
+}
+
+// Stop is a helper method to define mock.On call
+func (_e *Client_Expecter) Stop() *Client_Stop_Call {
+	return &Client_Stop_Call{Call: _e.mock.On("Stop")}
+}
+
+func (_c *Client_Stop_Call) Run(run func()) *Client_Stop_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_Stop_Call) Return(_a0 error) *Client_Stop_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_Stop_Call) RunAndReturn(run func() error) *Client_Stop_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// String provides a mock function with no fields
 func (_m *Client) String() string {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for String")
+	}
 
 	var r0 string
 	if rf, ok := ret.Get(0).(func() string); ok {
@@ -846,13 +2413,39 @@ func (_m *Client) String() string {
 	return r0
 }
 
-type mockConstructorTestingTNewClient interface {
-	mock.TestingT
-	Cleanup(func())
+// Client_String_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'String'
+type Client_String_Call struct {
+	*mock.Call
+}
+
+// String is a helper method to define mock.On call
+func (_e *Client_Expecter) String() *Client_String_Call {
+	return &Client_String_Call{Call: _e.mock.On("String")}
+}
+
+func (_c *Client_String_Call) Run(run func()) *Client_String_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_String_Call) Return(_a0 string) *Client_String_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_String_Call) RunAndReturn(run func() string) *Client_String_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewClient creates a new instance of Client. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewClient(t mockConstructorTestingTNewClient) *Client {
+// The first argument is typically a *testing.T value.
+func NewClient(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *Client {
 	mock := &Client{}
 	mock.Mock.Test(t)
 

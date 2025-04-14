@@ -222,6 +222,8 @@ func (idx *BlockerIndexer) Search(ctx context.Context, q *query.Query) ([]int64,
 	// fetch matching heights
 	results = make([]int64, 0, len(filteredHeights))
 	resultMap := make(map[int64]struct{})
+
+FOR_LOOP:
 	for _, hBz := range filteredHeights {
 		h := int64FromBytes(hBz)
 
@@ -238,7 +240,7 @@ func (idx *BlockerIndexer) Search(ctx context.Context, q *query.Query) ([]int64,
 
 		select {
 		case <-ctx.Done():
-			break
+			break FOR_LOOP
 
 		default:
 		}
@@ -314,8 +316,7 @@ LOOP:
 
 		select {
 		case <-ctx.Done():
-			break
-
+			break LOOP
 		default:
 		}
 	}
@@ -337,6 +338,7 @@ LOOP:
 
 	// Remove/reduce matches in filteredHashes that were not found in this
 	// match (tmpHashes).
+FOR_LOOP:
 	for k, v := range filteredHeights {
 		tmpHeight := tmpHeights[k]
 
@@ -347,8 +349,7 @@ LOOP:
 
 			select {
 			case <-ctx.Done():
-				break
-
+				break FOR_LOOP
 			default:
 			}
 		}
@@ -358,11 +359,15 @@ LOOP:
 }
 
 func (idx *BlockerIndexer) setTmpHeights(tmpHeights map[string][]byte, it dbm.Iterator) {
-	// If we return attributes that occur within the same events, then store the event sequence in the
-	// result map as well
+	// If we return attributes that occur within the same events, then store the
+	// event sequence in the result map as well.
 	eventSeq, _ := parseEventSeqFromEventKey(it.Key())
-	retVal := it.Value()
-	tmpHeights[string(retVal)+strconv.FormatInt(eventSeq, 10)] = it.Value()
+
+	// Copy the value because the iterator will be reused.
+	value := make([]byte, len(it.Value()))
+	copy(value, it.Value())
+
+	tmpHeights[string(value)+strconv.FormatInt(eventSeq, 10)] = value
 
 }
 
@@ -442,6 +447,7 @@ func (idx *BlockerIndexer) match(
 		}
 		defer it.Close()
 
+	LOOP_EXISTS:
 		for ; it.Valid(); it.Next() {
 			keyHeight, err := parseHeightFromEventKey(it.Key())
 			if err != nil || !checkHeightConditions(heightInfo, keyHeight) {
@@ -451,7 +457,7 @@ func (idx *BlockerIndexer) match(
 
 			select {
 			case <-ctx.Done():
-				break
+				break LOOP_EXISTS
 
 			default:
 			}
@@ -473,6 +479,7 @@ func (idx *BlockerIndexer) match(
 		}
 		defer it.Close()
 
+	LOOP_CONTAINS:
 		for ; it.Valid(); it.Next() {
 			eventValue, err := parseValueFromEventKey(it.Key())
 			if err != nil {
@@ -489,7 +496,7 @@ func (idx *BlockerIndexer) match(
 
 			select {
 			case <-ctx.Done():
-				break
+				break LOOP_CONTAINS
 
 			default:
 			}
@@ -515,6 +522,7 @@ func (idx *BlockerIndexer) match(
 
 	// Remove/reduce matches in filteredHeights that were not found in this
 	// match (tmpHeights).
+FOR_LOOP:
 	for k, v := range filteredHeights {
 		tmpHeight := tmpHeights[k]
 		if tmpHeight == nil || !bytes.Equal(tmpHeight, v) {
@@ -522,7 +530,7 @@ func (idx *BlockerIndexer) match(
 
 			select {
 			case <-ctx.Done():
-				break
+				break FOR_LOOP
 
 			default:
 			}

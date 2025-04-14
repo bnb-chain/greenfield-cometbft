@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	state "github.com/cometbft/cometbft/state"
+	mock "github.com/stretchr/testify/mock"
 
 	tendermintstate "github.com/cometbft/cometbft/proto/tendermint/state"
 
@@ -17,9 +16,21 @@ type Store struct {
 	mock.Mock
 }
 
+type Store_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *Store) EXPECT() *Store_Expecter {
+	return &Store_Expecter{mock: &_m.Mock}
+}
+
 // Bootstrap provides a mock function with given fields: _a0
 func (_m *Store) Bootstrap(_a0 state.State) error {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Bootstrap")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(state.State) error); ok {
@@ -31,9 +42,41 @@ func (_m *Store) Bootstrap(_a0 state.State) error {
 	return r0
 }
 
-// Close provides a mock function with given fields:
+// Store_Bootstrap_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Bootstrap'
+type Store_Bootstrap_Call struct {
+	*mock.Call
+}
+
+// Bootstrap is a helper method to define mock.On call
+//   - _a0 state.State
+func (_e *Store_Expecter) Bootstrap(_a0 interface{}) *Store_Bootstrap_Call {
+	return &Store_Bootstrap_Call{Call: _e.mock.On("Bootstrap", _a0)}
+}
+
+func (_c *Store_Bootstrap_Call) Run(run func(_a0 state.State)) *Store_Bootstrap_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(state.State))
+	})
+	return _c
+}
+
+func (_c *Store_Bootstrap_Call) Return(_a0 error) *Store_Bootstrap_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Store_Bootstrap_Call) RunAndReturn(run func(state.State) error) *Store_Bootstrap_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Close provides a mock function with no fields
 func (_m *Store) Close() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Close")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -45,18 +88,52 @@ func (_m *Store) Close() error {
 	return r0
 }
 
-// Load provides a mock function with given fields:
+// Store_Close_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Close'
+type Store_Close_Call struct {
+	*mock.Call
+}
+
+// Close is a helper method to define mock.On call
+func (_e *Store_Expecter) Close() *Store_Close_Call {
+	return &Store_Close_Call{Call: _e.mock.On("Close")}
+}
+
+func (_c *Store_Close_Call) Run(run func()) *Store_Close_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Store_Close_Call) Return(_a0 error) *Store_Close_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Store_Close_Call) RunAndReturn(run func() error) *Store_Close_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Load provides a mock function with no fields
 func (_m *Store) Load() (state.State, error) {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for Load")
+	}
+
 	var r0 state.State
+	var r1 error
+	if rf, ok := ret.Get(0).(func() (state.State, error)); ok {
+		return rf()
+	}
 	if rf, ok := ret.Get(0).(func() state.State); ok {
 		r0 = rf()
 	} else {
 		r0 = ret.Get(0).(state.State)
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func() error); ok {
 		r1 = rf()
 	} else {
@@ -66,11 +143,46 @@ func (_m *Store) Load() (state.State, error) {
 	return r0, r1
 }
 
+// Store_Load_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Load'
+type Store_Load_Call struct {
+	*mock.Call
+}
+
+// Load is a helper method to define mock.On call
+func (_e *Store_Expecter) Load() *Store_Load_Call {
+	return &Store_Load_Call{Call: _e.mock.On("Load")}
+}
+
+func (_c *Store_Load_Call) Run(run func()) *Store_Load_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Store_Load_Call) Return(_a0 state.State, _a1 error) *Store_Load_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Store_Load_Call) RunAndReturn(run func() (state.State, error)) *Store_Load_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // LoadABCIResponses provides a mock function with given fields: _a0
 func (_m *Store) LoadABCIResponses(_a0 int64) (*tendermintstate.ABCIResponses, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for LoadABCIResponses")
+	}
+
 	var r0 *tendermintstate.ABCIResponses
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64) (*tendermintstate.ABCIResponses, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(int64) *tendermintstate.ABCIResponses); ok {
 		r0 = rf(_a0)
 	} else {
@@ -79,7 +191,6 @@ func (_m *Store) LoadABCIResponses(_a0 int64) (*tendermintstate.ABCIResponses, e
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(int64) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -89,58 +200,53 @@ func (_m *Store) LoadABCIResponses(_a0 int64) (*tendermintstate.ABCIResponses, e
 	return r0, r1
 }
 
-func (_m *Store) LoadLastHeightValidatorsChanged(_a0 int64) (int64, error) {
-	ret := _m.Called(_a0)
-
-	var r0 int64
-	if rf, ok := ret.Get(0).(func(int64) int64); ok {
-		r0 = rf(_a0)
-	} else {
-		r0 = ret.Get(0).(int64)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int64) error); ok {
-		r1 = rf(_a0)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+// Store_LoadABCIResponses_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadABCIResponses'
+type Store_LoadABCIResponses_Call struct {
+	*mock.Call
 }
 
-func (_m *Store) LoadLastHeightConsensusParamsChanged(_a0 int64) (int64, error) {
-	ret := _m.Called(_a0)
+// LoadABCIResponses is a helper method to define mock.On call
+//   - _a0 int64
+func (_e *Store_Expecter) LoadABCIResponses(_a0 interface{}) *Store_LoadABCIResponses_Call {
+	return &Store_LoadABCIResponses_Call{Call: _e.mock.On("LoadABCIResponses", _a0)}
+}
 
-	var r0 int64
-	if rf, ok := ret.Get(0).(func(int64) int64); ok {
-		r0 = rf(_a0)
-	} else {
-		r0 = ret.Get(0).(int64)
-	}
+func (_c *Store_LoadABCIResponses_Call) Run(run func(_a0 int64)) *Store_LoadABCIResponses_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64))
+	})
+	return _c
+}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int64) error); ok {
-		r1 = rf(_a0)
-	} else {
-		r1 = ret.Error(1)
-	}
+func (_c *Store_LoadABCIResponses_Call) Return(_a0 *tendermintstate.ABCIResponses, _a1 error) *Store_LoadABCIResponses_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
 
-	return r0, r1
+func (_c *Store_LoadABCIResponses_Call) RunAndReturn(run func(int64) (*tendermintstate.ABCIResponses, error)) *Store_LoadABCIResponses_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // LoadConsensusParams provides a mock function with given fields: _a0
 func (_m *Store) LoadConsensusParams(_a0 int64) (types.ConsensusParams, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for LoadConsensusParams")
+	}
+
 	var r0 types.ConsensusParams
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64) (types.ConsensusParams, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(int64) types.ConsensusParams); ok {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Get(0).(types.ConsensusParams)
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(int64) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -150,18 +256,53 @@ func (_m *Store) LoadConsensusParams(_a0 int64) (types.ConsensusParams, error) {
 	return r0, r1
 }
 
+// Store_LoadConsensusParams_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadConsensusParams'
+type Store_LoadConsensusParams_Call struct {
+	*mock.Call
+}
+
+// LoadConsensusParams is a helper method to define mock.On call
+//   - _a0 int64
+func (_e *Store_Expecter) LoadConsensusParams(_a0 interface{}) *Store_LoadConsensusParams_Call {
+	return &Store_LoadConsensusParams_Call{Call: _e.mock.On("LoadConsensusParams", _a0)}
+}
+
+func (_c *Store_LoadConsensusParams_Call) Run(run func(_a0 int64)) *Store_LoadConsensusParams_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64))
+	})
+	return _c
+}
+
+func (_c *Store_LoadConsensusParams_Call) Return(_a0 types.ConsensusParams, _a1 error) *Store_LoadConsensusParams_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Store_LoadConsensusParams_Call) RunAndReturn(run func(int64) (types.ConsensusParams, error)) *Store_LoadConsensusParams_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // LoadFromDBOrGenesisDoc provides a mock function with given fields: _a0
 func (_m *Store) LoadFromDBOrGenesisDoc(_a0 *types.GenesisDoc) (state.State, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for LoadFromDBOrGenesisDoc")
+	}
+
 	var r0 state.State
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*types.GenesisDoc) (state.State, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(*types.GenesisDoc) state.State); ok {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Get(0).(state.State)
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(*types.GenesisDoc) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -171,18 +312,53 @@ func (_m *Store) LoadFromDBOrGenesisDoc(_a0 *types.GenesisDoc) (state.State, err
 	return r0, r1
 }
 
+// Store_LoadFromDBOrGenesisDoc_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadFromDBOrGenesisDoc'
+type Store_LoadFromDBOrGenesisDoc_Call struct {
+	*mock.Call
+}
+
+// LoadFromDBOrGenesisDoc is a helper method to define mock.On call
+//   - _a0 *types.GenesisDoc
+func (_e *Store_Expecter) LoadFromDBOrGenesisDoc(_a0 interface{}) *Store_LoadFromDBOrGenesisDoc_Call {
+	return &Store_LoadFromDBOrGenesisDoc_Call{Call: _e.mock.On("LoadFromDBOrGenesisDoc", _a0)}
+}
+
+func (_c *Store_LoadFromDBOrGenesisDoc_Call) Run(run func(_a0 *types.GenesisDoc)) *Store_LoadFromDBOrGenesisDoc_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(*types.GenesisDoc))
+	})
+	return _c
+}
+
+func (_c *Store_LoadFromDBOrGenesisDoc_Call) Return(_a0 state.State, _a1 error) *Store_LoadFromDBOrGenesisDoc_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Store_LoadFromDBOrGenesisDoc_Call) RunAndReturn(run func(*types.GenesisDoc) (state.State, error)) *Store_LoadFromDBOrGenesisDoc_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // LoadFromDBOrGenesisFile provides a mock function with given fields: _a0
 func (_m *Store) LoadFromDBOrGenesisFile(_a0 string) (state.State, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for LoadFromDBOrGenesisFile")
+	}
+
 	var r0 state.State
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (state.State, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(string) state.State); ok {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Get(0).(state.State)
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -192,11 +368,47 @@ func (_m *Store) LoadFromDBOrGenesisFile(_a0 string) (state.State, error) {
 	return r0, r1
 }
 
+// Store_LoadFromDBOrGenesisFile_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadFromDBOrGenesisFile'
+type Store_LoadFromDBOrGenesisFile_Call struct {
+	*mock.Call
+}
+
+// LoadFromDBOrGenesisFile is a helper method to define mock.On call
+//   - _a0 string
+func (_e *Store_Expecter) LoadFromDBOrGenesisFile(_a0 interface{}) *Store_LoadFromDBOrGenesisFile_Call {
+	return &Store_LoadFromDBOrGenesisFile_Call{Call: _e.mock.On("LoadFromDBOrGenesisFile", _a0)}
+}
+
+func (_c *Store_LoadFromDBOrGenesisFile_Call) Run(run func(_a0 string)) *Store_LoadFromDBOrGenesisFile_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *Store_LoadFromDBOrGenesisFile_Call) Return(_a0 state.State, _a1 error) *Store_LoadFromDBOrGenesisFile_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Store_LoadFromDBOrGenesisFile_Call) RunAndReturn(run func(string) (state.State, error)) *Store_LoadFromDBOrGenesisFile_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // LoadLastABCIResponse provides a mock function with given fields: _a0
 func (_m *Store) LoadLastABCIResponse(_a0 int64) (*tendermintstate.ABCIResponses, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for LoadLastABCIResponse")
+	}
+
 	var r0 *tendermintstate.ABCIResponses
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64) (*tendermintstate.ABCIResponses, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(int64) *tendermintstate.ABCIResponses); ok {
 		r0 = rf(_a0)
 	} else {
@@ -205,7 +417,6 @@ func (_m *Store) LoadLastABCIResponse(_a0 int64) (*tendermintstate.ABCIResponses
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(int64) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -215,11 +426,159 @@ func (_m *Store) LoadLastABCIResponse(_a0 int64) (*tendermintstate.ABCIResponses
 	return r0, r1
 }
 
+// Store_LoadLastABCIResponse_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadLastABCIResponse'
+type Store_LoadLastABCIResponse_Call struct {
+	*mock.Call
+}
+
+// LoadLastABCIResponse is a helper method to define mock.On call
+//   - _a0 int64
+func (_e *Store_Expecter) LoadLastABCIResponse(_a0 interface{}) *Store_LoadLastABCIResponse_Call {
+	return &Store_LoadLastABCIResponse_Call{Call: _e.mock.On("LoadLastABCIResponse", _a0)}
+}
+
+func (_c *Store_LoadLastABCIResponse_Call) Run(run func(_a0 int64)) *Store_LoadLastABCIResponse_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64))
+	})
+	return _c
+}
+
+func (_c *Store_LoadLastABCIResponse_Call) Return(_a0 *tendermintstate.ABCIResponses, _a1 error) *Store_LoadLastABCIResponse_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Store_LoadLastABCIResponse_Call) RunAndReturn(run func(int64) (*tendermintstate.ABCIResponses, error)) *Store_LoadLastABCIResponse_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// LoadLastHeightConsensusParamsChanged provides a mock function with given fields: height
+func (_m *Store) LoadLastHeightConsensusParamsChanged(height int64) (int64, error) {
+	ret := _m.Called(height)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LoadLastHeightConsensusParamsChanged")
+	}
+
+	var r0 int64
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64) (int64, error)); ok {
+		return rf(height)
+	}
+	if rf, ok := ret.Get(0).(func(int64) int64); ok {
+		r0 = rf(height)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(height)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Store_LoadLastHeightConsensusParamsChanged_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadLastHeightConsensusParamsChanged'
+type Store_LoadLastHeightConsensusParamsChanged_Call struct {
+	*mock.Call
+}
+
+// LoadLastHeightConsensusParamsChanged is a helper method to define mock.On call
+//   - height int64
+func (_e *Store_Expecter) LoadLastHeightConsensusParamsChanged(height interface{}) *Store_LoadLastHeightConsensusParamsChanged_Call {
+	return &Store_LoadLastHeightConsensusParamsChanged_Call{Call: _e.mock.On("LoadLastHeightConsensusParamsChanged", height)}
+}
+
+func (_c *Store_LoadLastHeightConsensusParamsChanged_Call) Run(run func(height int64)) *Store_LoadLastHeightConsensusParamsChanged_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64))
+	})
+	return _c
+}
+
+func (_c *Store_LoadLastHeightConsensusParamsChanged_Call) Return(_a0 int64, _a1 error) *Store_LoadLastHeightConsensusParamsChanged_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Store_LoadLastHeightConsensusParamsChanged_Call) RunAndReturn(run func(int64) (int64, error)) *Store_LoadLastHeightConsensusParamsChanged_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// LoadLastHeightValidatorsChanged provides a mock function with given fields: height
+func (_m *Store) LoadLastHeightValidatorsChanged(height int64) (int64, error) {
+	ret := _m.Called(height)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LoadLastHeightValidatorsChanged")
+	}
+
+	var r0 int64
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64) (int64, error)); ok {
+		return rf(height)
+	}
+	if rf, ok := ret.Get(0).(func(int64) int64); ok {
+		r0 = rf(height)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(height)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Store_LoadLastHeightValidatorsChanged_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadLastHeightValidatorsChanged'
+type Store_LoadLastHeightValidatorsChanged_Call struct {
+	*mock.Call
+}
+
+// LoadLastHeightValidatorsChanged is a helper method to define mock.On call
+//   - height int64
+func (_e *Store_Expecter) LoadLastHeightValidatorsChanged(height interface{}) *Store_LoadLastHeightValidatorsChanged_Call {
+	return &Store_LoadLastHeightValidatorsChanged_Call{Call: _e.mock.On("LoadLastHeightValidatorsChanged", height)}
+}
+
+func (_c *Store_LoadLastHeightValidatorsChanged_Call) Run(run func(height int64)) *Store_LoadLastHeightValidatorsChanged_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64))
+	})
+	return _c
+}
+
+func (_c *Store_LoadLastHeightValidatorsChanged_Call) Return(_a0 int64, _a1 error) *Store_LoadLastHeightValidatorsChanged_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Store_LoadLastHeightValidatorsChanged_Call) RunAndReturn(run func(int64) (int64, error)) *Store_LoadLastHeightValidatorsChanged_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // LoadValidators provides a mock function with given fields: _a0
 func (_m *Store) LoadValidators(_a0 int64) (*types.ValidatorSet, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for LoadValidators")
+	}
+
 	var r0 *types.ValidatorSet
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64) (*types.ValidatorSet, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(int64) *types.ValidatorSet); ok {
 		r0 = rf(_a0)
 	} else {
@@ -228,7 +587,6 @@ func (_m *Store) LoadValidators(_a0 int64) (*types.ValidatorSet, error) {
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(int64) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -238,9 +596,41 @@ func (_m *Store) LoadValidators(_a0 int64) (*types.ValidatorSet, error) {
 	return r0, r1
 }
 
+// Store_LoadValidators_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadValidators'
+type Store_LoadValidators_Call struct {
+	*mock.Call
+}
+
+// LoadValidators is a helper method to define mock.On call
+//   - _a0 int64
+func (_e *Store_Expecter) LoadValidators(_a0 interface{}) *Store_LoadValidators_Call {
+	return &Store_LoadValidators_Call{Call: _e.mock.On("LoadValidators", _a0)}
+}
+
+func (_c *Store_LoadValidators_Call) Run(run func(_a0 int64)) *Store_LoadValidators_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64))
+	})
+	return _c
+}
+
+func (_c *Store_LoadValidators_Call) Return(_a0 *types.ValidatorSet, _a1 error) *Store_LoadValidators_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Store_LoadValidators_Call) RunAndReturn(run func(int64) (*types.ValidatorSet, error)) *Store_LoadValidators_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // PruneStates provides a mock function with given fields: _a0, _a1
 func (_m *Store) PruneStates(_a0 int64, _a1 int64) error {
 	ret := _m.Called(_a0, _a1)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PruneStates")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(int64, int64) error); ok {
@@ -252,9 +642,42 @@ func (_m *Store) PruneStates(_a0 int64, _a1 int64) error {
 	return r0
 }
 
+// Store_PruneStates_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PruneStates'
+type Store_PruneStates_Call struct {
+	*mock.Call
+}
+
+// PruneStates is a helper method to define mock.On call
+//   - _a0 int64
+//   - _a1 int64
+func (_e *Store_Expecter) PruneStates(_a0 interface{}, _a1 interface{}) *Store_PruneStates_Call {
+	return &Store_PruneStates_Call{Call: _e.mock.On("PruneStates", _a0, _a1)}
+}
+
+func (_c *Store_PruneStates_Call) Run(run func(_a0 int64, _a1 int64)) *Store_PruneStates_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64), args[1].(int64))
+	})
+	return _c
+}
+
+func (_c *Store_PruneStates_Call) Return(_a0 error) *Store_PruneStates_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Store_PruneStates_Call) RunAndReturn(run func(int64, int64) error) *Store_PruneStates_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Save provides a mock function with given fields: _a0
 func (_m *Store) Save(_a0 state.State) error {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Save")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(state.State) error); ok {
@@ -266,9 +689,41 @@ func (_m *Store) Save(_a0 state.State) error {
 	return r0
 }
 
+// Store_Save_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Save'
+type Store_Save_Call struct {
+	*mock.Call
+}
+
+// Save is a helper method to define mock.On call
+//   - _a0 state.State
+func (_e *Store_Expecter) Save(_a0 interface{}) *Store_Save_Call {
+	return &Store_Save_Call{Call: _e.mock.On("Save", _a0)}
+}
+
+func (_c *Store_Save_Call) Run(run func(_a0 state.State)) *Store_Save_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(state.State))
+	})
+	return _c
+}
+
+func (_c *Store_Save_Call) Return(_a0 error) *Store_Save_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Store_Save_Call) RunAndReturn(run func(state.State) error) *Store_Save_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // SaveABCIResponses provides a mock function with given fields: _a0, _a1
 func (_m *Store) SaveABCIResponses(_a0 int64, _a1 *tendermintstate.ABCIResponses) error {
 	ret := _m.Called(_a0, _a1)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SaveABCIResponses")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(int64, *tendermintstate.ABCIResponses) error); ok {
@@ -280,13 +735,41 @@ func (_m *Store) SaveABCIResponses(_a0 int64, _a1 *tendermintstate.ABCIResponses
 	return r0
 }
 
-type mockConstructorTestingTNewStore interface {
-	mock.TestingT
-	Cleanup(func())
+// Store_SaveABCIResponses_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveABCIResponses'
+type Store_SaveABCIResponses_Call struct {
+	*mock.Call
+}
+
+// SaveABCIResponses is a helper method to define mock.On call
+//   - _a0 int64
+//   - _a1 *tendermintstate.ABCIResponses
+func (_e *Store_Expecter) SaveABCIResponses(_a0 interface{}, _a1 interface{}) *Store_SaveABCIResponses_Call {
+	return &Store_SaveABCIResponses_Call{Call: _e.mock.On("SaveABCIResponses", _a0, _a1)}
+}
+
+func (_c *Store_SaveABCIResponses_Call) Run(run func(_a0 int64, _a1 *tendermintstate.ABCIResponses)) *Store_SaveABCIResponses_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64), args[1].(*tendermintstate.ABCIResponses))
+	})
+	return _c
+}
+
+func (_c *Store_SaveABCIResponses_Call) Return(_a0 error) *Store_SaveABCIResponses_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Store_SaveABCIResponses_Call) RunAndReturn(run func(int64, *tendermintstate.ABCIResponses) error) *Store_SaveABCIResponses_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewStore creates a new instance of Store. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewStore(t mockConstructorTestingTNewStore) *Store {
+// The first argument is typically a *testing.T value.
+func NewStore(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *Store {
 	mock := &Store{}
 	mock.Mock.Test(t)
 

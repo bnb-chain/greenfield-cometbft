@@ -17,18 +17,33 @@ type BlockIndexer struct {
 	mock.Mock
 }
 
+type BlockIndexer_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *BlockIndexer) EXPECT() *BlockIndexer_Expecter {
+	return &BlockIndexer_Expecter{mock: &_m.Mock}
+}
+
 // Has provides a mock function with given fields: height
 func (_m *BlockIndexer) Has(height int64) (bool, error) {
 	ret := _m.Called(height)
 
+	if len(ret) == 0 {
+		panic("no return value specified for Has")
+	}
+
 	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64) (bool, error)); ok {
+		return rf(height)
+	}
 	if rf, ok := ret.Get(0).(func(int64) bool); ok {
 		r0 = rf(height)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(int64) error); ok {
 		r1 = rf(height)
 	} else {
@@ -38,9 +53,41 @@ func (_m *BlockIndexer) Has(height int64) (bool, error) {
 	return r0, r1
 }
 
+// BlockIndexer_Has_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Has'
+type BlockIndexer_Has_Call struct {
+	*mock.Call
+}
+
+// Has is a helper method to define mock.On call
+//   - height int64
+func (_e *BlockIndexer_Expecter) Has(height interface{}) *BlockIndexer_Has_Call {
+	return &BlockIndexer_Has_Call{Call: _e.mock.On("Has", height)}
+}
+
+func (_c *BlockIndexer_Has_Call) Run(run func(height int64)) *BlockIndexer_Has_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64))
+	})
+	return _c
+}
+
+func (_c *BlockIndexer_Has_Call) Return(_a0 bool, _a1 error) *BlockIndexer_Has_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *BlockIndexer_Has_Call) RunAndReturn(run func(int64) (bool, error)) *BlockIndexer_Has_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Index provides a mock function with given fields: _a0
 func (_m *BlockIndexer) Index(_a0 types.EventDataNewBlockHeader) error {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Index")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(types.EventDataNewBlockHeader) error); ok {
@@ -52,11 +99,47 @@ func (_m *BlockIndexer) Index(_a0 types.EventDataNewBlockHeader) error {
 	return r0
 }
 
+// BlockIndexer_Index_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Index'
+type BlockIndexer_Index_Call struct {
+	*mock.Call
+}
+
+// Index is a helper method to define mock.On call
+//   - _a0 types.EventDataNewBlockHeader
+func (_e *BlockIndexer_Expecter) Index(_a0 interface{}) *BlockIndexer_Index_Call {
+	return &BlockIndexer_Index_Call{Call: _e.mock.On("Index", _a0)}
+}
+
+func (_c *BlockIndexer_Index_Call) Run(run func(_a0 types.EventDataNewBlockHeader)) *BlockIndexer_Index_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.EventDataNewBlockHeader))
+	})
+	return _c
+}
+
+func (_c *BlockIndexer_Index_Call) Return(_a0 error) *BlockIndexer_Index_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *BlockIndexer_Index_Call) RunAndReturn(run func(types.EventDataNewBlockHeader) error) *BlockIndexer_Index_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Search provides a mock function with given fields: ctx, q
 func (_m *BlockIndexer) Search(ctx context.Context, q *query.Query) ([]int64, error) {
 	ret := _m.Called(ctx, q)
 
+	if len(ret) == 0 {
+		panic("no return value specified for Search")
+	}
+
 	var r0 []int64
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *query.Query) ([]int64, error)); ok {
+		return rf(ctx, q)
+	}
 	if rf, ok := ret.Get(0).(func(context.Context, *query.Query) []int64); ok {
 		r0 = rf(ctx, q)
 	} else {
@@ -65,7 +148,6 @@ func (_m *BlockIndexer) Search(ctx context.Context, q *query.Query) ([]int64, er
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, *query.Query) error); ok {
 		r1 = rf(ctx, q)
 	} else {
@@ -75,13 +157,41 @@ func (_m *BlockIndexer) Search(ctx context.Context, q *query.Query) ([]int64, er
 	return r0, r1
 }
 
-type mockConstructorTestingTNewBlockIndexer interface {
-	mock.TestingT
-	Cleanup(func())
+// BlockIndexer_Search_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Search'
+type BlockIndexer_Search_Call struct {
+	*mock.Call
+}
+
+// Search is a helper method to define mock.On call
+//   - ctx context.Context
+//   - q *query.Query
+func (_e *BlockIndexer_Expecter) Search(ctx interface{}, q interface{}) *BlockIndexer_Search_Call {
+	return &BlockIndexer_Search_Call{Call: _e.mock.On("Search", ctx, q)}
+}
+
+func (_c *BlockIndexer_Search_Call) Run(run func(ctx context.Context, q *query.Query)) *BlockIndexer_Search_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*query.Query))
+	})
+	return _c
+}
+
+func (_c *BlockIndexer_Search_Call) Return(_a0 []int64, _a1 error) *BlockIndexer_Search_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *BlockIndexer_Search_Call) RunAndReturn(run func(context.Context, *query.Query) ([]int64, error)) *BlockIndexer_Search_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewBlockIndexer creates a new instance of BlockIndexer. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewBlockIndexer(t mockConstructorTestingTNewBlockIndexer) *BlockIndexer {
+// The first argument is typically a *testing.T value.
+func NewBlockIndexer(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *BlockIndexer {
 	mock := &BlockIndexer{}
 	mock.Mock.Test(t)
 

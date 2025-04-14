@@ -1,9 +1,16 @@
 # We need to build in a Linux environment to support C libraries, e.g. RocksDB.
 # We use Debian instead of Alpine, so that we can use binary database packages
 # instead of spending time compiling them.
-FROM golang:1.20-bullseye
+FROM cometbft/cometbft-db-testing:v0.9.5
 
-RUN apt-get -qq update -y && apt-get -qq upgrade -y >/dev/null
+# Install Go 1.23
+RUN apt-get update && apt-get install -y wget
+RUN wget https://go.dev/dl/go1.23.8.linux-amd64.tar.gz && \
+    rm -rf /usr/local/go && \
+    tar -C /usr/local -xzf go1.23.8.linux-amd64.tar.gz && \
+    rm go1.23.8.linux-amd64.tar.gz
+ENV PATH="/usr/local/go/bin:${PATH}"
+
 RUN apt-get -qq install -y libleveldb-dev librocksdb-dev zlib1g-dev libsnappy-dev liblz4-dev libzstd-dev >/dev/null
 
 # Set up build directory /src/cometbft

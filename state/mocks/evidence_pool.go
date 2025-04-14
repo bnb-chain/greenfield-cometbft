@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	state "github.com/cometbft/cometbft/state"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/cometbft/cometbft/types"
 )
@@ -15,9 +14,21 @@ type EvidencePool struct {
 	mock.Mock
 }
 
+type EvidencePool_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *EvidencePool) EXPECT() *EvidencePool_Expecter {
+	return &EvidencePool_Expecter{mock: &_m.Mock}
+}
+
 // AddEvidence provides a mock function with given fields: _a0
 func (_m *EvidencePool) AddEvidence(_a0 types.Evidence) error {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AddEvidence")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(types.Evidence) error); ok {
@@ -29,9 +40,41 @@ func (_m *EvidencePool) AddEvidence(_a0 types.Evidence) error {
 	return r0
 }
 
+// EvidencePool_AddEvidence_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddEvidence'
+type EvidencePool_AddEvidence_Call struct {
+	*mock.Call
+}
+
+// AddEvidence is a helper method to define mock.On call
+//   - _a0 types.Evidence
+func (_e *EvidencePool_Expecter) AddEvidence(_a0 interface{}) *EvidencePool_AddEvidence_Call {
+	return &EvidencePool_AddEvidence_Call{Call: _e.mock.On("AddEvidence", _a0)}
+}
+
+func (_c *EvidencePool_AddEvidence_Call) Run(run func(_a0 types.Evidence)) *EvidencePool_AddEvidence_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Evidence))
+	})
+	return _c
+}
+
+func (_c *EvidencePool_AddEvidence_Call) Return(_a0 error) *EvidencePool_AddEvidence_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *EvidencePool_AddEvidence_Call) RunAndReturn(run func(types.Evidence) error) *EvidencePool_AddEvidence_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CheckEvidence provides a mock function with given fields: _a0
 func (_m *EvidencePool) CheckEvidence(_a0 types.EvidenceList) error {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckEvidence")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(types.EvidenceList) error); ok {
@@ -43,11 +86,47 @@ func (_m *EvidencePool) CheckEvidence(_a0 types.EvidenceList) error {
 	return r0
 }
 
+// EvidencePool_CheckEvidence_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CheckEvidence'
+type EvidencePool_CheckEvidence_Call struct {
+	*mock.Call
+}
+
+// CheckEvidence is a helper method to define mock.On call
+//   - _a0 types.EvidenceList
+func (_e *EvidencePool_Expecter) CheckEvidence(_a0 interface{}) *EvidencePool_CheckEvidence_Call {
+	return &EvidencePool_CheckEvidence_Call{Call: _e.mock.On("CheckEvidence", _a0)}
+}
+
+func (_c *EvidencePool_CheckEvidence_Call) Run(run func(_a0 types.EvidenceList)) *EvidencePool_CheckEvidence_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.EvidenceList))
+	})
+	return _c
+}
+
+func (_c *EvidencePool_CheckEvidence_Call) Return(_a0 error) *EvidencePool_CheckEvidence_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *EvidencePool_CheckEvidence_Call) RunAndReturn(run func(types.EvidenceList) error) *EvidencePool_CheckEvidence_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // PendingEvidence provides a mock function with given fields: maxBytes
 func (_m *EvidencePool) PendingEvidence(maxBytes int64) ([]types.Evidence, int64) {
 	ret := _m.Called(maxBytes)
 
+	if len(ret) == 0 {
+		panic("no return value specified for PendingEvidence")
+	}
+
 	var r0 []types.Evidence
+	var r1 int64
+	if rf, ok := ret.Get(0).(func(int64) ([]types.Evidence, int64)); ok {
+		return rf(maxBytes)
+	}
 	if rf, ok := ret.Get(0).(func(int64) []types.Evidence); ok {
 		r0 = rf(maxBytes)
 	} else {
@@ -56,7 +135,6 @@ func (_m *EvidencePool) PendingEvidence(maxBytes int64) ([]types.Evidence, int64
 		}
 	}
 
-	var r1 int64
 	if rf, ok := ret.Get(1).(func(int64) int64); ok {
 		r1 = rf(maxBytes)
 	} else {
@@ -66,18 +144,74 @@ func (_m *EvidencePool) PendingEvidence(maxBytes int64) ([]types.Evidence, int64
 	return r0, r1
 }
 
+// EvidencePool_PendingEvidence_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PendingEvidence'
+type EvidencePool_PendingEvidence_Call struct {
+	*mock.Call
+}
+
+// PendingEvidence is a helper method to define mock.On call
+//   - maxBytes int64
+func (_e *EvidencePool_Expecter) PendingEvidence(maxBytes interface{}) *EvidencePool_PendingEvidence_Call {
+	return &EvidencePool_PendingEvidence_Call{Call: _e.mock.On("PendingEvidence", maxBytes)}
+}
+
+func (_c *EvidencePool_PendingEvidence_Call) Run(run func(maxBytes int64)) *EvidencePool_PendingEvidence_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64))
+	})
+	return _c
+}
+
+func (_c *EvidencePool_PendingEvidence_Call) Return(ev []types.Evidence, size int64) *EvidencePool_PendingEvidence_Call {
+	_c.Call.Return(ev, size)
+	return _c
+}
+
+func (_c *EvidencePool_PendingEvidence_Call) RunAndReturn(run func(int64) ([]types.Evidence, int64)) *EvidencePool_PendingEvidence_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Update provides a mock function with given fields: _a0, _a1
 func (_m *EvidencePool) Update(_a0 state.State, _a1 types.EvidenceList) {
 	_m.Called(_a0, _a1)
 }
 
-type mockConstructorTestingTNewEvidencePool interface {
-	mock.TestingT
-	Cleanup(func())
+// EvidencePool_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type EvidencePool_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//   - _a0 state.State
+//   - _a1 types.EvidenceList
+func (_e *EvidencePool_Expecter) Update(_a0 interface{}, _a1 interface{}) *EvidencePool_Update_Call {
+	return &EvidencePool_Update_Call{Call: _e.mock.On("Update", _a0, _a1)}
+}
+
+func (_c *EvidencePool_Update_Call) Run(run func(_a0 state.State, _a1 types.EvidenceList)) *EvidencePool_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(state.State), args[1].(types.EvidenceList))
+	})
+	return _c
+}
+
+func (_c *EvidencePool_Update_Call) Return() *EvidencePool_Update_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *EvidencePool_Update_Call) RunAndReturn(run func(state.State, types.EvidenceList)) *EvidencePool_Update_Call {
+	_c.Run(run)
+	return _c
 }
 
 // NewEvidencePool creates a new instance of EvidencePool. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewEvidencePool(t mockConstructorTestingTNewEvidencePool) *EvidencePool {
+// The first argument is typically a *testing.T value.
+func NewEvidencePool(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *EvidencePool {
 	mock := &EvidencePool{}
 	mock.Mock.Test(t)
 

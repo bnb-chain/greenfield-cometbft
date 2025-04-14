@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	abcicli "github.com/cometbft/cometbft/abci/client"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/cometbft/cometbft/abci/types"
 )
@@ -15,11 +14,27 @@ type AppConnConsensus struct {
 	mock.Mock
 }
 
+type AppConnConsensus_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *AppConnConsensus) EXPECT() *AppConnConsensus_Expecter {
+	return &AppConnConsensus_Expecter{mock: &_m.Mock}
+}
+
 // BeginBlockSync provides a mock function with given fields: _a0
 func (_m *AppConnConsensus) BeginBlockSync(_a0 types.RequestBeginBlock) (*types.ResponseBeginBlock, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for BeginBlockSync")
+	}
+
 	var r0 *types.ResponseBeginBlock
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestBeginBlock) (*types.ResponseBeginBlock, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestBeginBlock) *types.ResponseBeginBlock); ok {
 		r0 = rf(_a0)
 	} else {
@@ -28,7 +43,6 @@ func (_m *AppConnConsensus) BeginBlockSync(_a0 types.RequestBeginBlock) (*types.
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestBeginBlock) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -38,11 +52,47 @@ func (_m *AppConnConsensus) BeginBlockSync(_a0 types.RequestBeginBlock) (*types.
 	return r0, r1
 }
 
-// CommitSync provides a mock function with given fields:
+// AppConnConsensus_BeginBlockSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'BeginBlockSync'
+type AppConnConsensus_BeginBlockSync_Call struct {
+	*mock.Call
+}
+
+// BeginBlockSync is a helper method to define mock.On call
+//   - _a0 types.RequestBeginBlock
+func (_e *AppConnConsensus_Expecter) BeginBlockSync(_a0 interface{}) *AppConnConsensus_BeginBlockSync_Call {
+	return &AppConnConsensus_BeginBlockSync_Call{Call: _e.mock.On("BeginBlockSync", _a0)}
+}
+
+func (_c *AppConnConsensus_BeginBlockSync_Call) Run(run func(_a0 types.RequestBeginBlock)) *AppConnConsensus_BeginBlockSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestBeginBlock))
+	})
+	return _c
+}
+
+func (_c *AppConnConsensus_BeginBlockSync_Call) Return(_a0 *types.ResponseBeginBlock, _a1 error) *AppConnConsensus_BeginBlockSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnConsensus_BeginBlockSync_Call) RunAndReturn(run func(types.RequestBeginBlock) (*types.ResponseBeginBlock, error)) *AppConnConsensus_BeginBlockSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CommitSync provides a mock function with no fields
 func (_m *AppConnConsensus) CommitSync() (*types.ResponseCommit, error) {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for CommitSync")
+	}
+
 	var r0 *types.ResponseCommit
+	var r1 error
+	if rf, ok := ret.Get(0).(func() (*types.ResponseCommit, error)); ok {
+		return rf()
+	}
 	if rf, ok := ret.Get(0).(func() *types.ResponseCommit); ok {
 		r0 = rf()
 	} else {
@@ -51,7 +101,6 @@ func (_m *AppConnConsensus) CommitSync() (*types.ResponseCommit, error) {
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func() error); ok {
 		r1 = rf()
 	} else {
@@ -61,9 +110,40 @@ func (_m *AppConnConsensus) CommitSync() (*types.ResponseCommit, error) {
 	return r0, r1
 }
 
+// AppConnConsensus_CommitSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CommitSync'
+type AppConnConsensus_CommitSync_Call struct {
+	*mock.Call
+}
+
+// CommitSync is a helper method to define mock.On call
+func (_e *AppConnConsensus_Expecter) CommitSync() *AppConnConsensus_CommitSync_Call {
+	return &AppConnConsensus_CommitSync_Call{Call: _e.mock.On("CommitSync")}
+}
+
+func (_c *AppConnConsensus_CommitSync_Call) Run(run func()) *AppConnConsensus_CommitSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *AppConnConsensus_CommitSync_Call) Return(_a0 *types.ResponseCommit, _a1 error) *AppConnConsensus_CommitSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnConsensus_CommitSync_Call) RunAndReturn(run func() (*types.ResponseCommit, error)) *AppConnConsensus_CommitSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeliverTxAsync provides a mock function with given fields: _a0
 func (_m *AppConnConsensus) DeliverTxAsync(_a0 types.RequestDeliverTx) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeliverTxAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestDeliverTx) *abcicli.ReqRes); ok {
@@ -77,11 +157,47 @@ func (_m *AppConnConsensus) DeliverTxAsync(_a0 types.RequestDeliverTx) *abcicli.
 	return r0
 }
 
+// AppConnConsensus_DeliverTxAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeliverTxAsync'
+type AppConnConsensus_DeliverTxAsync_Call struct {
+	*mock.Call
+}
+
+// DeliverTxAsync is a helper method to define mock.On call
+//   - _a0 types.RequestDeliverTx
+func (_e *AppConnConsensus_Expecter) DeliverTxAsync(_a0 interface{}) *AppConnConsensus_DeliverTxAsync_Call {
+	return &AppConnConsensus_DeliverTxAsync_Call{Call: _e.mock.On("DeliverTxAsync", _a0)}
+}
+
+func (_c *AppConnConsensus_DeliverTxAsync_Call) Run(run func(_a0 types.RequestDeliverTx)) *AppConnConsensus_DeliverTxAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestDeliverTx))
+	})
+	return _c
+}
+
+func (_c *AppConnConsensus_DeliverTxAsync_Call) Return(_a0 *abcicli.ReqRes) *AppConnConsensus_DeliverTxAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *AppConnConsensus_DeliverTxAsync_Call) RunAndReturn(run func(types.RequestDeliverTx) *abcicli.ReqRes) *AppConnConsensus_DeliverTxAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // EndBlockSync provides a mock function with given fields: _a0
 func (_m *AppConnConsensus) EndBlockSync(_a0 types.RequestEndBlock) (*types.ResponseEndBlock, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for EndBlockSync")
+	}
+
 	var r0 *types.ResponseEndBlock
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestEndBlock) (*types.ResponseEndBlock, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestEndBlock) *types.ResponseEndBlock); ok {
 		r0 = rf(_a0)
 	} else {
@@ -90,7 +206,6 @@ func (_m *AppConnConsensus) EndBlockSync(_a0 types.RequestEndBlock) (*types.Resp
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestEndBlock) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -100,9 +215,41 @@ func (_m *AppConnConsensus) EndBlockSync(_a0 types.RequestEndBlock) (*types.Resp
 	return r0, r1
 }
 
-// Error provides a mock function with given fields:
+// AppConnConsensus_EndBlockSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EndBlockSync'
+type AppConnConsensus_EndBlockSync_Call struct {
+	*mock.Call
+}
+
+// EndBlockSync is a helper method to define mock.On call
+//   - _a0 types.RequestEndBlock
+func (_e *AppConnConsensus_Expecter) EndBlockSync(_a0 interface{}) *AppConnConsensus_EndBlockSync_Call {
+	return &AppConnConsensus_EndBlockSync_Call{Call: _e.mock.On("EndBlockSync", _a0)}
+}
+
+func (_c *AppConnConsensus_EndBlockSync_Call) Run(run func(_a0 types.RequestEndBlock)) *AppConnConsensus_EndBlockSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestEndBlock))
+	})
+	return _c
+}
+
+func (_c *AppConnConsensus_EndBlockSync_Call) Return(_a0 *types.ResponseEndBlock, _a1 error) *AppConnConsensus_EndBlockSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnConsensus_EndBlockSync_Call) RunAndReturn(run func(types.RequestEndBlock) (*types.ResponseEndBlock, error)) *AppConnConsensus_EndBlockSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Error provides a mock function with no fields
 func (_m *AppConnConsensus) Error() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Error")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -114,11 +261,46 @@ func (_m *AppConnConsensus) Error() error {
 	return r0
 }
 
+// AppConnConsensus_Error_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Error'
+type AppConnConsensus_Error_Call struct {
+	*mock.Call
+}
+
+// Error is a helper method to define mock.On call
+func (_e *AppConnConsensus_Expecter) Error() *AppConnConsensus_Error_Call {
+	return &AppConnConsensus_Error_Call{Call: _e.mock.On("Error")}
+}
+
+func (_c *AppConnConsensus_Error_Call) Run(run func()) *AppConnConsensus_Error_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *AppConnConsensus_Error_Call) Return(_a0 error) *AppConnConsensus_Error_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *AppConnConsensus_Error_Call) RunAndReturn(run func() error) *AppConnConsensus_Error_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // InitChainSync provides a mock function with given fields: _a0
 func (_m *AppConnConsensus) InitChainSync(_a0 types.RequestInitChain) (*types.ResponseInitChain, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for InitChainSync")
+	}
+
 	var r0 *types.ResponseInitChain
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestInitChain) (*types.ResponseInitChain, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestInitChain) *types.ResponseInitChain); ok {
 		r0 = rf(_a0)
 	} else {
@@ -127,7 +309,6 @@ func (_m *AppConnConsensus) InitChainSync(_a0 types.RequestInitChain) (*types.Re
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestInitChain) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -137,11 +318,47 @@ func (_m *AppConnConsensus) InitChainSync(_a0 types.RequestInitChain) (*types.Re
 	return r0, r1
 }
 
+// AppConnConsensus_InitChainSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InitChainSync'
+type AppConnConsensus_InitChainSync_Call struct {
+	*mock.Call
+}
+
+// InitChainSync is a helper method to define mock.On call
+//   - _a0 types.RequestInitChain
+func (_e *AppConnConsensus_Expecter) InitChainSync(_a0 interface{}) *AppConnConsensus_InitChainSync_Call {
+	return &AppConnConsensus_InitChainSync_Call{Call: _e.mock.On("InitChainSync", _a0)}
+}
+
+func (_c *AppConnConsensus_InitChainSync_Call) Run(run func(_a0 types.RequestInitChain)) *AppConnConsensus_InitChainSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestInitChain))
+	})
+	return _c
+}
+
+func (_c *AppConnConsensus_InitChainSync_Call) Return(_a0 *types.ResponseInitChain, _a1 error) *AppConnConsensus_InitChainSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnConsensus_InitChainSync_Call) RunAndReturn(run func(types.RequestInitChain) (*types.ResponseInitChain, error)) *AppConnConsensus_InitChainSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // PrepareProposalSync provides a mock function with given fields: _a0
 func (_m *AppConnConsensus) PrepareProposalSync(_a0 types.RequestPrepareProposal) (*types.ResponsePrepareProposal, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for PrepareProposalSync")
+	}
+
 	var r0 *types.ResponsePrepareProposal
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestPrepareProposal) (*types.ResponsePrepareProposal, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestPrepareProposal) *types.ResponsePrepareProposal); ok {
 		r0 = rf(_a0)
 	} else {
@@ -150,7 +367,6 @@ func (_m *AppConnConsensus) PrepareProposalSync(_a0 types.RequestPrepareProposal
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestPrepareProposal) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -160,11 +376,47 @@ func (_m *AppConnConsensus) PrepareProposalSync(_a0 types.RequestPrepareProposal
 	return r0, r1
 }
 
+// AppConnConsensus_PrepareProposalSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PrepareProposalSync'
+type AppConnConsensus_PrepareProposalSync_Call struct {
+	*mock.Call
+}
+
+// PrepareProposalSync is a helper method to define mock.On call
+//   - _a0 types.RequestPrepareProposal
+func (_e *AppConnConsensus_Expecter) PrepareProposalSync(_a0 interface{}) *AppConnConsensus_PrepareProposalSync_Call {
+	return &AppConnConsensus_PrepareProposalSync_Call{Call: _e.mock.On("PrepareProposalSync", _a0)}
+}
+
+func (_c *AppConnConsensus_PrepareProposalSync_Call) Run(run func(_a0 types.RequestPrepareProposal)) *AppConnConsensus_PrepareProposalSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestPrepareProposal))
+	})
+	return _c
+}
+
+func (_c *AppConnConsensus_PrepareProposalSync_Call) Return(_a0 *types.ResponsePrepareProposal, _a1 error) *AppConnConsensus_PrepareProposalSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnConsensus_PrepareProposalSync_Call) RunAndReturn(run func(types.RequestPrepareProposal) (*types.ResponsePrepareProposal, error)) *AppConnConsensus_PrepareProposalSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ProcessProposalSync provides a mock function with given fields: _a0
 func (_m *AppConnConsensus) ProcessProposalSync(_a0 types.RequestProcessProposal) (*types.ResponseProcessProposal, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for ProcessProposalSync")
+	}
+
 	var r0 *types.ResponseProcessProposal
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestProcessProposal) (*types.ResponseProcessProposal, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestProcessProposal) *types.ResponseProcessProposal); ok {
 		r0 = rf(_a0)
 	} else {
@@ -173,7 +425,6 @@ func (_m *AppConnConsensus) ProcessProposalSync(_a0 types.RequestProcessProposal
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestProcessProposal) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -183,18 +434,73 @@ func (_m *AppConnConsensus) ProcessProposalSync(_a0 types.RequestProcessProposal
 	return r0, r1
 }
 
+// AppConnConsensus_ProcessProposalSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ProcessProposalSync'
+type AppConnConsensus_ProcessProposalSync_Call struct {
+	*mock.Call
+}
+
+// ProcessProposalSync is a helper method to define mock.On call
+//   - _a0 types.RequestProcessProposal
+func (_e *AppConnConsensus_Expecter) ProcessProposalSync(_a0 interface{}) *AppConnConsensus_ProcessProposalSync_Call {
+	return &AppConnConsensus_ProcessProposalSync_Call{Call: _e.mock.On("ProcessProposalSync", _a0)}
+}
+
+func (_c *AppConnConsensus_ProcessProposalSync_Call) Run(run func(_a0 types.RequestProcessProposal)) *AppConnConsensus_ProcessProposalSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestProcessProposal))
+	})
+	return _c
+}
+
+func (_c *AppConnConsensus_ProcessProposalSync_Call) Return(_a0 *types.ResponseProcessProposal, _a1 error) *AppConnConsensus_ProcessProposalSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnConsensus_ProcessProposalSync_Call) RunAndReturn(run func(types.RequestProcessProposal) (*types.ResponseProcessProposal, error)) *AppConnConsensus_ProcessProposalSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // SetResponseCallback provides a mock function with given fields: _a0
 func (_m *AppConnConsensus) SetResponseCallback(_a0 abcicli.Callback) {
 	_m.Called(_a0)
 }
 
-type mockConstructorTestingTNewAppConnConsensus interface {
-	mock.TestingT
-	Cleanup(func())
+// AppConnConsensus_SetResponseCallback_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetResponseCallback'
+type AppConnConsensus_SetResponseCallback_Call struct {
+	*mock.Call
+}
+
+// SetResponseCallback is a helper method to define mock.On call
+//   - _a0 abcicli.Callback
+func (_e *AppConnConsensus_Expecter) SetResponseCallback(_a0 interface{}) *AppConnConsensus_SetResponseCallback_Call {
+	return &AppConnConsensus_SetResponseCallback_Call{Call: _e.mock.On("SetResponseCallback", _a0)}
+}
+
+func (_c *AppConnConsensus_SetResponseCallback_Call) Run(run func(_a0 abcicli.Callback)) *AppConnConsensus_SetResponseCallback_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(abcicli.Callback))
+	})
+	return _c
+}
+
+func (_c *AppConnConsensus_SetResponseCallback_Call) Return() *AppConnConsensus_SetResponseCallback_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *AppConnConsensus_SetResponseCallback_Call) RunAndReturn(run func(abcicli.Callback)) *AppConnConsensus_SetResponseCallback_Call {
+	_c.Run(run)
+	return _c
 }
 
 // NewAppConnConsensus creates a new instance of AppConnConsensus. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewAppConnConsensus(t mockConstructorTestingTNewAppConnConsensus) *AppConnConsensus {
+// The first argument is typically a *testing.T value.
+func NewAppConnConsensus(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *AppConnConsensus {
 	mock := &AppConnConsensus{}
 	mock.Mock.Test(t)
 

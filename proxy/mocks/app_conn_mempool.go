@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	abcicli "github.com/cometbft/cometbft/abci/client"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/cometbft/cometbft/abci/types"
 )
@@ -15,9 +14,21 @@ type AppConnMempool struct {
 	mock.Mock
 }
 
+type AppConnMempool_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *AppConnMempool) EXPECT() *AppConnMempool_Expecter {
+	return &AppConnMempool_Expecter{mock: &_m.Mock}
+}
+
 // CheckTxAsync provides a mock function with given fields: _a0
 func (_m *AppConnMempool) CheckTxAsync(_a0 types.RequestCheckTx) *abcicli.ReqRes {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckTxAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func(types.RequestCheckTx) *abcicli.ReqRes); ok {
@@ -31,11 +42,47 @@ func (_m *AppConnMempool) CheckTxAsync(_a0 types.RequestCheckTx) *abcicli.ReqRes
 	return r0
 }
 
+// AppConnMempool_CheckTxAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CheckTxAsync'
+type AppConnMempool_CheckTxAsync_Call struct {
+	*mock.Call
+}
+
+// CheckTxAsync is a helper method to define mock.On call
+//   - _a0 types.RequestCheckTx
+func (_e *AppConnMempool_Expecter) CheckTxAsync(_a0 interface{}) *AppConnMempool_CheckTxAsync_Call {
+	return &AppConnMempool_CheckTxAsync_Call{Call: _e.mock.On("CheckTxAsync", _a0)}
+}
+
+func (_c *AppConnMempool_CheckTxAsync_Call) Run(run func(_a0 types.RequestCheckTx)) *AppConnMempool_CheckTxAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestCheckTx))
+	})
+	return _c
+}
+
+func (_c *AppConnMempool_CheckTxAsync_Call) Return(_a0 *abcicli.ReqRes) *AppConnMempool_CheckTxAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *AppConnMempool_CheckTxAsync_Call) RunAndReturn(run func(types.RequestCheckTx) *abcicli.ReqRes) *AppConnMempool_CheckTxAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CheckTxSync provides a mock function with given fields: _a0
 func (_m *AppConnMempool) CheckTxSync(_a0 types.RequestCheckTx) (*types.ResponseCheckTx, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for CheckTxSync")
+	}
+
 	var r0 *types.ResponseCheckTx
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestCheckTx) (*types.ResponseCheckTx, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestCheckTx) *types.ResponseCheckTx); ok {
 		r0 = rf(_a0)
 	} else {
@@ -44,7 +91,6 @@ func (_m *AppConnMempool) CheckTxSync(_a0 types.RequestCheckTx) (*types.Response
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestCheckTx) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -54,9 +100,41 @@ func (_m *AppConnMempool) CheckTxSync(_a0 types.RequestCheckTx) (*types.Response
 	return r0, r1
 }
 
-// Error provides a mock function with given fields:
+// AppConnMempool_CheckTxSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CheckTxSync'
+type AppConnMempool_CheckTxSync_Call struct {
+	*mock.Call
+}
+
+// CheckTxSync is a helper method to define mock.On call
+//   - _a0 types.RequestCheckTx
+func (_e *AppConnMempool_Expecter) CheckTxSync(_a0 interface{}) *AppConnMempool_CheckTxSync_Call {
+	return &AppConnMempool_CheckTxSync_Call{Call: _e.mock.On("CheckTxSync", _a0)}
+}
+
+func (_c *AppConnMempool_CheckTxSync_Call) Run(run func(_a0 types.RequestCheckTx)) *AppConnMempool_CheckTxSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestCheckTx))
+	})
+	return _c
+}
+
+func (_c *AppConnMempool_CheckTxSync_Call) Return(_a0 *types.ResponseCheckTx, _a1 error) *AppConnMempool_CheckTxSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnMempool_CheckTxSync_Call) RunAndReturn(run func(types.RequestCheckTx) (*types.ResponseCheckTx, error)) *AppConnMempool_CheckTxSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Error provides a mock function with no fields
 func (_m *AppConnMempool) Error() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Error")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -68,9 +146,40 @@ func (_m *AppConnMempool) Error() error {
 	return r0
 }
 
-// FlushAsync provides a mock function with given fields:
+// AppConnMempool_Error_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Error'
+type AppConnMempool_Error_Call struct {
+	*mock.Call
+}
+
+// Error is a helper method to define mock.On call
+func (_e *AppConnMempool_Expecter) Error() *AppConnMempool_Error_Call {
+	return &AppConnMempool_Error_Call{Call: _e.mock.On("Error")}
+}
+
+func (_c *AppConnMempool_Error_Call) Run(run func()) *AppConnMempool_Error_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *AppConnMempool_Error_Call) Return(_a0 error) *AppConnMempool_Error_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *AppConnMempool_Error_Call) RunAndReturn(run func() error) *AppConnMempool_Error_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// FlushAsync provides a mock function with no fields
 func (_m *AppConnMempool) FlushAsync() *abcicli.ReqRes {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for FlushAsync")
+	}
 
 	var r0 *abcicli.ReqRes
 	if rf, ok := ret.Get(0).(func() *abcicli.ReqRes); ok {
@@ -84,9 +193,40 @@ func (_m *AppConnMempool) FlushAsync() *abcicli.ReqRes {
 	return r0
 }
 
-// FlushSync provides a mock function with given fields:
+// AppConnMempool_FlushAsync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FlushAsync'
+type AppConnMempool_FlushAsync_Call struct {
+	*mock.Call
+}
+
+// FlushAsync is a helper method to define mock.On call
+func (_e *AppConnMempool_Expecter) FlushAsync() *AppConnMempool_FlushAsync_Call {
+	return &AppConnMempool_FlushAsync_Call{Call: _e.mock.On("FlushAsync")}
+}
+
+func (_c *AppConnMempool_FlushAsync_Call) Run(run func()) *AppConnMempool_FlushAsync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *AppConnMempool_FlushAsync_Call) Return(_a0 *abcicli.ReqRes) *AppConnMempool_FlushAsync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *AppConnMempool_FlushAsync_Call) RunAndReturn(run func() *abcicli.ReqRes) *AppConnMempool_FlushAsync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// FlushSync provides a mock function with no fields
 func (_m *AppConnMempool) FlushSync() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for FlushSync")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -98,18 +238,72 @@ func (_m *AppConnMempool) FlushSync() error {
 	return r0
 }
 
+// AppConnMempool_FlushSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FlushSync'
+type AppConnMempool_FlushSync_Call struct {
+	*mock.Call
+}
+
+// FlushSync is a helper method to define mock.On call
+func (_e *AppConnMempool_Expecter) FlushSync() *AppConnMempool_FlushSync_Call {
+	return &AppConnMempool_FlushSync_Call{Call: _e.mock.On("FlushSync")}
+}
+
+func (_c *AppConnMempool_FlushSync_Call) Run(run func()) *AppConnMempool_FlushSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *AppConnMempool_FlushSync_Call) Return(_a0 error) *AppConnMempool_FlushSync_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *AppConnMempool_FlushSync_Call) RunAndReturn(run func() error) *AppConnMempool_FlushSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // SetResponseCallback provides a mock function with given fields: _a0
 func (_m *AppConnMempool) SetResponseCallback(_a0 abcicli.Callback) {
 	_m.Called(_a0)
 }
 
-type mockConstructorTestingTNewAppConnMempool interface {
-	mock.TestingT
-	Cleanup(func())
+// AppConnMempool_SetResponseCallback_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetResponseCallback'
+type AppConnMempool_SetResponseCallback_Call struct {
+	*mock.Call
+}
+
+// SetResponseCallback is a helper method to define mock.On call
+//   - _a0 abcicli.Callback
+func (_e *AppConnMempool_Expecter) SetResponseCallback(_a0 interface{}) *AppConnMempool_SetResponseCallback_Call {
+	return &AppConnMempool_SetResponseCallback_Call{Call: _e.mock.On("SetResponseCallback", _a0)}
+}
+
+func (_c *AppConnMempool_SetResponseCallback_Call) Run(run func(_a0 abcicli.Callback)) *AppConnMempool_SetResponseCallback_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(abcicli.Callback))
+	})
+	return _c
+}
+
+func (_c *AppConnMempool_SetResponseCallback_Call) Return() *AppConnMempool_SetResponseCallback_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *AppConnMempool_SetResponseCallback_Call) RunAndReturn(run func(abcicli.Callback)) *AppConnMempool_SetResponseCallback_Call {
+	_c.Run(run)
+	return _c
 }
 
 // NewAppConnMempool creates a new instance of AppConnMempool. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewAppConnMempool(t mockConstructorTestingTNewAppConnMempool) *AppConnMempool {
+// The first argument is typically a *testing.T value.
+func NewAppConnMempool(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *AppConnMempool {
 	mock := &AppConnMempool{}
 	mock.Mock.Test(t)
 

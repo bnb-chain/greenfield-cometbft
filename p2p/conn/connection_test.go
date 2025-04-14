@@ -32,7 +32,7 @@ func createTestMConnection(conn net.Conn) *MConnection {
 func createMConnectionWithCallbacks(
 	conn net.Conn,
 	onReceive func(chID byte, msgBytes []byte),
-	onError func(r interface{}),
+	onError func(r any),
 ) *MConnection {
 	cfg := DefaultMConnConfig()
 	cfg.PingInterval = 90 * time.Millisecond
@@ -118,11 +118,11 @@ func TestMConnectionReceiveEnvelope(t *testing.T) {
 	defer client.Close()
 
 	receivedCh := make(chan []byte)
-	errorsCh := make(chan interface{})
+	errorsCh := make(chan any)
 	onReceive := func(chID byte, msgBytes []byte) {
 		receivedCh <- msgBytes
 	}
-	onError := func(r interface{}) {
+	onError := func(r any) {
 		errorsCh <- r
 	}
 	mconn1 := createMConnectionWithCallbacks(client, onReceive, onError)

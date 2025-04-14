@@ -13,11 +13,27 @@ type AppConnQuery struct {
 	mock.Mock
 }
 
+type AppConnQuery_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *AppConnQuery) EXPECT() *AppConnQuery_Expecter {
+	return &AppConnQuery_Expecter{mock: &_m.Mock}
+}
+
 // EchoSync provides a mock function with given fields: _a0
 func (_m *AppConnQuery) EchoSync(_a0 string) (*types.ResponseEcho, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for EchoSync")
+	}
+
 	var r0 *types.ResponseEcho
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (*types.ResponseEcho, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(string) *types.ResponseEcho); ok {
 		r0 = rf(_a0)
 	} else {
@@ -26,7 +42,6 @@ func (_m *AppConnQuery) EchoSync(_a0 string) (*types.ResponseEcho, error) {
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -36,9 +51,41 @@ func (_m *AppConnQuery) EchoSync(_a0 string) (*types.ResponseEcho, error) {
 	return r0, r1
 }
 
-// Error provides a mock function with given fields:
+// AppConnQuery_EchoSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EchoSync'
+type AppConnQuery_EchoSync_Call struct {
+	*mock.Call
+}
+
+// EchoSync is a helper method to define mock.On call
+//   - _a0 string
+func (_e *AppConnQuery_Expecter) EchoSync(_a0 interface{}) *AppConnQuery_EchoSync_Call {
+	return &AppConnQuery_EchoSync_Call{Call: _e.mock.On("EchoSync", _a0)}
+}
+
+func (_c *AppConnQuery_EchoSync_Call) Run(run func(_a0 string)) *AppConnQuery_EchoSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *AppConnQuery_EchoSync_Call) Return(_a0 *types.ResponseEcho, _a1 error) *AppConnQuery_EchoSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnQuery_EchoSync_Call) RunAndReturn(run func(string) (*types.ResponseEcho, error)) *AppConnQuery_EchoSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Error provides a mock function with no fields
 func (_m *AppConnQuery) Error() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Error")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -50,11 +97,46 @@ func (_m *AppConnQuery) Error() error {
 	return r0
 }
 
+// AppConnQuery_Error_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Error'
+type AppConnQuery_Error_Call struct {
+	*mock.Call
+}
+
+// Error is a helper method to define mock.On call
+func (_e *AppConnQuery_Expecter) Error() *AppConnQuery_Error_Call {
+	return &AppConnQuery_Error_Call{Call: _e.mock.On("Error")}
+}
+
+func (_c *AppConnQuery_Error_Call) Run(run func()) *AppConnQuery_Error_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *AppConnQuery_Error_Call) Return(_a0 error) *AppConnQuery_Error_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *AppConnQuery_Error_Call) RunAndReturn(run func() error) *AppConnQuery_Error_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // InfoSync provides a mock function with given fields: _a0
 func (_m *AppConnQuery) InfoSync(_a0 types.RequestInfo) (*types.ResponseInfo, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for InfoSync")
+	}
+
 	var r0 *types.ResponseInfo
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestInfo) (*types.ResponseInfo, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestInfo) *types.ResponseInfo); ok {
 		r0 = rf(_a0)
 	} else {
@@ -63,7 +145,6 @@ func (_m *AppConnQuery) InfoSync(_a0 types.RequestInfo) (*types.ResponseInfo, er
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestInfo) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -73,11 +154,47 @@ func (_m *AppConnQuery) InfoSync(_a0 types.RequestInfo) (*types.ResponseInfo, er
 	return r0, r1
 }
 
+// AppConnQuery_InfoSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InfoSync'
+type AppConnQuery_InfoSync_Call struct {
+	*mock.Call
+}
+
+// InfoSync is a helper method to define mock.On call
+//   - _a0 types.RequestInfo
+func (_e *AppConnQuery_Expecter) InfoSync(_a0 interface{}) *AppConnQuery_InfoSync_Call {
+	return &AppConnQuery_InfoSync_Call{Call: _e.mock.On("InfoSync", _a0)}
+}
+
+func (_c *AppConnQuery_InfoSync_Call) Run(run func(_a0 types.RequestInfo)) *AppConnQuery_InfoSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestInfo))
+	})
+	return _c
+}
+
+func (_c *AppConnQuery_InfoSync_Call) Return(_a0 *types.ResponseInfo, _a1 error) *AppConnQuery_InfoSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnQuery_InfoSync_Call) RunAndReturn(run func(types.RequestInfo) (*types.ResponseInfo, error)) *AppConnQuery_InfoSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // QuerySync provides a mock function with given fields: _a0
 func (_m *AppConnQuery) QuerySync(_a0 types.RequestQuery) (*types.ResponseQuery, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for QuerySync")
+	}
+
 	var r0 *types.ResponseQuery
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestQuery) (*types.ResponseQuery, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestQuery) *types.ResponseQuery); ok {
 		r0 = rf(_a0)
 	} else {
@@ -86,7 +203,6 @@ func (_m *AppConnQuery) QuerySync(_a0 types.RequestQuery) (*types.ResponseQuery,
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestQuery) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -96,13 +212,40 @@ func (_m *AppConnQuery) QuerySync(_a0 types.RequestQuery) (*types.ResponseQuery,
 	return r0, r1
 }
 
-type mockConstructorTestingTNewAppConnQuery interface {
-	mock.TestingT
-	Cleanup(func())
+// AppConnQuery_QuerySync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'QuerySync'
+type AppConnQuery_QuerySync_Call struct {
+	*mock.Call
+}
+
+// QuerySync is a helper method to define mock.On call
+//   - _a0 types.RequestQuery
+func (_e *AppConnQuery_Expecter) QuerySync(_a0 interface{}) *AppConnQuery_QuerySync_Call {
+	return &AppConnQuery_QuerySync_Call{Call: _e.mock.On("QuerySync", _a0)}
+}
+
+func (_c *AppConnQuery_QuerySync_Call) Run(run func(_a0 types.RequestQuery)) *AppConnQuery_QuerySync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestQuery))
+	})
+	return _c
+}
+
+func (_c *AppConnQuery_QuerySync_Call) Return(_a0 *types.ResponseQuery, _a1 error) *AppConnQuery_QuerySync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnQuery_QuerySync_Call) RunAndReturn(run func(types.RequestQuery) (*types.ResponseQuery, error)) *AppConnQuery_QuerySync_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewAppConnQuery creates a new instance of AppConnQuery. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewAppConnQuery(t mockConstructorTestingTNewAppConnQuery) *AppConnQuery {
+// The first argument is typically a *testing.T value.
+func NewAppConnQuery(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *AppConnQuery {
 	mock := &AppConnQuery{}
 	mock.Mock.Test(t)
 

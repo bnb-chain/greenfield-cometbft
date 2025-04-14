@@ -21,17 +21,34 @@ for any bug bounty. We advise you to be careful and experiment on the network at
 
 We implement several key features based on the CometBFT fork:
 
-* Vote Pool. Vote pool is used to collect votes from different validators for off-chain consensus.
-Currently, it is mainly used for cross chain and data availability challenge in Greenfield blockchain.
-* RANDAO. RANDAO is introduced for on-chain randomness. Overall, the idea is very similar to the RANDAO
-in Ethereum beacon chain, you can refer to [here](https://eth2book.info/altair/part2/building_blocks/randomness)
-for more information. It has some limitations, please use it with caution.
+Please do not depend on `main` as your production branch. Use
+[releases](https://github.com/cometbft/cometbft/releases) instead.
+
+If you intend to run CometBFT in production, we're happy to help. To contact
+us, in order of preference:
+
+- [Create a new discussion on
+  GitHub](https://github.com/cometbft/cometbft/discussions)
+- Reach out to us via [Telegram](https://t.me/CometBFT)
+- [Join the Cosmos Network Discord](https://discord.gg/cosmosnetwork) and
+  discuss in
+  [`#cometbft`](https://discord.com/channels/669268347736686612/1069933855307472906)
+
+More on how releases are conducted can be found [here](./RELEASES.md).
+
+## Security
+
+To report a security vulnerability, see our [bug bounty
+program](https://hackerone.com/cosmos). For examples of the kinds of bugs we're
+looking for, see [our security policy](SECURITY.md).
 
 ## Minimum requirements
 
-| Requirement | Notes             |
-|-------------|-------------------|
-| Go version  | Go 1.20 or higher |
+| CometBFT version | Requirement | Notes             |
+|------------------|-------------|-------------------|
+| v0.34.x          | Go version  | Go 1.22 or higher |
+| v0.37.x          | Go version  | Go 1.22 or higher |
+| main             | Go version  | Go 1.22 or higher |
 
 ### Install
 
@@ -93,7 +110,7 @@ included in our repository in the `COPYING` file.
 [version-url]: https://github.com/cometbft/cometbft/releases/latest
 [api-badge]: https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f6c616e672f6764646f3f7374617475732e737667
 [api-url]: https://pkg.go.dev/github.com/cometbft/cometbft
-[go-badge]: https://img.shields.io/badge/go-1.20-blue.svg
+[go-badge]: https://img.shields.io/badge/go-1.22-blue.svg
 [go-url]: https://github.com/moovweb/gvm
 [discord-badge]: https://img.shields.io/discord/669268347736686612.svg
 [discord-url]: https://discord.gg/cosmosnetwork

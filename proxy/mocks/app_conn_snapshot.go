@@ -13,11 +13,27 @@ type AppConnSnapshot struct {
 	mock.Mock
 }
 
+type AppConnSnapshot_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *AppConnSnapshot) EXPECT() *AppConnSnapshot_Expecter {
+	return &AppConnSnapshot_Expecter{mock: &_m.Mock}
+}
+
 // ApplySnapshotChunkSync provides a mock function with given fields: _a0
 func (_m *AppConnSnapshot) ApplySnapshotChunkSync(_a0 types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for ApplySnapshotChunkSync")
+	}
+
 	var r0 *types.ResponseApplySnapshotChunk
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestApplySnapshotChunk) *types.ResponseApplySnapshotChunk); ok {
 		r0 = rf(_a0)
 	} else {
@@ -26,7 +42,6 @@ func (_m *AppConnSnapshot) ApplySnapshotChunkSync(_a0 types.RequestApplySnapshot
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestApplySnapshotChunk) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -36,9 +51,41 @@ func (_m *AppConnSnapshot) ApplySnapshotChunkSync(_a0 types.RequestApplySnapshot
 	return r0, r1
 }
 
-// Error provides a mock function with given fields:
+// AppConnSnapshot_ApplySnapshotChunkSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ApplySnapshotChunkSync'
+type AppConnSnapshot_ApplySnapshotChunkSync_Call struct {
+	*mock.Call
+}
+
+// ApplySnapshotChunkSync is a helper method to define mock.On call
+//   - _a0 types.RequestApplySnapshotChunk
+func (_e *AppConnSnapshot_Expecter) ApplySnapshotChunkSync(_a0 interface{}) *AppConnSnapshot_ApplySnapshotChunkSync_Call {
+	return &AppConnSnapshot_ApplySnapshotChunkSync_Call{Call: _e.mock.On("ApplySnapshotChunkSync", _a0)}
+}
+
+func (_c *AppConnSnapshot_ApplySnapshotChunkSync_Call) Run(run func(_a0 types.RequestApplySnapshotChunk)) *AppConnSnapshot_ApplySnapshotChunkSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestApplySnapshotChunk))
+	})
+	return _c
+}
+
+func (_c *AppConnSnapshot_ApplySnapshotChunkSync_Call) Return(_a0 *types.ResponseApplySnapshotChunk, _a1 error) *AppConnSnapshot_ApplySnapshotChunkSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnSnapshot_ApplySnapshotChunkSync_Call) RunAndReturn(run func(types.RequestApplySnapshotChunk) (*types.ResponseApplySnapshotChunk, error)) *AppConnSnapshot_ApplySnapshotChunkSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Error provides a mock function with no fields
 func (_m *AppConnSnapshot) Error() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Error")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -50,11 +97,46 @@ func (_m *AppConnSnapshot) Error() error {
 	return r0
 }
 
+// AppConnSnapshot_Error_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Error'
+type AppConnSnapshot_Error_Call struct {
+	*mock.Call
+}
+
+// Error is a helper method to define mock.On call
+func (_e *AppConnSnapshot_Expecter) Error() *AppConnSnapshot_Error_Call {
+	return &AppConnSnapshot_Error_Call{Call: _e.mock.On("Error")}
+}
+
+func (_c *AppConnSnapshot_Error_Call) Run(run func()) *AppConnSnapshot_Error_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *AppConnSnapshot_Error_Call) Return(_a0 error) *AppConnSnapshot_Error_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *AppConnSnapshot_Error_Call) RunAndReturn(run func() error) *AppConnSnapshot_Error_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ListSnapshotsSync provides a mock function with given fields: _a0
 func (_m *AppConnSnapshot) ListSnapshotsSync(_a0 types.RequestListSnapshots) (*types.ResponseListSnapshots, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for ListSnapshotsSync")
+	}
+
 	var r0 *types.ResponseListSnapshots
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestListSnapshots) (*types.ResponseListSnapshots, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestListSnapshots) *types.ResponseListSnapshots); ok {
 		r0 = rf(_a0)
 	} else {
@@ -63,7 +145,6 @@ func (_m *AppConnSnapshot) ListSnapshotsSync(_a0 types.RequestListSnapshots) (*t
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestListSnapshots) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -73,11 +154,47 @@ func (_m *AppConnSnapshot) ListSnapshotsSync(_a0 types.RequestListSnapshots) (*t
 	return r0, r1
 }
 
+// AppConnSnapshot_ListSnapshotsSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListSnapshotsSync'
+type AppConnSnapshot_ListSnapshotsSync_Call struct {
+	*mock.Call
+}
+
+// ListSnapshotsSync is a helper method to define mock.On call
+//   - _a0 types.RequestListSnapshots
+func (_e *AppConnSnapshot_Expecter) ListSnapshotsSync(_a0 interface{}) *AppConnSnapshot_ListSnapshotsSync_Call {
+	return &AppConnSnapshot_ListSnapshotsSync_Call{Call: _e.mock.On("ListSnapshotsSync", _a0)}
+}
+
+func (_c *AppConnSnapshot_ListSnapshotsSync_Call) Run(run func(_a0 types.RequestListSnapshots)) *AppConnSnapshot_ListSnapshotsSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestListSnapshots))
+	})
+	return _c
+}
+
+func (_c *AppConnSnapshot_ListSnapshotsSync_Call) Return(_a0 *types.ResponseListSnapshots, _a1 error) *AppConnSnapshot_ListSnapshotsSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnSnapshot_ListSnapshotsSync_Call) RunAndReturn(run func(types.RequestListSnapshots) (*types.ResponseListSnapshots, error)) *AppConnSnapshot_ListSnapshotsSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // LoadSnapshotChunkSync provides a mock function with given fields: _a0
 func (_m *AppConnSnapshot) LoadSnapshotChunkSync(_a0 types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for LoadSnapshotChunkSync")
+	}
+
 	var r0 *types.ResponseLoadSnapshotChunk
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestLoadSnapshotChunk) *types.ResponseLoadSnapshotChunk); ok {
 		r0 = rf(_a0)
 	} else {
@@ -86,7 +203,6 @@ func (_m *AppConnSnapshot) LoadSnapshotChunkSync(_a0 types.RequestLoadSnapshotCh
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestLoadSnapshotChunk) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -96,11 +212,47 @@ func (_m *AppConnSnapshot) LoadSnapshotChunkSync(_a0 types.RequestLoadSnapshotCh
 	return r0, r1
 }
 
+// AppConnSnapshot_LoadSnapshotChunkSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadSnapshotChunkSync'
+type AppConnSnapshot_LoadSnapshotChunkSync_Call struct {
+	*mock.Call
+}
+
+// LoadSnapshotChunkSync is a helper method to define mock.On call
+//   - _a0 types.RequestLoadSnapshotChunk
+func (_e *AppConnSnapshot_Expecter) LoadSnapshotChunkSync(_a0 interface{}) *AppConnSnapshot_LoadSnapshotChunkSync_Call {
+	return &AppConnSnapshot_LoadSnapshotChunkSync_Call{Call: _e.mock.On("LoadSnapshotChunkSync", _a0)}
+}
+
+func (_c *AppConnSnapshot_LoadSnapshotChunkSync_Call) Run(run func(_a0 types.RequestLoadSnapshotChunk)) *AppConnSnapshot_LoadSnapshotChunkSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestLoadSnapshotChunk))
+	})
+	return _c
+}
+
+func (_c *AppConnSnapshot_LoadSnapshotChunkSync_Call) Return(_a0 *types.ResponseLoadSnapshotChunk, _a1 error) *AppConnSnapshot_LoadSnapshotChunkSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnSnapshot_LoadSnapshotChunkSync_Call) RunAndReturn(run func(types.RequestLoadSnapshotChunk) (*types.ResponseLoadSnapshotChunk, error)) *AppConnSnapshot_LoadSnapshotChunkSync_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // OfferSnapshotSync provides a mock function with given fields: _a0
 func (_m *AppConnSnapshot) OfferSnapshotSync(_a0 types.RequestOfferSnapshot) (*types.ResponseOfferSnapshot, error) {
 	ret := _m.Called(_a0)
 
+	if len(ret) == 0 {
+		panic("no return value specified for OfferSnapshotSync")
+	}
+
 	var r0 *types.ResponseOfferSnapshot
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.RequestOfferSnapshot) (*types.ResponseOfferSnapshot, error)); ok {
+		return rf(_a0)
+	}
 	if rf, ok := ret.Get(0).(func(types.RequestOfferSnapshot) *types.ResponseOfferSnapshot); ok {
 		r0 = rf(_a0)
 	} else {
@@ -109,7 +261,6 @@ func (_m *AppConnSnapshot) OfferSnapshotSync(_a0 types.RequestOfferSnapshot) (*t
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(types.RequestOfferSnapshot) error); ok {
 		r1 = rf(_a0)
 	} else {
@@ -119,13 +270,40 @@ func (_m *AppConnSnapshot) OfferSnapshotSync(_a0 types.RequestOfferSnapshot) (*t
 	return r0, r1
 }
 
-type mockConstructorTestingTNewAppConnSnapshot interface {
-	mock.TestingT
-	Cleanup(func())
+// AppConnSnapshot_OfferSnapshotSync_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'OfferSnapshotSync'
+type AppConnSnapshot_OfferSnapshotSync_Call struct {
+	*mock.Call
+}
+
+// OfferSnapshotSync is a helper method to define mock.On call
+//   - _a0 types.RequestOfferSnapshot
+func (_e *AppConnSnapshot_Expecter) OfferSnapshotSync(_a0 interface{}) *AppConnSnapshot_OfferSnapshotSync_Call {
+	return &AppConnSnapshot_OfferSnapshotSync_Call{Call: _e.mock.On("OfferSnapshotSync", _a0)}
+}
+
+func (_c *AppConnSnapshot_OfferSnapshotSync_Call) Run(run func(_a0 types.RequestOfferSnapshot)) *AppConnSnapshot_OfferSnapshotSync_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.RequestOfferSnapshot))
+	})
+	return _c
+}
+
+func (_c *AppConnSnapshot_OfferSnapshotSync_Call) Return(_a0 *types.ResponseOfferSnapshot, _a1 error) *AppConnSnapshot_OfferSnapshotSync_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AppConnSnapshot_OfferSnapshotSync_Call) RunAndReturn(run func(types.RequestOfferSnapshot) (*types.ResponseOfferSnapshot, error)) *AppConnSnapshot_OfferSnapshotSync_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewAppConnSnapshot creates a new instance of AppConnSnapshot. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewAppConnSnapshot(t mockConstructorTestingTNewAppConnSnapshot) *AppConnSnapshot {
+// The first argument is typically a *testing.T value.
+func NewAppConnSnapshot(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *AppConnSnapshot {
 	mock := &AppConnSnapshot{}
 	mock.Mock.Test(t)
 

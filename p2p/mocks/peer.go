@@ -18,9 +18,21 @@ type Peer struct {
 	mock.Mock
 }
 
-// CloseConn provides a mock function with given fields:
+type Peer_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *Peer) EXPECT() *Peer_Expecter {
+	return &Peer_Expecter{mock: &_m.Mock}
+}
+
+// CloseConn provides a mock function with no fields
 func (_m *Peer) CloseConn() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for CloseConn")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -32,14 +44,72 @@ func (_m *Peer) CloseConn() error {
 	return r0
 }
 
-// FlushStop provides a mock function with given fields:
+// Peer_CloseConn_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CloseConn'
+type Peer_CloseConn_Call struct {
+	*mock.Call
+}
+
+// CloseConn is a helper method to define mock.On call
+func (_e *Peer_Expecter) CloseConn() *Peer_CloseConn_Call {
+	return &Peer_CloseConn_Call{Call: _e.mock.On("CloseConn")}
+}
+
+func (_c *Peer_CloseConn_Call) Run(run func()) *Peer_CloseConn_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_CloseConn_Call) Return(_a0 error) *Peer_CloseConn_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_CloseConn_Call) RunAndReturn(run func() error) *Peer_CloseConn_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// FlushStop provides a mock function with no fields
 func (_m *Peer) FlushStop() {
 	_m.Called()
+}
+
+// Peer_FlushStop_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FlushStop'
+type Peer_FlushStop_Call struct {
+	*mock.Call
+}
+
+// FlushStop is a helper method to define mock.On call
+func (_e *Peer_Expecter) FlushStop() *Peer_FlushStop_Call {
+	return &Peer_FlushStop_Call{Call: _e.mock.On("FlushStop")}
+}
+
+func (_c *Peer_FlushStop_Call) Run(run func()) *Peer_FlushStop_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_FlushStop_Call) Return() *Peer_FlushStop_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Peer_FlushStop_Call) RunAndReturn(run func()) *Peer_FlushStop_Call {
+	_c.Run(run)
+	return _c
 }
 
 // Get provides a mock function with given fields: _a0
 func (_m *Peer) Get(_a0 string) interface{} {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Get")
+	}
 
 	var r0 interface{}
 	if rf, ok := ret.Get(0).(func(string) interface{}); ok {
@@ -53,9 +123,41 @@ func (_m *Peer) Get(_a0 string) interface{} {
 	return r0
 }
 
-// GetRemovalFailed provides a mock function with given fields:
+// Peer_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type Peer_Get_Call struct {
+	*mock.Call
+}
+
+// Get is a helper method to define mock.On call
+//   - _a0 string
+func (_e *Peer_Expecter) Get(_a0 interface{}) *Peer_Get_Call {
+	return &Peer_Get_Call{Call: _e.mock.On("Get", _a0)}
+}
+
+func (_c *Peer_Get_Call) Run(run func(_a0 string)) *Peer_Get_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *Peer_Get_Call) Return(_a0 interface{}) *Peer_Get_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_Get_Call) RunAndReturn(run func(string) interface{}) *Peer_Get_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetRemovalFailed provides a mock function with no fields
 func (_m *Peer) GetRemovalFailed() bool {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetRemovalFailed")
+	}
 
 	var r0 bool
 	if rf, ok := ret.Get(0).(func() bool); ok {
@@ -67,9 +169,40 @@ func (_m *Peer) GetRemovalFailed() bool {
 	return r0
 }
 
-// ID provides a mock function with given fields:
+// Peer_GetRemovalFailed_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetRemovalFailed'
+type Peer_GetRemovalFailed_Call struct {
+	*mock.Call
+}
+
+// GetRemovalFailed is a helper method to define mock.On call
+func (_e *Peer_Expecter) GetRemovalFailed() *Peer_GetRemovalFailed_Call {
+	return &Peer_GetRemovalFailed_Call{Call: _e.mock.On("GetRemovalFailed")}
+}
+
+func (_c *Peer_GetRemovalFailed_Call) Run(run func()) *Peer_GetRemovalFailed_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_GetRemovalFailed_Call) Return(_a0 bool) *Peer_GetRemovalFailed_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_GetRemovalFailed_Call) RunAndReturn(run func() bool) *Peer_GetRemovalFailed_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ID provides a mock function with no fields
 func (_m *Peer) ID() p2p.ID {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for ID")
+	}
 
 	var r0 p2p.ID
 	if rf, ok := ret.Get(0).(func() p2p.ID); ok {
@@ -81,10 +214,41 @@ func (_m *Peer) ID() p2p.ID {
 	return r0
 }
 
-// IsOutbound provides a mock function with given fields:
+// Peer_ID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ID'
+type Peer_ID_Call struct {
+	*mock.Call
+}
+
+// ID is a helper method to define mock.On call
+func (_e *Peer_Expecter) ID() *Peer_ID_Call {
+	return &Peer_ID_Call{Call: _e.mock.On("ID")}
+}
+
+func (_c *Peer_ID_Call) Run(run func()) *Peer_ID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_ID_Call) Return(_a0 p2p.ID) *Peer_ID_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_ID_Call) RunAndReturn(run func() p2p.ID) *Peer_ID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// IsOutbound provides a mock function with no fields
 func (_m *Peer) IsOutbound() bool {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for IsOutbound")
+	}
+
 	var r0 bool
 	if rf, ok := ret.Get(0).(func() bool); ok {
 		r0 = rf()
@@ -95,10 +259,41 @@ func (_m *Peer) IsOutbound() bool {
 	return r0
 }
 
-// IsPersistent provides a mock function with given fields:
+// Peer_IsOutbound_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsOutbound'
+type Peer_IsOutbound_Call struct {
+	*mock.Call
+}
+
+// IsOutbound is a helper method to define mock.On call
+func (_e *Peer_Expecter) IsOutbound() *Peer_IsOutbound_Call {
+	return &Peer_IsOutbound_Call{Call: _e.mock.On("IsOutbound")}
+}
+
+func (_c *Peer_IsOutbound_Call) Run(run func()) *Peer_IsOutbound_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_IsOutbound_Call) Return(_a0 bool) *Peer_IsOutbound_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_IsOutbound_Call) RunAndReturn(run func() bool) *Peer_IsOutbound_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// IsPersistent provides a mock function with no fields
 func (_m *Peer) IsPersistent() bool {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for IsPersistent")
+	}
+
 	var r0 bool
 	if rf, ok := ret.Get(0).(func() bool); ok {
 		r0 = rf()
@@ -109,10 +304,41 @@ func (_m *Peer) IsPersistent() bool {
 	return r0
 }
 
-// IsRunning provides a mock function with given fields:
+// Peer_IsPersistent_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsPersistent'
+type Peer_IsPersistent_Call struct {
+	*mock.Call
+}
+
+// IsPersistent is a helper method to define mock.On call
+func (_e *Peer_Expecter) IsPersistent() *Peer_IsPersistent_Call {
+	return &Peer_IsPersistent_Call{Call: _e.mock.On("IsPersistent")}
+}
+
+func (_c *Peer_IsPersistent_Call) Run(run func()) *Peer_IsPersistent_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_IsPersistent_Call) Return(_a0 bool) *Peer_IsPersistent_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_IsPersistent_Call) RunAndReturn(run func() bool) *Peer_IsPersistent_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// IsRunning provides a mock function with no fields
 func (_m *Peer) IsRunning() bool {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for IsRunning")
+	}
+
 	var r0 bool
 	if rf, ok := ret.Get(0).(func() bool); ok {
 		r0 = rf()
@@ -123,9 +349,40 @@ func (_m *Peer) IsRunning() bool {
 	return r0
 }
 
-// NodeInfo provides a mock function with given fields:
+// Peer_IsRunning_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'IsRunning'
+type Peer_IsRunning_Call struct {
+	*mock.Call
+}
+
+// IsRunning is a helper method to define mock.On call
+func (_e *Peer_Expecter) IsRunning() *Peer_IsRunning_Call {
+	return &Peer_IsRunning_Call{Call: _e.mock.On("IsRunning")}
+}
+
+func (_c *Peer_IsRunning_Call) Run(run func()) *Peer_IsRunning_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_IsRunning_Call) Return(_a0 bool) *Peer_IsRunning_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_IsRunning_Call) RunAndReturn(run func() bool) *Peer_IsRunning_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// NodeInfo provides a mock function with no fields
 func (_m *Peer) NodeInfo() p2p.NodeInfo {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for NodeInfo")
+	}
 
 	var r0 p2p.NodeInfo
 	if rf, ok := ret.Get(0).(func() p2p.NodeInfo); ok {
@@ -139,10 +396,41 @@ func (_m *Peer) NodeInfo() p2p.NodeInfo {
 	return r0
 }
 
-// OnReset provides a mock function with given fields:
+// Peer_NodeInfo_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'NodeInfo'
+type Peer_NodeInfo_Call struct {
+	*mock.Call
+}
+
+// NodeInfo is a helper method to define mock.On call
+func (_e *Peer_Expecter) NodeInfo() *Peer_NodeInfo_Call {
+	return &Peer_NodeInfo_Call{Call: _e.mock.On("NodeInfo")}
+}
+
+func (_c *Peer_NodeInfo_Call) Run(run func()) *Peer_NodeInfo_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_NodeInfo_Call) Return(_a0 p2p.NodeInfo) *Peer_NodeInfo_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_NodeInfo_Call) RunAndReturn(run func() p2p.NodeInfo) *Peer_NodeInfo_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// OnReset provides a mock function with no fields
 func (_m *Peer) OnReset() error {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for OnReset")
+	}
+
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
 		r0 = rf()
@@ -153,10 +441,41 @@ func (_m *Peer) OnReset() error {
 	return r0
 }
 
-// OnStart provides a mock function with given fields:
+// Peer_OnReset_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'OnReset'
+type Peer_OnReset_Call struct {
+	*mock.Call
+}
+
+// OnReset is a helper method to define mock.On call
+func (_e *Peer_Expecter) OnReset() *Peer_OnReset_Call {
+	return &Peer_OnReset_Call{Call: _e.mock.On("OnReset")}
+}
+
+func (_c *Peer_OnReset_Call) Run(run func()) *Peer_OnReset_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_OnReset_Call) Return(_a0 error) *Peer_OnReset_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_OnReset_Call) RunAndReturn(run func() error) *Peer_OnReset_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// OnStart provides a mock function with no fields
 func (_m *Peer) OnStart() error {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for OnStart")
+	}
+
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
 		r0 = rf()
@@ -167,14 +486,72 @@ func (_m *Peer) OnStart() error {
 	return r0
 }
 
-// OnStop provides a mock function with given fields:
+// Peer_OnStart_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'OnStart'
+type Peer_OnStart_Call struct {
+	*mock.Call
+}
+
+// OnStart is a helper method to define mock.On call
+func (_e *Peer_Expecter) OnStart() *Peer_OnStart_Call {
+	return &Peer_OnStart_Call{Call: _e.mock.On("OnStart")}
+}
+
+func (_c *Peer_OnStart_Call) Run(run func()) *Peer_OnStart_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_OnStart_Call) Return(_a0 error) *Peer_OnStart_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_OnStart_Call) RunAndReturn(run func() error) *Peer_OnStart_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// OnStop provides a mock function with no fields
 func (_m *Peer) OnStop() {
 	_m.Called()
 }
 
-// Quit provides a mock function with given fields:
+// Peer_OnStop_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'OnStop'
+type Peer_OnStop_Call struct {
+	*mock.Call
+}
+
+// OnStop is a helper method to define mock.On call
+func (_e *Peer_Expecter) OnStop() *Peer_OnStop_Call {
+	return &Peer_OnStop_Call{Call: _e.mock.On("OnStop")}
+}
+
+func (_c *Peer_OnStop_Call) Run(run func()) *Peer_OnStop_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_OnStop_Call) Return() *Peer_OnStop_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Peer_OnStop_Call) RunAndReturn(run func()) *Peer_OnStop_Call {
+	_c.Run(run)
+	return _c
+}
+
+// Quit provides a mock function with no fields
 func (_m *Peer) Quit() <-chan struct{} {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Quit")
+	}
 
 	var r0 <-chan struct{}
 	if rf, ok := ret.Get(0).(func() <-chan struct{}); ok {
@@ -188,9 +565,40 @@ func (_m *Peer) Quit() <-chan struct{} {
 	return r0
 }
 
-// RemoteAddr provides a mock function with given fields:
+// Peer_Quit_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Quit'
+type Peer_Quit_Call struct {
+	*mock.Call
+}
+
+// Quit is a helper method to define mock.On call
+func (_e *Peer_Expecter) Quit() *Peer_Quit_Call {
+	return &Peer_Quit_Call{Call: _e.mock.On("Quit")}
+}
+
+func (_c *Peer_Quit_Call) Run(run func()) *Peer_Quit_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_Quit_Call) Return(_a0 <-chan struct{}) *Peer_Quit_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_Quit_Call) RunAndReturn(run func() <-chan struct{}) *Peer_Quit_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// RemoteAddr provides a mock function with no fields
 func (_m *Peer) RemoteAddr() net.Addr {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for RemoteAddr")
+	}
 
 	var r0 net.Addr
 	if rf, ok := ret.Get(0).(func() net.Addr); ok {
@@ -204,9 +612,40 @@ func (_m *Peer) RemoteAddr() net.Addr {
 	return r0
 }
 
-// RemoteIP provides a mock function with given fields:
+// Peer_RemoteAddr_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'RemoteAddr'
+type Peer_RemoteAddr_Call struct {
+	*mock.Call
+}
+
+// RemoteAddr is a helper method to define mock.On call
+func (_e *Peer_Expecter) RemoteAddr() *Peer_RemoteAddr_Call {
+	return &Peer_RemoteAddr_Call{Call: _e.mock.On("RemoteAddr")}
+}
+
+func (_c *Peer_RemoteAddr_Call) Run(run func()) *Peer_RemoteAddr_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_RemoteAddr_Call) Return(_a0 net.Addr) *Peer_RemoteAddr_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_RemoteAddr_Call) RunAndReturn(run func() net.Addr) *Peer_RemoteAddr_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// RemoteIP provides a mock function with no fields
 func (_m *Peer) RemoteIP() net.IP {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for RemoteIP")
+	}
 
 	var r0 net.IP
 	if rf, ok := ret.Get(0).(func() net.IP); ok {
@@ -220,9 +659,40 @@ func (_m *Peer) RemoteIP() net.IP {
 	return r0
 }
 
-// Reset provides a mock function with given fields:
+// Peer_RemoteIP_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'RemoteIP'
+type Peer_RemoteIP_Call struct {
+	*mock.Call
+}
+
+// RemoteIP is a helper method to define mock.On call
+func (_e *Peer_Expecter) RemoteIP() *Peer_RemoteIP_Call {
+	return &Peer_RemoteIP_Call{Call: _e.mock.On("RemoteIP")}
+}
+
+func (_c *Peer_RemoteIP_Call) Run(run func()) *Peer_RemoteIP_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_RemoteIP_Call) Return(_a0 net.IP) *Peer_RemoteIP_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_RemoteIP_Call) RunAndReturn(run func() net.IP) *Peer_RemoteIP_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Reset provides a mock function with no fields
 func (_m *Peer) Reset() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Reset")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -234,9 +704,40 @@ func (_m *Peer) Reset() error {
 	return r0
 }
 
+// Peer_Reset_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Reset'
+type Peer_Reset_Call struct {
+	*mock.Call
+}
+
+// Reset is a helper method to define mock.On call
+func (_e *Peer_Expecter) Reset() *Peer_Reset_Call {
+	return &Peer_Reset_Call{Call: _e.mock.On("Reset")}
+}
+
+func (_c *Peer_Reset_Call) Run(run func()) *Peer_Reset_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_Reset_Call) Return(_a0 error) *Peer_Reset_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_Reset_Call) RunAndReturn(run func() error) *Peer_Reset_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // SendEnvelope provides a mock function with given fields: _a0
 func (_m *Peer) SendEnvelope(_a0 p2p.Envelope) bool {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SendEnvelope")
+	}
 
 	var r0 bool
 	if rf, ok := ret.Get(0).(func(p2p.Envelope) bool); ok {
@@ -248,9 +749,66 @@ func (_m *Peer) SendEnvelope(_a0 p2p.Envelope) bool {
 	return r0
 }
 
+// Peer_SendEnvelope_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SendEnvelope'
+type Peer_SendEnvelope_Call struct {
+	*mock.Call
+}
+
+// SendEnvelope is a helper method to define mock.On call
+//   - _a0 p2p.Envelope
+func (_e *Peer_Expecter) SendEnvelope(_a0 interface{}) *Peer_SendEnvelope_Call {
+	return &Peer_SendEnvelope_Call{Call: _e.mock.On("SendEnvelope", _a0)}
+}
+
+func (_c *Peer_SendEnvelope_Call) Run(run func(_a0 p2p.Envelope)) *Peer_SendEnvelope_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(p2p.Envelope))
+	})
+	return _c
+}
+
+func (_c *Peer_SendEnvelope_Call) Return(_a0 bool) *Peer_SendEnvelope_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_SendEnvelope_Call) RunAndReturn(run func(p2p.Envelope) bool) *Peer_SendEnvelope_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Set provides a mock function with given fields: _a0, _a1
 func (_m *Peer) Set(_a0 string, _a1 interface{}) {
 	_m.Called(_a0, _a1)
+}
+
+// Peer_Set_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Set'
+type Peer_Set_Call struct {
+	*mock.Call
+}
+
+// Set is a helper method to define mock.On call
+//   - _a0 string
+//   - _a1 interface{}
+func (_e *Peer_Expecter) Set(_a0 interface{}, _a1 interface{}) *Peer_Set_Call {
+	return &Peer_Set_Call{Call: _e.mock.On("Set", _a0, _a1)}
+}
+
+func (_c *Peer_Set_Call) Run(run func(_a0 string, _a1 interface{})) *Peer_Set_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(interface{}))
+	})
+	return _c
+}
+
+func (_c *Peer_Set_Call) Return() *Peer_Set_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Peer_Set_Call) RunAndReturn(run func(string, interface{})) *Peer_Set_Call {
+	_c.Run(run)
+	return _c
 }
 
 // SetLogger provides a mock function with given fields: _a0
@@ -258,14 +816,73 @@ func (_m *Peer) SetLogger(_a0 log.Logger) {
 	_m.Called(_a0)
 }
 
-// SetRemovalFailed provides a mock function with given fields:
+// Peer_SetLogger_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetLogger'
+type Peer_SetLogger_Call struct {
+	*mock.Call
+}
+
+// SetLogger is a helper method to define mock.On call
+//   - _a0 log.Logger
+func (_e *Peer_Expecter) SetLogger(_a0 interface{}) *Peer_SetLogger_Call {
+	return &Peer_SetLogger_Call{Call: _e.mock.On("SetLogger", _a0)}
+}
+
+func (_c *Peer_SetLogger_Call) Run(run func(_a0 log.Logger)) *Peer_SetLogger_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(log.Logger))
+	})
+	return _c
+}
+
+func (_c *Peer_SetLogger_Call) Return() *Peer_SetLogger_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Peer_SetLogger_Call) RunAndReturn(run func(log.Logger)) *Peer_SetLogger_Call {
+	_c.Run(run)
+	return _c
+}
+
+// SetRemovalFailed provides a mock function with no fields
 func (_m *Peer) SetRemovalFailed() {
 	_m.Called()
 }
 
-// SocketAddr provides a mock function with given fields:
+// Peer_SetRemovalFailed_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetRemovalFailed'
+type Peer_SetRemovalFailed_Call struct {
+	*mock.Call
+}
+
+// SetRemovalFailed is a helper method to define mock.On call
+func (_e *Peer_Expecter) SetRemovalFailed() *Peer_SetRemovalFailed_Call {
+	return &Peer_SetRemovalFailed_Call{Call: _e.mock.On("SetRemovalFailed")}
+}
+
+func (_c *Peer_SetRemovalFailed_Call) Run(run func()) *Peer_SetRemovalFailed_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_SetRemovalFailed_Call) Return() *Peer_SetRemovalFailed_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Peer_SetRemovalFailed_Call) RunAndReturn(run func()) *Peer_SetRemovalFailed_Call {
+	_c.Run(run)
+	return _c
+}
+
+// SocketAddr provides a mock function with no fields
 func (_m *Peer) SocketAddr() *p2p.NetAddress {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for SocketAddr")
+	}
 
 	var r0 *p2p.NetAddress
 	if rf, ok := ret.Get(0).(func() *p2p.NetAddress); ok {
@@ -279,9 +896,40 @@ func (_m *Peer) SocketAddr() *p2p.NetAddress {
 	return r0
 }
 
-// Start provides a mock function with given fields:
+// Peer_SocketAddr_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SocketAddr'
+type Peer_SocketAddr_Call struct {
+	*mock.Call
+}
+
+// SocketAddr is a helper method to define mock.On call
+func (_e *Peer_Expecter) SocketAddr() *Peer_SocketAddr_Call {
+	return &Peer_SocketAddr_Call{Call: _e.mock.On("SocketAddr")}
+}
+
+func (_c *Peer_SocketAddr_Call) Run(run func()) *Peer_SocketAddr_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_SocketAddr_Call) Return(_a0 *p2p.NetAddress) *Peer_SocketAddr_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_SocketAddr_Call) RunAndReturn(run func() *p2p.NetAddress) *Peer_SocketAddr_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Start provides a mock function with no fields
 func (_m *Peer) Start() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Start")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -293,9 +941,40 @@ func (_m *Peer) Start() error {
 	return r0
 }
 
-// Status provides a mock function with given fields:
+// Peer_Start_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Start'
+type Peer_Start_Call struct {
+	*mock.Call
+}
+
+// Start is a helper method to define mock.On call
+func (_e *Peer_Expecter) Start() *Peer_Start_Call {
+	return &Peer_Start_Call{Call: _e.mock.On("Start")}
+}
+
+func (_c *Peer_Start_Call) Run(run func()) *Peer_Start_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_Start_Call) Return(_a0 error) *Peer_Start_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_Start_Call) RunAndReturn(run func() error) *Peer_Start_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Status provides a mock function with no fields
 func (_m *Peer) Status() conn.ConnectionStatus {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Status")
+	}
 
 	var r0 conn.ConnectionStatus
 	if rf, ok := ret.Get(0).(func() conn.ConnectionStatus); ok {
@@ -307,9 +986,40 @@ func (_m *Peer) Status() conn.ConnectionStatus {
 	return r0
 }
 
-// Stop provides a mock function with given fields:
+// Peer_Status_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Status'
+type Peer_Status_Call struct {
+	*mock.Call
+}
+
+// Status is a helper method to define mock.On call
+func (_e *Peer_Expecter) Status() *Peer_Status_Call {
+	return &Peer_Status_Call{Call: _e.mock.On("Status")}
+}
+
+func (_c *Peer_Status_Call) Run(run func()) *Peer_Status_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_Status_Call) Return(_a0 conn.ConnectionStatus) *Peer_Status_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_Status_Call) RunAndReturn(run func() conn.ConnectionStatus) *Peer_Status_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Stop provides a mock function with no fields
 func (_m *Peer) Stop() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Stop")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -321,9 +1031,40 @@ func (_m *Peer) Stop() error {
 	return r0
 }
 
-// String provides a mock function with given fields:
+// Peer_Stop_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Stop'
+type Peer_Stop_Call struct {
+	*mock.Call
+}
+
+// Stop is a helper method to define mock.On call
+func (_e *Peer_Expecter) Stop() *Peer_Stop_Call {
+	return &Peer_Stop_Call{Call: _e.mock.On("Stop")}
+}
+
+func (_c *Peer_Stop_Call) Run(run func()) *Peer_Stop_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_Stop_Call) Return(_a0 error) *Peer_Stop_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_Stop_Call) RunAndReturn(run func() error) *Peer_Stop_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// String provides a mock function with no fields
 func (_m *Peer) String() string {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for String")
+	}
 
 	var r0 string
 	if rf, ok := ret.Get(0).(func() string); ok {
@@ -335,9 +1076,40 @@ func (_m *Peer) String() string {
 	return r0
 }
 
+// Peer_String_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'String'
+type Peer_String_Call struct {
+	*mock.Call
+}
+
+// String is a helper method to define mock.On call
+func (_e *Peer_Expecter) String() *Peer_String_Call {
+	return &Peer_String_Call{Call: _e.mock.On("String")}
+}
+
+func (_c *Peer_String_Call) Run(run func()) *Peer_String_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Peer_String_Call) Return(_a0 string) *Peer_String_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_String_Call) RunAndReturn(run func() string) *Peer_String_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // TrySendEnvelope provides a mock function with given fields: _a0
 func (_m *Peer) TrySendEnvelope(_a0 p2p.Envelope) bool {
 	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for TrySendEnvelope")
+	}
 
 	var r0 bool
 	if rf, ok := ret.Get(0).(func(p2p.Envelope) bool); ok {
@@ -349,13 +1121,40 @@ func (_m *Peer) TrySendEnvelope(_a0 p2p.Envelope) bool {
 	return r0
 }
 
-type mockConstructorTestingTNewPeer interface {
-	mock.TestingT
-	Cleanup(func())
+// Peer_TrySendEnvelope_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'TrySendEnvelope'
+type Peer_TrySendEnvelope_Call struct {
+	*mock.Call
+}
+
+// TrySendEnvelope is a helper method to define mock.On call
+//   - _a0 p2p.Envelope
+func (_e *Peer_Expecter) TrySendEnvelope(_a0 interface{}) *Peer_TrySendEnvelope_Call {
+	return &Peer_TrySendEnvelope_Call{Call: _e.mock.On("TrySendEnvelope", _a0)}
+}
+
+func (_c *Peer_TrySendEnvelope_Call) Run(run func(_a0 p2p.Envelope)) *Peer_TrySendEnvelope_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(p2p.Envelope))
+	})
+	return _c
+}
+
+func (_c *Peer_TrySendEnvelope_Call) Return(_a0 bool) *Peer_TrySendEnvelope_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Peer_TrySendEnvelope_Call) RunAndReturn(run func(p2p.Envelope) bool) *Peer_TrySendEnvelope_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewPeer creates a new instance of Peer. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewPeer(t mockConstructorTestingTNewPeer) *Peer {
+// The first argument is typically a *testing.T value.
+func NewPeer(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *Peer {
 	mock := &Peer{}
 	mock.Mock.Test(t)
 

@@ -17,9 +17,21 @@ type LightClient struct {
 	mock.Mock
 }
 
-// ChainID provides a mock function with given fields:
+type LightClient_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *LightClient) EXPECT() *LightClient_Expecter {
+	return &LightClient_Expecter{mock: &_m.Mock}
+}
+
+// ChainID provides a mock function with no fields
 func (_m *LightClient) ChainID() string {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for ChainID")
+	}
 
 	var r0 string
 	if rf, ok := ret.Get(0).(func() string); ok {
@@ -31,11 +43,46 @@ func (_m *LightClient) ChainID() string {
 	return r0
 }
 
+// LightClient_ChainID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ChainID'
+type LightClient_ChainID_Call struct {
+	*mock.Call
+}
+
+// ChainID is a helper method to define mock.On call
+func (_e *LightClient_Expecter) ChainID() *LightClient_ChainID_Call {
+	return &LightClient_ChainID_Call{Call: _e.mock.On("ChainID")}
+}
+
+func (_c *LightClient_ChainID_Call) Run(run func()) *LightClient_ChainID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *LightClient_ChainID_Call) Return(_a0 string) *LightClient_ChainID_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *LightClient_ChainID_Call) RunAndReturn(run func() string) *LightClient_ChainID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // TrustedLightBlock provides a mock function with given fields: height
 func (_m *LightClient) TrustedLightBlock(height int64) (*types.LightBlock, error) {
 	ret := _m.Called(height)
 
+	if len(ret) == 0 {
+		panic("no return value specified for TrustedLightBlock")
+	}
+
 	var r0 *types.LightBlock
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64) (*types.LightBlock, error)); ok {
+		return rf(height)
+	}
 	if rf, ok := ret.Get(0).(func(int64) *types.LightBlock); ok {
 		r0 = rf(height)
 	} else {
@@ -44,7 +91,6 @@ func (_m *LightClient) TrustedLightBlock(height int64) (*types.LightBlock, error
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(int64) error); ok {
 		r1 = rf(height)
 	} else {
@@ -54,11 +100,47 @@ func (_m *LightClient) TrustedLightBlock(height int64) (*types.LightBlock, error
 	return r0, r1
 }
 
+// LightClient_TrustedLightBlock_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'TrustedLightBlock'
+type LightClient_TrustedLightBlock_Call struct {
+	*mock.Call
+}
+
+// TrustedLightBlock is a helper method to define mock.On call
+//   - height int64
+func (_e *LightClient_Expecter) TrustedLightBlock(height interface{}) *LightClient_TrustedLightBlock_Call {
+	return &LightClient_TrustedLightBlock_Call{Call: _e.mock.On("TrustedLightBlock", height)}
+}
+
+func (_c *LightClient_TrustedLightBlock_Call) Run(run func(height int64)) *LightClient_TrustedLightBlock_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64))
+	})
+	return _c
+}
+
+func (_c *LightClient_TrustedLightBlock_Call) Return(_a0 *types.LightBlock, _a1 error) *LightClient_TrustedLightBlock_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *LightClient_TrustedLightBlock_Call) RunAndReturn(run func(int64) (*types.LightBlock, error)) *LightClient_TrustedLightBlock_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Update provides a mock function with given fields: ctx, now
 func (_m *LightClient) Update(ctx context.Context, now time.Time) (*types.LightBlock, error) {
 	ret := _m.Called(ctx, now)
 
+	if len(ret) == 0 {
+		panic("no return value specified for Update")
+	}
+
 	var r0 *types.LightBlock
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, time.Time) (*types.LightBlock, error)); ok {
+		return rf(ctx, now)
+	}
 	if rf, ok := ret.Get(0).(func(context.Context, time.Time) *types.LightBlock); ok {
 		r0 = rf(ctx, now)
 	} else {
@@ -67,7 +149,6 @@ func (_m *LightClient) Update(ctx context.Context, now time.Time) (*types.LightB
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, time.Time) error); ok {
 		r1 = rf(ctx, now)
 	} else {
@@ -77,11 +158,48 @@ func (_m *LightClient) Update(ctx context.Context, now time.Time) (*types.LightB
 	return r0, r1
 }
 
+// LightClient_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type LightClient_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//   - ctx context.Context
+//   - now time.Time
+func (_e *LightClient_Expecter) Update(ctx interface{}, now interface{}) *LightClient_Update_Call {
+	return &LightClient_Update_Call{Call: _e.mock.On("Update", ctx, now)}
+}
+
+func (_c *LightClient_Update_Call) Run(run func(ctx context.Context, now time.Time)) *LightClient_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(time.Time))
+	})
+	return _c
+}
+
+func (_c *LightClient_Update_Call) Return(_a0 *types.LightBlock, _a1 error) *LightClient_Update_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *LightClient_Update_Call) RunAndReturn(run func(context.Context, time.Time) (*types.LightBlock, error)) *LightClient_Update_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // VerifyLightBlockAtHeight provides a mock function with given fields: ctx, height, now
 func (_m *LightClient) VerifyLightBlockAtHeight(ctx context.Context, height int64, now time.Time) (*types.LightBlock, error) {
 	ret := _m.Called(ctx, height, now)
 
+	if len(ret) == 0 {
+		panic("no return value specified for VerifyLightBlockAtHeight")
+	}
+
 	var r0 *types.LightBlock
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, time.Time) (*types.LightBlock, error)); ok {
+		return rf(ctx, height, now)
+	}
 	if rf, ok := ret.Get(0).(func(context.Context, int64, time.Time) *types.LightBlock); ok {
 		r0 = rf(ctx, height, now)
 	} else {
@@ -90,7 +208,6 @@ func (_m *LightClient) VerifyLightBlockAtHeight(ctx context.Context, height int6
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, int64, time.Time) error); ok {
 		r1 = rf(ctx, height, now)
 	} else {
@@ -100,13 +217,42 @@ func (_m *LightClient) VerifyLightBlockAtHeight(ctx context.Context, height int6
 	return r0, r1
 }
 
-type mockConstructorTestingTNewLightClient interface {
-	mock.TestingT
-	Cleanup(func())
+// LightClient_VerifyLightBlockAtHeight_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'VerifyLightBlockAtHeight'
+type LightClient_VerifyLightBlockAtHeight_Call struct {
+	*mock.Call
+}
+
+// VerifyLightBlockAtHeight is a helper method to define mock.On call
+//   - ctx context.Context
+//   - height int64
+//   - now time.Time
+func (_e *LightClient_Expecter) VerifyLightBlockAtHeight(ctx interface{}, height interface{}, now interface{}) *LightClient_VerifyLightBlockAtHeight_Call {
+	return &LightClient_VerifyLightBlockAtHeight_Call{Call: _e.mock.On("VerifyLightBlockAtHeight", ctx, height, now)}
+}
+
+func (_c *LightClient_VerifyLightBlockAtHeight_Call) Run(run func(ctx context.Context, height int64, now time.Time)) *LightClient_VerifyLightBlockAtHeight_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(int64), args[2].(time.Time))
+	})
+	return _c
+}
+
+func (_c *LightClient_VerifyLightBlockAtHeight_Call) Return(_a0 *types.LightBlock, _a1 error) *LightClient_VerifyLightBlockAtHeight_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *LightClient_VerifyLightBlockAtHeight_Call) RunAndReturn(run func(context.Context, int64, time.Time) (*types.LightBlock, error)) *LightClient_VerifyLightBlockAtHeight_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewLightClient creates a new instance of LightClient. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewLightClient(t mockConstructorTestingTNewLightClient) *LightClient {
+// The first argument is typically a *testing.T value.
+func NewLightClient(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *LightClient {
 	mock := &LightClient{}
 	mock.Mock.Test(t)
 
