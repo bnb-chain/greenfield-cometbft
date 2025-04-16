@@ -4,6 +4,8 @@ import "github.com/go-kit/kit/metrics"
 
 //go:generate go run ../../../../scripts/metricsgen -struct=Metrics
 
+const MetricsSubsystem = "testdata"
+
 type Metrics struct {
 	WithLabels     metrics.Counter   `metrics_labels:"step,time"`
 	WithExpBuckets metrics.Histogram `metrics_buckettype:"exp" metrics_bucketsizes:".1,100,8"`

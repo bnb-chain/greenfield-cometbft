@@ -1,7 +1,8 @@
 package types
 
 import (
-	crytporand "crypto/rand"
+	"crypto/rand"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -44,9 +45,9 @@ func TestValidatorValidateBasic(t *testing.T) {
 	pubKey, _ := priv.GetPubKey()
 
 	blsPubKey := make([]byte, BlsPubKeySize)
-	_, _ = crytporand.Read(blsPubKey)
+	_, _ = rand.Read(blsPubKey)
 	relayer := make([]byte, AddressSize)
-	_, _ = crytporand.Read(relayer)
+	_, _ = rand.Read(relayer)
 
 	val := NewValidator(pubKey, 1)
 	val.SetBlsKey(blsPubKey)
@@ -91,7 +92,7 @@ func TestValidatorValidateBasic(t *testing.T) {
 				Address: nil,
 			},
 			err: true,
-			msg: "validator address is the wrong size: ",
+			msg: fmt.Sprintf("validator address is incorrectly derived from pubkey. Exp: %v, got ", pubKey.Address()),
 		},
 		{
 			val: &Validator{
@@ -99,7 +100,7 @@ func TestValidatorValidateBasic(t *testing.T) {
 				Address: []byte{'a'},
 			},
 			err: true,
-			msg: "validator address is the wrong size: 61",
+			msg: fmt.Sprintf("validator address is incorrectly derived from pubkey. Exp: %v, got 61", pubKey.Address()),
 		},
 		{
 			val: val,

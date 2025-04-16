@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cometbft/cometbft/p2p"
 	bcproto "github.com/cometbft/cometbft/proto/tendermint/blocksync"
@@ -58,26 +59,38 @@ type Reactor struct {
 	pool              *BlockPool
 	blockSync         bool
 	skipAppHashVerify bool
+	localAddr         crypto.Address
 
 	requestsCh <-chan BlockRequest
 	errorsCh   <-chan peerError
 }
 
-// NewReactor returns new reactor instance.
-func NewReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore,
-	blockSync bool, options ...ReactorOption) *Reactor {
+func NewReactorWithOfflineStateSyncAndAddr(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore,
+	blockSync bool, localAddr crypto.Address, offlineStateSyncHeight int64) *Reactor {
 
-	if state.LastBlockHeight != store.Height() {
-		panic(fmt.Sprintf("state (%v) and store (%v) height mismatch", state.LastBlockHeight,
-			store.Height()))
+	storeHeight := store.Height()
+	if storeHeight == 0 {
+		// If state sync was performed offline and the stores were bootstrapped to height H
+		// the state store's lastHeight will be H while blockstore's Height and Base are still 0
+		// 1. This scenario should not lead to a panic in this case, which is indicated by
+		// having a OfflineStateSyncHeight > 0
+		// 2. We need to instruct the blocksync reactor to start fetching blocks from H+1
+		// instead of 0.
+		storeHeight = offlineStateSyncHeight
+	}
+	if state.LastBlockHeight != storeHeight {
+		panic(fmt.Sprintf("state (%v) and store (%v) height mismatch, stores were left in an inconsistent state", state.LastBlockHeight,
+			storeHeight))
 	}
 
-	requestsCh := make(chan BlockRequest, maxTotalRequesters)
+	// It's okay to block since sendRequest is called from a separate goroutine
+	// (bpRequester#requestRoutine; 1 per each peer).
+	requestsCh := make(chan BlockRequest)
 
 	const capacity = 1000                      // must be bigger than peers count
 	errorsCh := make(chan peerError, capacity) // so we don't block in #Receive#pool.AddBlock
 
-	startHeight := store.Height() + 1
+	startHeight := storeHeight + 1
 	if startHeight == 1 {
 		startHeight = state.InitialHeight
 	}
@@ -89,16 +102,26 @@ func NewReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockS
 		store:        store,
 		pool:         pool,
 		blockSync:    blockSync,
+		localAddr:    localAddr,
 		requestsCh:   requestsCh,
 		errorsCh:     errorsCh,
 	}
 	bcR.BaseReactor = *p2p.NewBaseReactor("Reactor", bcR)
 
-	for _, option := range options {
-		option(bcR)
-	}
-
 	return bcR
+}
+
+func NewReactorWithOfflineStateSync(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore,
+	blockSync bool, offlineStateSyncHeight int64) *Reactor {
+	return NewReactorWithOfflineStateSyncAndAddr(state, blockExec, store, blockSync, nil, offlineStateSyncHeight)
+}
+
+// NewReactor returns new reactor instance.
+func NewReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore,
+	blockSync bool) *Reactor {
+
+	return NewReactorWithOfflineStateSync(state, blockExec, store, blockSync, 0)
+
 }
 
 // SetLogger implements service.Service by setting the logger on reactor and pool.
@@ -236,9 +259,19 @@ func (bcR *Reactor) ReceiveEnvelope(e p2p.Envelope) {
 		bcR.pool.SetPeerRange(e.Src.ID(), msg.Base, msg.Height)
 	case *bcproto.NoBlockResponse:
 		bcR.Logger.Debug("Peer does not have requested block", "peer", e.Src, "height", msg.Height)
+		bcR.pool.RedoRequestFrom(msg.Height, e.Src.ID())
 	default:
 		bcR.Logger.Error(fmt.Sprintf("Unknown message type %v", reflect.TypeOf(msg)))
 	}
+}
+
+func (bcR *Reactor) localNodeBlocksTheChain(state sm.State) bool {
+	_, val := state.Validators.GetByAddress(bcR.localAddr)
+	if val == nil {
+		return false
+	}
+	total := state.Validators.TotalVotingPower()
+	return val.VotingPower >= total/3
 }
 
 // Handle messages from the poolReactor telling the reactor what to do.
@@ -305,7 +338,7 @@ FOR_LOOP:
 			outbound, inbound, _ := bcR.Switch.NumPeers()
 			bcR.Logger.Debug("Consensus ticker", "numPending", numPending, "total", lenRequesters,
 				"outbound", outbound, "inbound", inbound)
-			if bcR.pool.IsCaughtUp() {
+			if bcR.pool.IsCaughtUp() || bcR.localNodeBlocksTheChain(state) {
 				bcR.Logger.Info("Time to switch to consensus reactor!", "height", height)
 				if err := bcR.pool.Stop(); err != nil {
 					bcR.Logger.Error("Error stopping pool", "err", err)
@@ -370,14 +403,14 @@ FOR_LOOP:
 
 			if err != nil {
 				bcR.Logger.Error("Error in validation", "err", err)
-				peerID := bcR.pool.RedoRequest(first.Height)
+				peerID := bcR.pool.RemovePeerAndRedoAllPeerRequests(first.Height)
 				peer := bcR.Switch.Peers().Get(peerID)
 				if peer != nil {
 					// NOTE: we've already removed the peer's request, but we
 					// still need to clean up the rest.
 					bcR.Switch.StopPeerForError(peer, fmt.Errorf("Reactor validation error: %v", err))
 				}
-				peerID2 := bcR.pool.RedoRequest(second.Height)
+				peerID2 := bcR.pool.RemovePeerAndRedoAllPeerRequests(second.Height)
 				peer2 := bcR.Switch.Peers().Get(peerID2)
 				if peer2 != nil && peer2 != peer {
 					// NOTE: we've already removed the peer's request, but we

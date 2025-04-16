@@ -3,7 +3,7 @@ package votepool
 import (
 	"errors"
 
-	"github.com/prysmaticlabs/prysm/crypto/bls/blst"
+	"github.com/prysmaticlabs/prysm/v4/crypto/bls/blst"
 
 	"github.com/cometbft/cometbft/libs/sync"
 	"github.com/cometbft/cometbft/types"

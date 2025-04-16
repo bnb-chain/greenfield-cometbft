@@ -187,6 +187,13 @@ func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block, s
 	return blockExec.evpool.CheckEvidence(block.Evidence.Evidence)
 }
 
+// ApplyVerifiedBlock does the same as `ApplyBlock`, but skips verification.
+func (blockExec *BlockExecutor) ApplyVerifiedBlock(
+	state State, blockID types.BlockID, block *types.Block,
+) (State, int64, error) {
+	return blockExec.applyBlock(state, blockID, block)
+}
+
 // ApplyBlock validates the block against the state, executes it against the app,
 // fires the relevant events, commits the app, and saves the new state and responses.
 // It returns the new state and the block height to retain (pruning older blocks).
@@ -201,6 +208,10 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		return state, 0, ErrInvalidBlock(err)
 	}
 
+	return blockExec.applyBlock(state, blockID, block)
+}
+
+func (blockExec *BlockExecutor) applyBlock(state State, blockID types.BlockID, block *types.Block) (State, int64, error) {
 	interruptCh := make(chan struct{})
 	// do pre execute for cache
 	if blockExec.proxyPrefetchApp != nil {
@@ -244,7 +255,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		return state, 0, err
 	}
 	if len(validatorUpdates) > 0 {
-		blockExec.logger.Debug("updates to validators", "updates", types.ValidatorListString(validatorUpdates))
+		blockExec.logger.Info("updates to validators", "updates", types.ValidatorListString(validatorUpdates))
 		blockExec.metrics.ValidatorSetUpdates.Add(1)
 	}
 	if abciResponses.EndBlock.ConsensusParamUpdates != nil {

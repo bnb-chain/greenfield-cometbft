@@ -5,9 +5,8 @@ package mocks
 import (
 	context "context"
 
-	mock "github.com/stretchr/testify/mock"
-
 	query "github.com/cometbft/cometbft/libs/pubsub/query"
+	mock "github.com/stretchr/testify/mock"
 
 	txindex "github.com/cometbft/cometbft/state/txindex"
 
@@ -19,9 +18,21 @@ type TxIndexer struct {
 	mock.Mock
 }
 
+type TxIndexer_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *TxIndexer) EXPECT() *TxIndexer_Expecter {
+	return &TxIndexer_Expecter{mock: &_m.Mock}
+}
+
 // AddBatch provides a mock function with given fields: b
 func (_m *TxIndexer) AddBatch(b *txindex.Batch) error {
 	ret := _m.Called(b)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AddBatch")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*txindex.Batch) error); ok {
@@ -33,11 +44,47 @@ func (_m *TxIndexer) AddBatch(b *txindex.Batch) error {
 	return r0
 }
 
+// TxIndexer_AddBatch_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddBatch'
+type TxIndexer_AddBatch_Call struct {
+	*mock.Call
+}
+
+// AddBatch is a helper method to define mock.On call
+//   - b *txindex.Batch
+func (_e *TxIndexer_Expecter) AddBatch(b interface{}) *TxIndexer_AddBatch_Call {
+	return &TxIndexer_AddBatch_Call{Call: _e.mock.On("AddBatch", b)}
+}
+
+func (_c *TxIndexer_AddBatch_Call) Run(run func(b *txindex.Batch)) *TxIndexer_AddBatch_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(*txindex.Batch))
+	})
+	return _c
+}
+
+func (_c *TxIndexer_AddBatch_Call) Return(_a0 error) *TxIndexer_AddBatch_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *TxIndexer_AddBatch_Call) RunAndReturn(run func(*txindex.Batch) error) *TxIndexer_AddBatch_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Get provides a mock function with given fields: hash
 func (_m *TxIndexer) Get(hash []byte) (*types.TxResult, error) {
 	ret := _m.Called(hash)
 
+	if len(ret) == 0 {
+		panic("no return value specified for Get")
+	}
+
 	var r0 *types.TxResult
+	var r1 error
+	if rf, ok := ret.Get(0).(func([]byte) (*types.TxResult, error)); ok {
+		return rf(hash)
+	}
 	if rf, ok := ret.Get(0).(func([]byte) *types.TxResult); ok {
 		r0 = rf(hash)
 	} else {
@@ -46,7 +93,6 @@ func (_m *TxIndexer) Get(hash []byte) (*types.TxResult, error) {
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func([]byte) error); ok {
 		r1 = rf(hash)
 	} else {
@@ -56,9 +102,41 @@ func (_m *TxIndexer) Get(hash []byte) (*types.TxResult, error) {
 	return r0, r1
 }
 
+// TxIndexer_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type TxIndexer_Get_Call struct {
+	*mock.Call
+}
+
+// Get is a helper method to define mock.On call
+//   - hash []byte
+func (_e *TxIndexer_Expecter) Get(hash interface{}) *TxIndexer_Get_Call {
+	return &TxIndexer_Get_Call{Call: _e.mock.On("Get", hash)}
+}
+
+func (_c *TxIndexer_Get_Call) Run(run func(hash []byte)) *TxIndexer_Get_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].([]byte))
+	})
+	return _c
+}
+
+func (_c *TxIndexer_Get_Call) Return(_a0 *types.TxResult, _a1 error) *TxIndexer_Get_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *TxIndexer_Get_Call) RunAndReturn(run func([]byte) (*types.TxResult, error)) *TxIndexer_Get_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Index provides a mock function with given fields: result
 func (_m *TxIndexer) Index(result *types.TxResult) error {
 	ret := _m.Called(result)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Index")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*types.TxResult) error); ok {
@@ -70,11 +148,47 @@ func (_m *TxIndexer) Index(result *types.TxResult) error {
 	return r0
 }
 
+// TxIndexer_Index_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Index'
+type TxIndexer_Index_Call struct {
+	*mock.Call
+}
+
+// Index is a helper method to define mock.On call
+//   - result *types.TxResult
+func (_e *TxIndexer_Expecter) Index(result interface{}) *TxIndexer_Index_Call {
+	return &TxIndexer_Index_Call{Call: _e.mock.On("Index", result)}
+}
+
+func (_c *TxIndexer_Index_Call) Run(run func(result *types.TxResult)) *TxIndexer_Index_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(*types.TxResult))
+	})
+	return _c
+}
+
+func (_c *TxIndexer_Index_Call) Return(_a0 error) *TxIndexer_Index_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *TxIndexer_Index_Call) RunAndReturn(run func(*types.TxResult) error) *TxIndexer_Index_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Search provides a mock function with given fields: ctx, q
 func (_m *TxIndexer) Search(ctx context.Context, q *query.Query) ([]*types.TxResult, error) {
 	ret := _m.Called(ctx, q)
 
+	if len(ret) == 0 {
+		panic("no return value specified for Search")
+	}
+
 	var r0 []*types.TxResult
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *query.Query) ([]*types.TxResult, error)); ok {
+		return rf(ctx, q)
+	}
 	if rf, ok := ret.Get(0).(func(context.Context, *query.Query) []*types.TxResult); ok {
 		r0 = rf(ctx, q)
 	} else {
@@ -83,7 +197,6 @@ func (_m *TxIndexer) Search(ctx context.Context, q *query.Query) ([]*types.TxRes
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, *query.Query) error); ok {
 		r1 = rf(ctx, q)
 	} else {
@@ -93,13 +206,41 @@ func (_m *TxIndexer) Search(ctx context.Context, q *query.Query) ([]*types.TxRes
 	return r0, r1
 }
 
-type mockConstructorTestingTNewTxIndexer interface {
-	mock.TestingT
-	Cleanup(func())
+// TxIndexer_Search_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Search'
+type TxIndexer_Search_Call struct {
+	*mock.Call
+}
+
+// Search is a helper method to define mock.On call
+//   - ctx context.Context
+//   - q *query.Query
+func (_e *TxIndexer_Expecter) Search(ctx interface{}, q interface{}) *TxIndexer_Search_Call {
+	return &TxIndexer_Search_Call{Call: _e.mock.On("Search", ctx, q)}
+}
+
+func (_c *TxIndexer_Search_Call) Run(run func(ctx context.Context, q *query.Query)) *TxIndexer_Search_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*query.Query))
+	})
+	return _c
+}
+
+func (_c *TxIndexer_Search_Call) Return(_a0 []*types.TxResult, _a1 error) *TxIndexer_Search_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *TxIndexer_Search_Call) RunAndReturn(run func(context.Context, *query.Query) ([]*types.TxResult, error)) *TxIndexer_Search_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewTxIndexer creates a new instance of TxIndexer. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewTxIndexer(t mockConstructorTestingTNewTxIndexer) *TxIndexer {
+// The first argument is typically a *testing.T value.
+func NewTxIndexer(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *TxIndexer {
 	mock := &TxIndexer{}
 	mock.Mock.Test(t)
 

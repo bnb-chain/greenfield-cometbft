@@ -100,7 +100,7 @@ func newReactor(
 	// Make the Reactor itself.
 	// NOTE we have to create and commit the blocks first because
 	// pool.height is determined from the store.
-	fastSync := true
+	blockSync := true
 	db := dbm.NewMemDB()
 	stateStore = sm.NewStore(db, sm.StoreOptions{
 		DiscardABCIResponses: false,
@@ -150,7 +150,7 @@ func newReactor(
 		blockStore.SaveBlock(thisBlock, thisParts, lastCommit)
 	}
 
-	bcReactor := NewReactor(state.Copy(), blockExec, blockStore, fastSync)
+	bcReactor := NewReactor(state.Copy(), blockExec, blockStore, blockSync)
 	bcReactor.SetLogger(logger.With("module", "blockchain"))
 
 	return ReactorPair{bcReactor, proxyApp}

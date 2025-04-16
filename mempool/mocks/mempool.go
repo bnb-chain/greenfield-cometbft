@@ -16,9 +16,21 @@ type Mempool struct {
 	mock.Mock
 }
 
+type Mempool_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *Mempool) EXPECT() *Mempool_Expecter {
+	return &Mempool_Expecter{mock: &_m.Mock}
+}
+
 // CheckTx provides a mock function with given fields: tx, callback, txInfo
 func (_m *Mempool) CheckTx(tx types.Tx, callback func(*abcitypes.Response), txInfo mempool.TxInfo) error {
 	ret := _m.Called(tx, callback, txInfo)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckTx")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(types.Tx, func(*abcitypes.Response), mempool.TxInfo) error); ok {
@@ -30,19 +42,107 @@ func (_m *Mempool) CheckTx(tx types.Tx, callback func(*abcitypes.Response), txIn
 	return r0
 }
 
-// EnableTxsAvailable provides a mock function with given fields:
+// Mempool_CheckTx_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CheckTx'
+type Mempool_CheckTx_Call struct {
+	*mock.Call
+}
+
+// CheckTx is a helper method to define mock.On call
+//   - tx types.Tx
+//   - callback func(*abcitypes.Response)
+//   - txInfo mempool.TxInfo
+func (_e *Mempool_Expecter) CheckTx(tx interface{}, callback interface{}, txInfo interface{}) *Mempool_CheckTx_Call {
+	return &Mempool_CheckTx_Call{Call: _e.mock.On("CheckTx", tx, callback, txInfo)}
+}
+
+func (_c *Mempool_CheckTx_Call) Run(run func(tx types.Tx, callback func(*abcitypes.Response), txInfo mempool.TxInfo)) *Mempool_CheckTx_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Tx), args[1].(func(*abcitypes.Response)), args[2].(mempool.TxInfo))
+	})
+	return _c
+}
+
+func (_c *Mempool_CheckTx_Call) Return(_a0 error) *Mempool_CheckTx_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Mempool_CheckTx_Call) RunAndReturn(run func(types.Tx, func(*abcitypes.Response), mempool.TxInfo) error) *Mempool_CheckTx_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// EnableTxsAvailable provides a mock function with no fields
 func (_m *Mempool) EnableTxsAvailable() {
 	_m.Called()
 }
 
-// Flush provides a mock function with given fields:
+// Mempool_EnableTxsAvailable_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EnableTxsAvailable'
+type Mempool_EnableTxsAvailable_Call struct {
+	*mock.Call
+}
+
+// EnableTxsAvailable is a helper method to define mock.On call
+func (_e *Mempool_Expecter) EnableTxsAvailable() *Mempool_EnableTxsAvailable_Call {
+	return &Mempool_EnableTxsAvailable_Call{Call: _e.mock.On("EnableTxsAvailable")}
+}
+
+func (_c *Mempool_EnableTxsAvailable_Call) Run(run func()) *Mempool_EnableTxsAvailable_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Mempool_EnableTxsAvailable_Call) Return() *Mempool_EnableTxsAvailable_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Mempool_EnableTxsAvailable_Call) RunAndReturn(run func()) *Mempool_EnableTxsAvailable_Call {
+	_c.Run(run)
+	return _c
+}
+
+// Flush provides a mock function with no fields
 func (_m *Mempool) Flush() {
 	_m.Called()
 }
 
-// FlushAppConn provides a mock function with given fields:
+// Mempool_Flush_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Flush'
+type Mempool_Flush_Call struct {
+	*mock.Call
+}
+
+// Flush is a helper method to define mock.On call
+func (_e *Mempool_Expecter) Flush() *Mempool_Flush_Call {
+	return &Mempool_Flush_Call{Call: _e.mock.On("Flush")}
+}
+
+func (_c *Mempool_Flush_Call) Run(run func()) *Mempool_Flush_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Mempool_Flush_Call) Return() *Mempool_Flush_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Mempool_Flush_Call) RunAndReturn(run func()) *Mempool_Flush_Call {
+	_c.Run(run)
+	return _c
+}
+
+// FlushAppConn provides a mock function with no fields
 func (_m *Mempool) FlushAppConn() error {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for FlushAppConn")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -54,14 +154,72 @@ func (_m *Mempool) FlushAppConn() error {
 	return r0
 }
 
-// Lock provides a mock function with given fields:
+// Mempool_FlushAppConn_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FlushAppConn'
+type Mempool_FlushAppConn_Call struct {
+	*mock.Call
+}
+
+// FlushAppConn is a helper method to define mock.On call
+func (_e *Mempool_Expecter) FlushAppConn() *Mempool_FlushAppConn_Call {
+	return &Mempool_FlushAppConn_Call{Call: _e.mock.On("FlushAppConn")}
+}
+
+func (_c *Mempool_FlushAppConn_Call) Run(run func()) *Mempool_FlushAppConn_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Mempool_FlushAppConn_Call) Return(_a0 error) *Mempool_FlushAppConn_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Mempool_FlushAppConn_Call) RunAndReturn(run func() error) *Mempool_FlushAppConn_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Lock provides a mock function with no fields
 func (_m *Mempool) Lock() {
 	_m.Called()
+}
+
+// Mempool_Lock_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Lock'
+type Mempool_Lock_Call struct {
+	*mock.Call
+}
+
+// Lock is a helper method to define mock.On call
+func (_e *Mempool_Expecter) Lock() *Mempool_Lock_Call {
+	return &Mempool_Lock_Call{Call: _e.mock.On("Lock")}
+}
+
+func (_c *Mempool_Lock_Call) Run(run func()) *Mempool_Lock_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Mempool_Lock_Call) Return() *Mempool_Lock_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Mempool_Lock_Call) RunAndReturn(run func()) *Mempool_Lock_Call {
+	_c.Run(run)
+	return _c
 }
 
 // ReapMaxTxs provides a mock function with given fields: max
 func (_m *Mempool) ReapMaxTxs(max int) types.Txs {
 	ret := _m.Called(max)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ReapMaxTxs")
+	}
 
 	var r0 types.Txs
 	if rf, ok := ret.Get(0).(func(int) types.Txs); ok {
@@ -75,9 +233,41 @@ func (_m *Mempool) ReapMaxTxs(max int) types.Txs {
 	return r0
 }
 
+// Mempool_ReapMaxTxs_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ReapMaxTxs'
+type Mempool_ReapMaxTxs_Call struct {
+	*mock.Call
+}
+
+// ReapMaxTxs is a helper method to define mock.On call
+//   - max int
+func (_e *Mempool_Expecter) ReapMaxTxs(max interface{}) *Mempool_ReapMaxTxs_Call {
+	return &Mempool_ReapMaxTxs_Call{Call: _e.mock.On("ReapMaxTxs", max)}
+}
+
+func (_c *Mempool_ReapMaxTxs_Call) Run(run func(max int)) *Mempool_ReapMaxTxs_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int))
+	})
+	return _c
+}
+
+func (_c *Mempool_ReapMaxTxs_Call) Return(_a0 types.Txs) *Mempool_ReapMaxTxs_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Mempool_ReapMaxTxs_Call) RunAndReturn(run func(int) types.Txs) *Mempool_ReapMaxTxs_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ReapMaxTxsMaxBytesMaxGas provides a mock function with given fields: maxTxs, maxBytes, maxGas
 func (_m *Mempool) ReapMaxTxsMaxBytesMaxGas(maxTxs int, maxBytes int64, maxGas int64) types.Txs {
 	ret := _m.Called(maxTxs, maxBytes, maxGas)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ReapMaxTxsMaxBytesMaxGas")
+	}
 
 	var r0 types.Txs
 	if rf, ok := ret.Get(0).(func(int, int64, int64) types.Txs); ok {
@@ -91,9 +281,43 @@ func (_m *Mempool) ReapMaxTxsMaxBytesMaxGas(maxTxs int, maxBytes int64, maxGas i
 	return r0
 }
 
+// Mempool_ReapMaxTxsMaxBytesMaxGas_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ReapMaxTxsMaxBytesMaxGas'
+type Mempool_ReapMaxTxsMaxBytesMaxGas_Call struct {
+	*mock.Call
+}
+
+// ReapMaxTxsMaxBytesMaxGas is a helper method to define mock.On call
+//   - maxTxs int
+//   - maxBytes int64
+//   - maxGas int64
+func (_e *Mempool_Expecter) ReapMaxTxsMaxBytesMaxGas(maxTxs interface{}, maxBytes interface{}, maxGas interface{}) *Mempool_ReapMaxTxsMaxBytesMaxGas_Call {
+	return &Mempool_ReapMaxTxsMaxBytesMaxGas_Call{Call: _e.mock.On("ReapMaxTxsMaxBytesMaxGas", maxTxs, maxBytes, maxGas)}
+}
+
+func (_c *Mempool_ReapMaxTxsMaxBytesMaxGas_Call) Run(run func(maxTxs int, maxBytes int64, maxGas int64)) *Mempool_ReapMaxTxsMaxBytesMaxGas_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int), args[1].(int64), args[2].(int64))
+	})
+	return _c
+}
+
+func (_c *Mempool_ReapMaxTxsMaxBytesMaxGas_Call) Return(_a0 types.Txs) *Mempool_ReapMaxTxsMaxBytesMaxGas_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Mempool_ReapMaxTxsMaxBytesMaxGas_Call) RunAndReturn(run func(int, int64, int64) types.Txs) *Mempool_ReapMaxTxsMaxBytesMaxGas_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // RemoveTxByKey provides a mock function with given fields: txKey
 func (_m *Mempool) RemoveTxByKey(txKey types.TxKey) error {
 	ret := _m.Called(txKey)
+
+	if len(ret) == 0 {
+		panic("no return value specified for RemoveTxByKey")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(types.TxKey) error); ok {
@@ -105,9 +329,41 @@ func (_m *Mempool) RemoveTxByKey(txKey types.TxKey) error {
 	return r0
 }
 
-// Size provides a mock function with given fields:
+// Mempool_RemoveTxByKey_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'RemoveTxByKey'
+type Mempool_RemoveTxByKey_Call struct {
+	*mock.Call
+}
+
+// RemoveTxByKey is a helper method to define mock.On call
+//   - txKey types.TxKey
+func (_e *Mempool_Expecter) RemoveTxByKey(txKey interface{}) *Mempool_RemoveTxByKey_Call {
+	return &Mempool_RemoveTxByKey_Call{Call: _e.mock.On("RemoveTxByKey", txKey)}
+}
+
+func (_c *Mempool_RemoveTxByKey_Call) Run(run func(txKey types.TxKey)) *Mempool_RemoveTxByKey_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.TxKey))
+	})
+	return _c
+}
+
+func (_c *Mempool_RemoveTxByKey_Call) Return(_a0 error) *Mempool_RemoveTxByKey_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Mempool_RemoveTxByKey_Call) RunAndReturn(run func(types.TxKey) error) *Mempool_RemoveTxByKey_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Size provides a mock function with no fields
 func (_m *Mempool) Size() int {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Size")
+	}
 
 	var r0 int
 	if rf, ok := ret.Get(0).(func() int); ok {
@@ -119,9 +375,40 @@ func (_m *Mempool) Size() int {
 	return r0
 }
 
-// SizeBytes provides a mock function with given fields:
+// Mempool_Size_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Size'
+type Mempool_Size_Call struct {
+	*mock.Call
+}
+
+// Size is a helper method to define mock.On call
+func (_e *Mempool_Expecter) Size() *Mempool_Size_Call {
+	return &Mempool_Size_Call{Call: _e.mock.On("Size")}
+}
+
+func (_c *Mempool_Size_Call) Run(run func()) *Mempool_Size_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Mempool_Size_Call) Return(_a0 int) *Mempool_Size_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Mempool_Size_Call) RunAndReturn(run func() int) *Mempool_Size_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SizeBytes provides a mock function with no fields
 func (_m *Mempool) SizeBytes() int64 {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for SizeBytes")
+	}
 
 	var r0 int64
 	if rf, ok := ret.Get(0).(func() int64); ok {
@@ -133,9 +420,40 @@ func (_m *Mempool) SizeBytes() int64 {
 	return r0
 }
 
-// TxsAvailable provides a mock function with given fields:
+// Mempool_SizeBytes_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SizeBytes'
+type Mempool_SizeBytes_Call struct {
+	*mock.Call
+}
+
+// SizeBytes is a helper method to define mock.On call
+func (_e *Mempool_Expecter) SizeBytes() *Mempool_SizeBytes_Call {
+	return &Mempool_SizeBytes_Call{Call: _e.mock.On("SizeBytes")}
+}
+
+func (_c *Mempool_SizeBytes_Call) Run(run func()) *Mempool_SizeBytes_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Mempool_SizeBytes_Call) Return(_a0 int64) *Mempool_SizeBytes_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Mempool_SizeBytes_Call) RunAndReturn(run func() int64) *Mempool_SizeBytes_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// TxsAvailable provides a mock function with no fields
 func (_m *Mempool) TxsAvailable() <-chan struct{} {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for TxsAvailable")
+	}
 
 	var r0 <-chan struct{}
 	if rf, ok := ret.Get(0).(func() <-chan struct{}); ok {
@@ -149,14 +467,72 @@ func (_m *Mempool) TxsAvailable() <-chan struct{} {
 	return r0
 }
 
-// Unlock provides a mock function with given fields:
+// Mempool_TxsAvailable_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'TxsAvailable'
+type Mempool_TxsAvailable_Call struct {
+	*mock.Call
+}
+
+// TxsAvailable is a helper method to define mock.On call
+func (_e *Mempool_Expecter) TxsAvailable() *Mempool_TxsAvailable_Call {
+	return &Mempool_TxsAvailable_Call{Call: _e.mock.On("TxsAvailable")}
+}
+
+func (_c *Mempool_TxsAvailable_Call) Run(run func()) *Mempool_TxsAvailable_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Mempool_TxsAvailable_Call) Return(_a0 <-chan struct{}) *Mempool_TxsAvailable_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Mempool_TxsAvailable_Call) RunAndReturn(run func() <-chan struct{}) *Mempool_TxsAvailable_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Unlock provides a mock function with no fields
 func (_m *Mempool) Unlock() {
 	_m.Called()
+}
+
+// Mempool_Unlock_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Unlock'
+type Mempool_Unlock_Call struct {
+	*mock.Call
+}
+
+// Unlock is a helper method to define mock.On call
+func (_e *Mempool_Expecter) Unlock() *Mempool_Unlock_Call {
+	return &Mempool_Unlock_Call{Call: _e.mock.On("Unlock")}
+}
+
+func (_c *Mempool_Unlock_Call) Run(run func()) *Mempool_Unlock_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Mempool_Unlock_Call) Return() *Mempool_Unlock_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Mempool_Unlock_Call) RunAndReturn(run func()) *Mempool_Unlock_Call {
+	_c.Run(run)
+	return _c
 }
 
 // Update provides a mock function with given fields: blockHeight, blockTxs, deliverTxResponses, newPreFn, newPostFn
 func (_m *Mempool) Update(blockHeight int64, blockTxs types.Txs, deliverTxResponses []*abcitypes.ResponseDeliverTx, newPreFn mempool.PreCheckFunc, newPostFn mempool.PostCheckFunc) error {
 	ret := _m.Called(blockHeight, blockTxs, deliverTxResponses, newPreFn, newPostFn)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Update")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(int64, types.Txs, []*abcitypes.ResponseDeliverTx, mempool.PreCheckFunc, mempool.PostCheckFunc) error); ok {
@@ -168,13 +544,44 @@ func (_m *Mempool) Update(blockHeight int64, blockTxs types.Txs, deliverTxRespon
 	return r0
 }
 
-type mockConstructorTestingTNewMempool interface {
-	mock.TestingT
-	Cleanup(func())
+// Mempool_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type Mempool_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//   - blockHeight int64
+//   - blockTxs types.Txs
+//   - deliverTxResponses []*abcitypes.ResponseDeliverTx
+//   - newPreFn mempool.PreCheckFunc
+//   - newPostFn mempool.PostCheckFunc
+func (_e *Mempool_Expecter) Update(blockHeight interface{}, blockTxs interface{}, deliverTxResponses interface{}, newPreFn interface{}, newPostFn interface{}) *Mempool_Update_Call {
+	return &Mempool_Update_Call{Call: _e.mock.On("Update", blockHeight, blockTxs, deliverTxResponses, newPreFn, newPostFn)}
+}
+
+func (_c *Mempool_Update_Call) Run(run func(blockHeight int64, blockTxs types.Txs, deliverTxResponses []*abcitypes.ResponseDeliverTx, newPreFn mempool.PreCheckFunc, newPostFn mempool.PostCheckFunc)) *Mempool_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(int64), args[1].(types.Txs), args[2].([]*abcitypes.ResponseDeliverTx), args[3].(mempool.PreCheckFunc), args[4].(mempool.PostCheckFunc))
+	})
+	return _c
+}
+
+func (_c *Mempool_Update_Call) Return(_a0 error) *Mempool_Update_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Mempool_Update_Call) RunAndReturn(run func(int64, types.Txs, []*abcitypes.ResponseDeliverTx, mempool.PreCheckFunc, mempool.PostCheckFunc) error) *Mempool_Update_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewMempool creates a new instance of Mempool. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewMempool(t mockConstructorTestingTNewMempool) *Mempool {
+// The first argument is typically a *testing.T value.
+func NewMempool(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *Mempool {
 	mock := &Mempool{}
 	mock.Mock.Test(t)
 

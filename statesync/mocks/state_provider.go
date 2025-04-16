@@ -5,9 +5,8 @@ package mocks
 import (
 	context "context"
 
-	mock "github.com/stretchr/testify/mock"
-
 	state "github.com/cometbft/cometbft/state"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/cometbft/cometbft/types"
 )
@@ -17,11 +16,27 @@ type StateProvider struct {
 	mock.Mock
 }
 
+type StateProvider_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *StateProvider) EXPECT() *StateProvider_Expecter {
+	return &StateProvider_Expecter{mock: &_m.Mock}
+}
+
 // AppHash provides a mock function with given fields: ctx, height
 func (_m *StateProvider) AppHash(ctx context.Context, height uint64) ([]byte, error) {
 	ret := _m.Called(ctx, height)
 
+	if len(ret) == 0 {
+		panic("no return value specified for AppHash")
+	}
+
 	var r0 []byte
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uint64) ([]byte, error)); ok {
+		return rf(ctx, height)
+	}
 	if rf, ok := ret.Get(0).(func(context.Context, uint64) []byte); ok {
 		r0 = rf(ctx, height)
 	} else {
@@ -30,7 +45,6 @@ func (_m *StateProvider) AppHash(ctx context.Context, height uint64) ([]byte, er
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
 		r1 = rf(ctx, height)
 	} else {
@@ -40,11 +54,48 @@ func (_m *StateProvider) AppHash(ctx context.Context, height uint64) ([]byte, er
 	return r0, r1
 }
 
+// StateProvider_AppHash_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AppHash'
+type StateProvider_AppHash_Call struct {
+	*mock.Call
+}
+
+// AppHash is a helper method to define mock.On call
+//   - ctx context.Context
+//   - height uint64
+func (_e *StateProvider_Expecter) AppHash(ctx interface{}, height interface{}) *StateProvider_AppHash_Call {
+	return &StateProvider_AppHash_Call{Call: _e.mock.On("AppHash", ctx, height)}
+}
+
+func (_c *StateProvider_AppHash_Call) Run(run func(ctx context.Context, height uint64)) *StateProvider_AppHash_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uint64))
+	})
+	return _c
+}
+
+func (_c *StateProvider_AppHash_Call) Return(_a0 []byte, _a1 error) *StateProvider_AppHash_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *StateProvider_AppHash_Call) RunAndReturn(run func(context.Context, uint64) ([]byte, error)) *StateProvider_AppHash_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Commit provides a mock function with given fields: ctx, height
 func (_m *StateProvider) Commit(ctx context.Context, height uint64) (*types.Commit, error) {
 	ret := _m.Called(ctx, height)
 
+	if len(ret) == 0 {
+		panic("no return value specified for Commit")
+	}
+
 	var r0 *types.Commit
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uint64) (*types.Commit, error)); ok {
+		return rf(ctx, height)
+	}
 	if rf, ok := ret.Get(0).(func(context.Context, uint64) *types.Commit); ok {
 		r0 = rf(ctx, height)
 	} else {
@@ -53,7 +104,6 @@ func (_m *StateProvider) Commit(ctx context.Context, height uint64) (*types.Comm
 		}
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
 		r1 = rf(ctx, height)
 	} else {
@@ -61,20 +111,56 @@ func (_m *StateProvider) Commit(ctx context.Context, height uint64) (*types.Comm
 	}
 
 	return r0, r1
+}
+
+// StateProvider_Commit_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Commit'
+type StateProvider_Commit_Call struct {
+	*mock.Call
+}
+
+// Commit is a helper method to define mock.On call
+//   - ctx context.Context
+//   - height uint64
+func (_e *StateProvider_Expecter) Commit(ctx interface{}, height interface{}) *StateProvider_Commit_Call {
+	return &StateProvider_Commit_Call{Call: _e.mock.On("Commit", ctx, height)}
+}
+
+func (_c *StateProvider_Commit_Call) Run(run func(ctx context.Context, height uint64)) *StateProvider_Commit_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uint64))
+	})
+	return _c
+}
+
+func (_c *StateProvider_Commit_Call) Return(_a0 *types.Commit, _a1 error) *StateProvider_Commit_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *StateProvider_Commit_Call) RunAndReturn(run func(context.Context, uint64) (*types.Commit, error)) *StateProvider_Commit_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // State provides a mock function with given fields: ctx, height
 func (_m *StateProvider) State(ctx context.Context, height uint64) (state.State, error) {
 	ret := _m.Called(ctx, height)
 
+	if len(ret) == 0 {
+		panic("no return value specified for State")
+	}
+
 	var r0 state.State
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uint64) (state.State, error)); ok {
+		return rf(ctx, height)
+	}
 	if rf, ok := ret.Get(0).(func(context.Context, uint64) state.State); ok {
 		r0 = rf(ctx, height)
 	} else {
 		r0 = ret.Get(0).(state.State)
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
 		r1 = rf(ctx, height)
 	} else {
@@ -84,13 +170,41 @@ func (_m *StateProvider) State(ctx context.Context, height uint64) (state.State,
 	return r0, r1
 }
 
-type mockConstructorTestingTNewStateProvider interface {
-	mock.TestingT
-	Cleanup(func())
+// StateProvider_State_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'State'
+type StateProvider_State_Call struct {
+	*mock.Call
+}
+
+// State is a helper method to define mock.On call
+//   - ctx context.Context
+//   - height uint64
+func (_e *StateProvider_Expecter) State(ctx interface{}, height interface{}) *StateProvider_State_Call {
+	return &StateProvider_State_Call{Call: _e.mock.On("State", ctx, height)}
+}
+
+func (_c *StateProvider_State_Call) Run(run func(ctx context.Context, height uint64)) *StateProvider_State_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uint64))
+	})
+	return _c
+}
+
+func (_c *StateProvider_State_Call) Return(_a0 state.State, _a1 error) *StateProvider_State_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *StateProvider_State_Call) RunAndReturn(run func(context.Context, uint64) (state.State, error)) *StateProvider_State_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // NewStateProvider creates a new instance of StateProvider. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewStateProvider(t mockConstructorTestingTNewStateProvider) *StateProvider {
+// The first argument is typically a *testing.T value.
+func NewStateProvider(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *StateProvider {
 	mock := &StateProvider{}
 	mock.Mock.Test(t)
 

@@ -67,15 +67,18 @@ func Rollback(bs BlockStore, ss Store, removeBlock bool, rollbackBlocks int64) (
 	}
 
 	nextHeight := rollbackHeight + 1
+
 	lastHeightValidatorsChanged, err := ss.LoadLastHeightValidatorsChanged(nextHeight + 1)
 	if err != nil {
 		return -1, nil, err
 	}
 
-	// this can only happen if the validator set changed since the last block
 	if lastHeightValidatorsChanged > nextHeight {
 		lastHeightValidatorsChanged = nextHeight + 1
 	}
+
+	// paramsChangeHeight is not used in this function
+	_ = nextHeight + 1
 
 	//paramsChangeHeight := invalidState.LastHeightConsensusParamsChanged
 	paramsChangeHeight, err := ss.LoadLastHeightConsensusParamsChanged(nextHeight)

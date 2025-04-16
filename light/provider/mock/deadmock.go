@@ -18,7 +18,7 @@ func NewDeadMock(chainID string) provider.Provider {
 
 func (p *deadMock) ChainID() string { return p.chainID }
 
-func (p *deadMock) String() string { return "deadMock" }
+func (*deadMock) String() string { return "deadMock" }
 
 func (p *deadMock) LightBlock(_ context.Context, height int64) (*types.LightBlock, error) {
 	return nil, provider.ErrNoResponse
