@@ -1,4 +1,11 @@
 # CHANGELOG
+## v1.3.2
+This release updates the dependencies in this repo
+
+Features:
+* [#73](https://github.com/bnb-chain/greenfield-cometbft/pull/73) update prysm version
+* [#77](https://github.com/bnb-chain/greenfield-cometbft/pull/77) chore: update dependencies and fix workflows
+* [#85](https://github.com/bnb-chain/greenfield-cometbft/pull/85) feat: update btcec
 
 ## v1.3.0
 This release fixes the vulnerabilities in the repo
