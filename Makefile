@@ -379,4 +379,8 @@ $(BUILDDIR)/packages.txt:$(GO_TEST_FILES) $(BUILDDIR)
 split-test-packages:$(BUILDDIR)/packages.txt
 	split -d -n l/$(NUM_SPLIT) $< $<.
 test-group-%:split-test-packages
-	cat $(BUILDDIR)/packages.txt.$* | xargs go test -mod=readonly -timeout=15m -race -coverprofile=$(BUILDDIR)/$*.profile.out
+	while read -r pkg; do \
+		if [ -n "$$pkg" ]; then \
+			go test -mod=readonly -timeout=15m -p 1 -parallel 1 -race -v -coverprofile=$(BUILDDIR)/$*.profile.out "$$pkg"; \
+		fi; \
+	done < $(BUILDDIR)/packages.txt.$*
