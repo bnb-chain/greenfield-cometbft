@@ -278,7 +278,7 @@ lint:
 .PHONY: lint
 
 
-# This code repo requires go 1.21.x for now, `-format json` will make the cmd exit with code zero even if vulnerabilities are found.
+# This code repo requires go 1.22.x for now, `-format json` will make the cmd exit with code zero even if vulnerabilities are found.
 # However, you can still use the output to get a list of vulnerabilities found.
 vulncheck:
 	@go run golang.org/x/vuln/cmd/govulncheck@latest -format json ./...
